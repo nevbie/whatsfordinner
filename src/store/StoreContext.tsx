@@ -1,0 +1,139 @@
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { builtinDishes } from '../data/dishes'
+import type { DayEntry, Dish, FamilySettings, FamilyState } from '../data/types'
+import { firebaseConfig } from '../firebaseConfig'
+import type { Backend } from './backend'
+import { localBackend, readLocal, writeLocal } from './local'
+
+const FAMILY_KEY = 'wfd:family'
+
+interface StoreValue {
+  state: FamilyState
+  dishes: Dish[]
+  dishById: Map<string, Dish>
+  familyCode: string | null
+  syncAvailable: boolean
+  syncError: string | null
+  setDay(date: string, entry: DayEntry | null): void
+  toggleFavorite(id: string): void
+  saveDish(dish: Dish): void
+  deleteDish(id: string): void
+  updateSettings(patch: Partial<FamilySettings>): void
+  createFamily(): Promise<string>
+  joinFamily(code: string): Promise<boolean>
+  leaveFamily(): void
+}
+
+const Ctx = createContext<StoreValue | null>(null)
+
+function readFamilyCode(): string | null {
+  try {
+    return localStorage.getItem(FAMILY_KEY)
+  } catch {
+    return null
+  }
+}
+
+function writeFamilyCode(code: string | null) {
+  try {
+    if (code) localStorage.setItem(FAMILY_KEY, code)
+    else localStorage.removeItem(FAMILY_KEY)
+  } catch {
+    /* ignore */
+  }
+}
+
+// Firebase is only loaded when the family actually uses sync.
+const loadFirebase = () => import('./firebase')
+
+export function StoreProvider({ children }: { children: ReactNode }) {
+  const syncAvailable = firebaseConfig !== null
+  const [familyCode, setFamilyCode] = useState<string | null>(() => (syncAvailable ? readFamilyCode() : null))
+  const [backend, setBackend] = useState<Backend | null>(null)
+  const [state, setState] = useState<FamilyState>(readLocal)
+  const [syncError, setSyncError] = useState<string | null>(null)
+
+  // choose backend
+  useEffect(() => {
+    let cancelled = false
+    if (!familyCode) {
+      setBackend(localBackend())
+      return
+    }
+    loadFirebase()
+      .then((m) => !cancelled && setBackend(m.firebaseBackend(familyCode)))
+      .catch((e) => setSyncError(String(e)))
+    return () => {
+      cancelled = true
+    }
+  }, [familyCode])
+
+  useEffect(() => {
+    if (!backend) return
+    setSyncError(null)
+    return backend.subscribe(
+      (s) => {
+        setState(s)
+        // keep a local copy so the app opens instantly and works if the family is left
+        if (familyCode) writeLocal(s)
+      },
+      (e) => setSyncError(e instanceof Error ? e.message : String(e)),
+    )
+  }, [backend, familyCode])
+
+  const run = useCallback(
+    (p: Promise<void> | undefined) => p?.catch((e) => setSyncError(e instanceof Error ? e.message : String(e))),
+    [],
+  )
+
+  // Custom dishes with a built-in id are the family's edits of that dish and replace it.
+  const dishes = useMemo(() => {
+    const custom = state.customDishes
+    const builtinIds = new Set(builtinDishes.map((d) => d.id))
+    return [...builtinDishes.map((d) => custom[d.id] ?? d), ...Object.values(custom).filter((d) => !builtinIds.has(d.id))]
+  }, [state.customDishes])
+  const dishById = useMemo(() => new Map(dishes.map((d) => [d.id, d])), [dishes])
+
+  const value: StoreValue = {
+    state,
+    dishes,
+    dishById,
+    familyCode,
+    syncAvailable,
+    syncError,
+    setDay: (date, entry) => run(backend?.setDay(date, entry)),
+    toggleFavorite: (id) => run(backend?.setFavorite(id, !state.favorites.includes(id))),
+    saveDish: (dish) => run(backend?.saveDish(dish)),
+    deleteDish: (id) => run(backend?.deleteDish(id)),
+    updateSettings: (patch) => run(backend?.updateSettings(patch)),
+    async createFamily() {
+      const m = await loadFirebase()
+      const code = m.newFamilyCode()
+      await m.createFamily(code, state)
+      writeFamilyCode(code)
+      setFamilyCode(code)
+      return code
+    },
+    async joinFamily(input) {
+      const m = await loadFirebase()
+      const code = m.cleanCode(input)
+      if (!(await m.familyExists(code))) return false
+      writeFamilyCode(code)
+      setFamilyCode(code)
+      return true
+    },
+    leaveFamily() {
+      writeLocal(state)
+      writeFamilyCode(null)
+      setFamilyCode(null)
+    },
+  }
+
+  return <Ctx.Provider value={value}>{children}</Ctx.Provider>
+}
+
+export function useStore(): StoreValue {
+  const v = useContext(Ctx)
+  if (!v) throw new Error('useStore outside StoreProvider')
+  return v
+}

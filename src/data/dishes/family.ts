@@ -1,0 +1,95 @@
+import { d } from './define'
+
+/**
+ * The family's own list ("Was gibt's heute?" sheet, numbers 1–96).
+ * Numbers in comments refer to the paper list. 25 and 91 are merged,
+ * 28/36 open the meal builder, 72–79 are restaurants (see restaurants.ts).
+ */
+export const familyDishes = [
+  d({ id: 'haehnchen-suesskartoffel', o: 'Hähnchenbrust mit Süßkartoffelpüree und Preiselbeersauce', en: 'Chicken breast with sweet potato mash and cranberry sauce', c: 'german', t: 'meat kids', i: 'chicken sweet_potato cranberries butter milk' }), // 1
+  d({ id: 'lasagne', o: 'Lasagne', l: 'it', en: 'Lasagna', c: 'italian', t: 'meat kids oven', e: 3, i: 'lasagna_sheets minced_beef canned_tomatoes onion carrot celery milk butter flour parmesan' }), // 2
+  d({ id: 'ofenkaese', o: 'Ofenkäse mit Baguette', en: 'Baked cheese with baguette', c: 'german', t: 'veggie winter oven', e: 1, i: 'baking_cheese baguette garlic rosemary honey' }), // 3
+  d({ id: 'haehnchen-erdnuss-curry', o: 'Hähnchen mit Erdnusssauce und Curry', en: 'Chicken with peanut sauce and curry', c: 'fusion', t: 'meat kids', i: 'chicken peanut_butter coconut_milk curry_powder soy_sauce rice' }), // 4
+  d({ id: 'fischstaebchen', o: 'Fischstäbchen', en: 'Fish fingers', c: 'german', t: 'fish kids', e: 1, i: 'fish_fingers potatoes peas', n: ['Mit Kartoffelpüree oder Salzkartoffeln.', 'With mashed or boiled potatoes.'] }), // 5
+  d({ id: 'falafel', o: 'فلافل', l: 'ar', r: 'Falāfil', de: 'Falafel', en: 'Falafel', c: 'mideast', t: 'vegan kids', i: 'dried_chickpeas onion parsley coriander garlic cumin flatbread tahini tomato cucumber' }), // 6
+  d({ id: 'wraps', o: 'Wraps', en: 'Wraps', c: 'mexican', t: 'kids', e: 1, i: 'tortillas chicken lettuce tomato cucumber cheese sour_cream' }), // 7
+  d({ id: 'griessbrei', o: 'Grießbrei mit Pfirsichen oder Apfelmark', en: 'Semolina pudding with peaches or apple purée', c: 'german', t: 'veggie sweet kids', e: 1, i: 'semolina milk sugar peaches apple_sauce' }), // 8
+  d({ id: 'bratwurst-pueree', o: 'Bratwurst mit Kartoffelbrei, Erbsen, Möhrchen und Kohlrabi', en: 'Bratwurst with mashed potatoes, peas, carrots and kohlrabi', c: 'german', t: 'meat kids', i: 'bratwurst potatoes peas carrot kohlrabi milk butter' }), // 9
+  d({ id: 'maultaschen', o: 'Maultaschen', en: 'Maultaschen (Swabian filled pasta)', c: 'german', t: 'meat kids', e: 1, i: 'maultaschen onion butter broth', n: ['Geschmälzt mit Zwiebeln oder in der Brühe.', 'Pan-fried with onions or served in broth.'] }), // 10
+  d({ id: 'camembert', o: 'Gebackener Camembert mit Preiselbeeren', en: 'Fried camembert with cranberries', c: 'german', t: 'veggie', e: 1, i: 'camembert breadcrumbs egg flour cranberries baguette lettuce' }), // 11
+  d({ id: 'thai-curry', o: 'แกง', l: 'th', r: 'Kaeng', de: 'Thai-Curry', en: 'Thai curry', c: 'thai', t: 'meat spicy', i: 'curry_paste coconut_milk chicken bell_pepper bamboo_shoots thai_basil rice' }), // 12
+  d({ id: 'grillen', o: 'Grillen', en: 'Barbecue', c: 'german', t: 'meat summer social', i: 'bratwurst steak halloumi corn bell_pepper baguette potato_salad' }), // 13
+  d({ id: 'bulgur-merguez', o: 'Bulgur mit Merguez', en: 'Bulgur with merguez sausages', c: 'northafrican', t: 'meat spicy', e: 1, i: 'merguez bulgur tomato onion bell_pepper parsley' }), // 14
+  d({ id: 'kaesespaetzle', o: 'Käsespätzle', en: 'Cheese spätzle with fried onions', c: 'german', t: 'veggie kids winter', i: 'spaetzle mountain_cheese onion butter' }), // 15
+  d({ id: 'milchreis', o: 'Milchreis mit Pfirsichen oder Kompott', en: 'Rice pudding with peaches or compote', c: 'german', t: 'veggie sweet kids', e: 1, i: 'pudding_rice milk sugar cinnamon peaches' }), // 16
+  d({ id: 'raclette', o: 'Raclette', l: 'fr', en: 'Raclette', c: 'swiss', t: 'kids winter social', i: 'raclette_cheese potatoes gherkins pearl_onions mushrooms bell_pepper ham' }), // 17
+  d({ id: 'spaghetti-bolognese', o: 'Spaghetti alla bolognese', l: 'it', de: 'Spaghetti Bolognese', en: 'Spaghetti bolognese', c: 'italian', t: 'meat kids', i: 'minced_beef spaghetti canned_tomatoes onion carrot celery parmesan' }), // 18
+  d({ id: 'hamburger', o: 'Hamburger', l: 'en', en: 'Burgers', c: 'american', t: 'meat kids', i: 'minced_beef burger_buns lettuce tomato onion cheese gherkins' }), // 19
+  d({ id: 'rind-sesam-thaibasilikum', o: 'Rindfleischstreifen mit Sesam und Thaibasilikum', en: 'Beef strips with sesame and Thai basil', c: 'fusion', t: 'meat', e: 1, i: 'beef sesame thai_basil soy_sauce garlic chili rice' }), // 20
+  d({ id: 'schnitzel', o: 'Schnitzel', en: 'Schnitzel (breaded cutlet)', c: 'german', t: 'meat kids', i: 'pork_cutlet breadcrumbs egg flour lemon potatoes' }), // 21
+  d({ id: 'mercimek-koeftesi', o: 'Mercimek köftesi', l: 'tr', de: 'Linsenköfte', en: 'Red lentil patties', c: 'turkish', t: 'vegan kids', i: 'red_lentils bulgur onion tomato_paste spring_onion parsley lettuce lemon', n: ['Kalt in Salatblättern mit Zitrone.', 'Served cold in lettuce leaves with lemon.'] }), // 22
+  d({ id: 'pfannkuchen', o: 'Pfannkuchen', en: 'Pancakes', c: 'german', t: 'veggie sweet kids', e: 1, i: 'flour egg milk apple_sauce' }), // 23
+  d({ id: 'kaiserschmarrn', o: 'Kaiserschmarrn', en: 'Kaiserschmarrn (shredded pancake)', c: 'austrian', t: 'veggie sweet kids', e: 1, i: 'flour egg milk sugar raisins butter apple_sauce' }), // 24
+  d({ id: 'kohlrabi-kartoffel-auflauf', o: 'Kohlrabi-Kartoffel-Auflauf', en: 'Kohlrabi and potato bake', c: 'german', t: 'veggie kids oven', i: 'kohlrabi potatoes cream cheese nutmeg' }), // 25 + 91
+  d({ id: 'nudelauflauf', o: 'Nudelauflauf', en: 'Pasta bake', c: 'german', t: 'kids oven', i: 'pasta cheese cream egg ham broccoli' }), // 26
+  d({ id: 'fondue', o: 'Fondue', l: 'fr', en: 'Fondue (cheese or meat)', c: 'swiss', t: 'winter social', i: 'gruyere white_wine baguette beef broth' }), // 27
+  d({ id: 'chinesisch', o: '中餐', l: 'zh', r: 'Zhōngcān', de: 'Chinesisch (diverse)', en: 'Chinese (various)', c: 'chinese', k: 'combo', combo: 'chinese', i: '' }), // 28
+  d({ id: 'frikadellen', o: 'Frikadellen mit Bratkartoffeln, Erbsen, Möhrchen und Kohlrabi', en: 'Meat patties with fried potatoes, peas, carrots and kohlrabi', c: 'german', t: 'meat kids', i: 'minced_mixed potatoes peas carrot kohlrabi bread_roll egg onion' }), // 29
+  d({ id: 'tajine', o: 'طاجين', l: 'ar', r: 'Ṭājīn', de: 'Tajine mit Couscous', en: 'Tagine with couscous', c: 'northafrican', t: 'meat', e: 3, i: 'lamb couscous onion carrot zucchini chickpeas dried_apricots ras_el_hanout' }), // 30
+  d({ id: 'sandwich', o: 'Sandwich', l: 'en', en: 'Sandwiches', c: 'american', t: 'kids', e: 1, i: 'bread cheese ham lettuce tomato egg' }), // 31
+  d({ id: 'waffeln', o: 'Waffeln', en: 'Waffles', c: 'german', t: 'veggie sweet kids', e: 1, i: 'flour egg butter milk sugar' }), // 32
+  d({ id: 'leberkaese-ei', o: 'Rührei oder Spiegelei mit Leberkäse und Bratkartoffeln', en: 'Scrambled or fried eggs with Leberkäse and fried potatoes', c: 'german', t: 'meat kids', e: 1, i: 'egg leberkaese potatoes onion' }), // 33
+  d({ id: 'haehnchengeschnetzeltes', o: 'Hähnchengeschnetzeltes mit Pilzen und Bandnudeln', en: 'Creamy chicken with mushrooms and tagliatelle', c: 'german', t: 'meat kids', e: 1, i: 'chicken mushrooms cream onion tagliatelle' }), // 34
+  d({ id: 'chili-con-carne', o: 'Chili con carne', l: 'es', de: 'Chili con Carne', en: 'Chili con carne', c: 'mexican', t: 'meat spicy', i: 'minced_beef kidney_beans corn canned_tomatoes onion bell_pepper chili rice' }), // 35
+  d({ id: 'indisch', o: 'भारतीय खाना', l: 'hi', r: 'Bhāratīya khānā', de: 'Indisch (diverse)', en: 'Indian (various)', c: 'indian', k: 'combo', combo: 'indian', i: '' }), // 36
+  d({ id: 'cordon-bleu', o: 'Cordon bleu', l: 'fr', en: 'Cordon bleu (cutlet filled with ham and cheese)', c: 'swiss', t: 'meat kids', i: 'pork_cutlet ham cheese breadcrumbs egg flour potatoes' }), // 37
+  d({ id: 'ratatouille', o: 'Ratatouille', l: 'fr', de: 'Ratatouille mit Bratkartoffeln', en: 'Ratatouille with fried potatoes', c: 'french', t: 'vegan summer', i: 'eggplant zucchini bell_pepper tomato onion garlic herbes_de_provence potatoes' }), // 38
+  d({ id: 'pizza', o: 'Pizza', l: 'it', en: 'Pizza', c: 'italian', t: 'kids social oven', i: 'flour yeast canned_tomatoes mozzarella ham mushrooms bell_pepper' }), // 39
+  d({ id: 'hack-kartoffel-auflauf', o: 'Hack-Kartoffel-Auflauf', en: 'Minced meat and potato bake', c: 'german', t: 'meat kids oven', i: 'minced_beef potatoes onion canned_tomatoes cream cheese' }), // 40
+  d({ id: 'tortellini', o: 'Tortellini', l: 'it', en: 'Tortellini', c: 'italian', t: 'kids', e: 1, i: 'tortellini cream ham peas parmesan', n: ['Z. B. alla panna mit Schinken und Erbsen.', 'E.g. alla panna with ham and peas.'] }), // 41
+  d({ id: 'ofen-feta', o: 'Φέτα ψητή', l: 'el', r: 'Féta psití', de: 'Gebackener Feta im Ofen (Tomaten, Paprika …)', en: 'Oven-baked feta with tomatoes and peppers', c: 'greek', t: 'veggie oven', e: 1, i: 'feta cherry_tomatoes bell_pepper onion olive_oil oregano baguette' }), // 42
+  d({ id: 'tapas', o: 'Tapas', l: 'es', en: 'Tapas (dates in bacon, tortilla, prawns, albóndigas …)', c: 'spanish', t: 'social', e: 3, i: 'potatoes egg dates bacon prawns minced_mixed chorizo olives garlic bread' }), // 43
+  d({ id: 'schupfnudeln', o: 'Schupfnudeln mit Sauerkraut oder Apfelmus', en: 'Potato noodles with sauerkraut or apple sauce', c: 'german', t: 'veggie kids winter', e: 1, i: 'schupfnudeln sauerkraut onion apple_sauce' }), // 44
+  d({ id: 'lachs-julienne', o: 'Gebratener Lachs mit Juliennegemüse und Bandnudeln', en: 'Pan-fried salmon with julienne vegetables and tagliatelle', c: 'german', t: 'fish kids', i: 'salmon tagliatelle carrot zucchini leek cream' }), // 45
+  d({ id: 'kartoffelpuffer', o: 'Kartoffelpuffer', en: 'Potato pancakes', c: 'german', t: 'veggie kids', i: 'potatoes onion egg flour apple_sauce' }), // 46
+  d({ id: 'flammkuchen', o: 'Flammkuchen', en: 'Tarte flambée', c: 'french', t: 'meat kids oven', i: 'flour creme_fraiche onion bacon', n: ['Elsässisch: Flammekueche.', 'Alsatian: Flammekueche.'] }), // 47
+  d({ id: 'ofengemuese', o: 'Ofengemüse mit Joghurt', en: 'Roasted vegetables with yogurt dip', c: 'german', t: 'veggie kids oven', e: 1, i: 'potatoes carrot bell_pepper zucchini red_onion yogurt garlic herbs' }), // 48
+  d({ id: 'quiche', o: 'Quiche', l: 'fr', en: 'Quiche', c: 'french', t: 'veggie oven', i: 'flour butter egg cream cheese leek spinach' }), // 49
+  d({ id: 'szegediner', o: 'Székelygulyás', l: 'hu', de: 'Szegediner Gulasch', en: 'Szeged goulash (pork and sauerkraut stew)', c: 'eastern', t: 'meat winter', i: 'pork sauerkraut onion paprika_powder sour_cream potatoes' }), // 50
+  d({ id: 'rinderrouladen', o: 'Rinderrouladen', en: 'Beef roulades', c: 'german', t: 'meat winter', e: 3, i: 'beef_slices bacon gherkins mustard onion red_wine potatoes red_cabbage' }), // 51
+  d({ id: 'ossobuco', o: 'Ossobuco', l: 'it', de: 'Osso buco (geschmorte Kalbshaxe)', en: 'Osso buco (braised veal shank)', c: 'italian', t: 'meat', e: 3, i: 'veal_shank canned_tomatoes white_wine carrot celery onion lemon parsley' }), // 52
+  d({ id: 'saltimbocca', o: 'Saltimbocca alla romana', l: 'it', de: 'Saltimbocca (Kalb mit Schinken und Salbei)', en: 'Saltimbocca (veal with prosciutto and sage)', c: 'italian', t: 'meat', e: 1, i: 'veal_cutlet prosciutto sage white_wine butter' }), // 53
+  d({ id: 'vitello-tonnato', o: 'Vitello tonnato', l: 'it', de: 'Vitello tonnato (Kalb mit Thunfischsoße)', en: 'Vitello tonnato (veal with tuna sauce)', c: 'italian', t: 'meat summer', e: 3, i: 'veal tuna mayonnaise capers anchovies lemon' }), // 54
+  d({ id: 'gambas-ajillo', o: 'Gambas al ajillo', l: 'es', de: 'Garnelen mit Knoblauch', en: 'Garlic prawns', c: 'spanish', t: 'fish', e: 1, i: 'prawns garlic olive_oil chili parsley baguette' }), // 55
+  d({ id: 'haehnchen-bratschlauch', o: 'Hähnchen im Bratschlauch', en: 'Chicken roasted in a bag', c: 'german', t: 'meat kids oven', i: 'chicken_legs potatoes carrot onion paprika_powder' }), // 56
+  d({ id: 'coq-au-vin', o: 'Coq au vin', l: 'fr', de: 'Coq au vin (Huhn in Rotwein)', en: 'Coq au vin (chicken in red wine)', c: 'french', t: 'meat winter', e: 3, i: 'chicken_legs red_wine bacon mushrooms pearl_onions carrot baguette' }), // 57
+  d({ id: 'bun-tron', o: 'Bún trộn', l: 'vi', de: 'Vietnamesischer Nudelsalat', en: 'Vietnamese noodle salad', c: 'vietnamese', t: 'summer', i: 'rice_noodles beef lettuce cucumber carrot mint coriander peanuts fish_sauce lime' }), // 58
+  d({ id: 'sabzi-khordan', o: 'سبزی خوردن', l: 'fa', r: 'Sabzi khordan', de: 'Kräuter mit Fladenbrot und Schafskäse', en: 'Fresh herbs with flatbread and feta', c: 'persian', t: 'veggie summer', e: 1, i: 'herbs flatbread feta radish spring_onion walnuts' }), // 59
+  d({ id: 'goi-cuon', o: 'Gỏi cuốn', l: 'vi', de: 'Sommerrollen', en: 'Summer rolls', c: 'vietnamese', t: 'fish kids summer', i: 'rice_paper rice_noodles prawns lettuce cucumber carrot mint coriander peanut_butter hoisin', n: ['Jeder rollt selbst – macht Kindern Spaß.', 'Everyone rolls their own – kids love it.'] }), // 60
+  d({ id: 'ofenpommes', o: 'Ofenpommes', en: 'Oven fries', c: 'german', t: 'vegan kids oven', e: 1, i: 'potatoes oil paprika_powder' }), // 61
+  d({ id: 'blumenkohl-kartoffel-auflauf', o: 'Blumenkohl-Kartoffel-Auflauf', en: 'Cauliflower and potato bake', c: 'german', t: 'veggie kids oven', i: 'cauliflower potatoes cream cheese nutmeg' }), // 62
+  d({ id: 'brezenknoedel', o: 'Brezenknödel', en: 'Pretzel dumplings', c: 'german', t: 'veggie winter', i: 'pretzels milk egg onion parsley butter mushrooms', n: ['Gern mit Pilzrahmsoße.', 'Nice with creamy mushroom sauce.'] }), // 63
+  d({ id: 'fisch-steinpilzrisotto', o: 'Fisch mit Steinpilzrisotto', en: 'Fish with porcini risotto', c: 'italian', t: 'fish', i: 'fish_fillet risotto_rice porcini onion white_wine parmesan broth' }), // 64
+  d({ id: 'gemuesequiche', o: 'Gemüsequiche', en: 'Vegetable quiche', c: 'french', t: 'veggie oven', i: 'flour butter egg cream cheese leek bell_pepper zucchini' }), // 65
+  d({ id: 'blumenfocaccia', o: 'Blumenfocaccia', en: 'Flower focaccia (garden focaccia)', c: 'italian', t: 'vegan kids oven', e: 3, i: 'flour yeast olive_oil cherry_tomatoes bell_pepper olives red_onion herbs', n: ['Mit Gemüse als Blumen belegt – Kinder dekorieren.', 'Topped with vegetables arranged as flowers – kids decorate.'] }), // 66
+  d({ id: 'steak-gratin', o: 'Steak mit Kartoffelgratin und Sauce béarnaise', en: 'Steak with potato gratin and béarnaise sauce', c: 'french', t: 'meat', e: 3, i: 'steak potatoes cream garlic butter egg tarragon' }), // 67
+  d({ id: 'lamm-kraeuterkruste', o: 'Lamm mit Kräutersenfkruste und Bohnen', en: 'Lamb with herb-mustard crust and green beans', c: 'french', t: 'meat', e: 3, i: 'lamb_rack mustard herbs breadcrumbs green_beans potatoes' }), // 68
+  d({ id: 'gemuesestrudel', o: 'Gemüsestrudel (z. B. Lauch)', en: 'Vegetable strudel (e.g. leek)', c: 'austrian', t: 'veggie oven', i: 'leek strudel_dough cream_cheese egg cheese' }), // 69
+  d({ id: 'gefuellte-kohlrabi', o: 'Gefüllte Kohlrabi', en: 'Stuffed kohlrabi', c: 'german', t: 'meat oven', i: 'kohlrabi minced_mixed onion cream cheese' }), // 70
+  d({ id: 'rohkost', o: 'Rohkost mit Kräuterfrischkäse oder Hummus', en: 'Raw vegetables with herb cream cheese or hummus', c: 'german', t: 'veggie kids summer', e: 1, i: 'carrot cucumber bell_pepper kohlrabi cherry_tomatoes cream_cheese hummus bread' }), // 71
+  d({ id: 'gruenkern', o: 'Grünkernbrei oder Grünkernklößchen', en: 'Green spelt porridge or dumplings', c: 'german', t: 'veggie', i: 'green_spelt onion egg broth herbs' }), // 80
+  d({ id: 'blumenkohl-bechamel', o: 'Blumenkohl mit Béchamelsauce', en: 'Cauliflower with béchamel sauce', c: 'german', t: 'veggie kids', e: 1, i: 'cauliflower butter flour milk nutmeg potatoes', n: ['Geht auch mit Brokkoli oder Kohlrabi.', 'Also works with broccoli or kohlrabi.'] }), // 81
+  d({ id: 'tartiflette', o: 'Tartiflette', l: 'fr', de: 'Tartiflette (Kartoffelauflauf mit Reblochon)', en: 'Tartiflette (potato bake with Reblochon)', c: 'french', t: 'meat winter oven', i: 'potatoes reblochon bacon onion white_wine cream' }), // 82
+  d({ id: 'spaghetti-salmone', o: 'Spaghetti al salmone e limone', l: 'it', de: 'Spaghetti mit Lachs und Zitrone', en: 'Spaghetti with salmon and lemon', c: 'italian', t: 'fish kids', e: 1, i: 'salmon spaghetti lemon cream dill' }), // 83
+  d({ id: 'schweinemedaillons', o: 'Schweinemedaillons mit grüner Pfeffersoße', en: 'Pork medallions with green peppercorn sauce', c: 'german', t: 'meat', i: 'pork_tenderloin green_peppercorns cream broth spaetzle' }), // 84
+  d({ id: 'brotzeit', o: 'Brotzeit', en: 'Bavarian cold supper (bread, cheese, cold cuts)', c: 'german', t: 'kids', e: 1, i: 'bread butter cheese cold_cuts radish gherkins' }), // 85
+  d({ id: 'kartoffelgratin', o: 'Kartoffelgratin', en: 'Potato gratin', c: 'german', t: 'veggie kids oven', i: 'potatoes cream milk cheese garlic nutmeg' }), // 87
+  d({ id: 'zwiebelkuchen', o: 'Zwiebelkuchen', en: 'Onion tart', c: 'german', t: 'meat oven', i: 'onion flour yeast bacon sour_cream egg caraway', n: ['Klassisch im Herbst mit Federweißem.', 'Classic in autumn with new wine.'] }), // 88
+  d({ id: 'hefekuchen-gemuese', o: 'Hefekuchen mit Gemüse', en: 'Savoury yeast tart with vegetables', c: 'german', t: 'veggie oven', i: 'flour yeast leek bell_pepper zucchini sour_cream egg cheese', n: ['Wie Zwiebelkuchen, nur mit anderem Gemüse.', 'Like onion tart, just with other vegetables.'] }), // 89
+  d({ id: 'gratin-dauphinois', o: 'Gratin dauphinois', l: 'fr', de: 'Gratin dauphinois (Kartoffelgratin nach Art der Dauphiné)', en: 'Gratin dauphinois (French potato gratin)', c: 'french', t: 'veggie kids oven', i: 'potatoes cream milk garlic nutmeg butter' }), // 90
+  d({ id: 'lachs-risotto', o: 'Lachs mit Risotto', en: 'Salmon with risotto', c: 'italian', t: 'fish', i: 'salmon risotto_rice onion white_wine parmesan broth' }), // 92
+  d({ id: 'teigtaschen-pizzateig', o: 'Teigtaschen mit Pizzateig', en: 'Filled pizza-dough pockets', c: 'italian', t: 'kids oven', i: 'flour yeast canned_tomatoes cheese ham bell_pepper', n: ['Ähnlich wie Calzone.', 'Similar to calzone.'] }), // 93
+  d({ id: 'rind-sojasosse-sesam', o: 'Rindfleischstreifen mit Sojasoße und Sesam', en: 'Beef strips with soy sauce and sesame', c: 'fusion', t: 'meat kids', e: 1, i: 'beef soy_sauce sesame garlic ginger spring_onion rice' }), // 94
+  d({ id: 'kartoffelrolle', o: 'Kartoffelrolle', en: 'Potato roll', c: 'german', t: 'kids', i: 'potatoes' }), // 95
+  d({ id: 'nudeln-erdnusssauce', o: 'Selbstgemachte Nudeln mit Erdnusssauce', en: 'Homemade noodles with peanut sauce', c: 'fusion', t: 'veggie kids', i: 'flour egg peanut_butter soy_sauce garlic ginger cucumber spring_onion' }), // 96
+]
