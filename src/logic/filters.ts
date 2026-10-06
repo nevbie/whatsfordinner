@@ -75,3 +75,18 @@ export function matchesFilters(dish: Dish, f: Filters, favorites: ReadonlySet<st
   if (!inCuisineGroup(dish, f.cuisine)) return false
   return matchesDiet(dish, f)
 }
+
+/** Number of filters that differ from the defaults (shown as a badge on the filter button). */
+export function activeFilterCount(f: Filters): number {
+  return (
+    Number(f.diet !== 'any') +
+    f.regions.length +
+    f.staples.length +
+    Number(f.cuisine !== 'any') +
+    Number(f.kids) +
+    Number(f.noSpicy) +
+    Number(f.maxEffort < 3) +
+    Number(f.favoritesOnly) +
+    Number(f.eatOut)
+  )
+}

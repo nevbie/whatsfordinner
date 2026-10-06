@@ -6,6 +6,7 @@ import { formatDay } from '../components/format'
 import type { Dish } from '../data/types'
 import { useLang } from '../i18n'
 import { todayISO } from '../logic/dates'
+import { activeFilterCount } from '../logic/filters'
 import { suggest } from '../logic/suggest'
 import { useStore } from '../store/StoreContext'
 import { useUI } from '../ui'
@@ -86,6 +87,7 @@ export function SuggestView() {
         <h2>{t('nav.suggest')}</h2>
         <button className={`chip ${showFilters ? 'on' : ''}`} onClick={() => setShowFilters(!showFilters)} aria-expanded={showFilters}>
           ⚙︎ {t('suggest.filters')}
+          {activeFilterCount(filters) > 0 && <span className="count-badge">{activeFilterCount(filters)}</span>}
         </button>
       </div>
       {showFilters && <FilterBar filters={filters} onChange={setFilters} />}

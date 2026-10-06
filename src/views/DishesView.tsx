@@ -6,7 +6,7 @@ import { useDishStats } from '../components/useDishStats'
 import type { Dish, Lang } from '../data/types'
 import { ingredientName } from '../data/ingredients'
 import { useLang } from '../i18n'
-import { matchesFilters } from '../logic/filters'
+import { activeFilterCount, DEFAULT_FILTERS, matchesFilters } from '../logic/filters'
 import { useStore } from '../store/StoreContext'
 import { useUI } from '../ui'
 
@@ -37,6 +37,8 @@ export function DishesView() {
   const [query, setQuery] = useState('')
   const [showSides, setShowSides] = useState(false)
   const [sort, setSort] = useState<'name' | 'recent'>('name')
+  const [showFilters, setShowFilters] = useState(false)
+  const active = activeFilterCount(filters) + Number(showSides)
 
   const list = useMemo(() => {
     const favs = new Set(state.favorites)
@@ -56,22 +58,60 @@ export function DishesView() {
   return (
     <div className="view">
       <h1>{t('nav.dishes')}</h1>
-      <input className="search" type="search" placeholder={t('dishes.search')} value={query} onChange={(e) => setQuery(e.target.value)} />
-      <FilterBar filters={filters} onChange={setFilters} />
-      <div className="row between">
-        <label className="check">
-          <input type="checkbox" checked={showSides} onChange={(e) => setShowSides(e.target.checked)} /> {t('dishes.showSides')}
-        </label>
-        <div className="segmented small">
-          <button className={sort === 'name' ? 'on' : ''} onClick={() => setSort('name')}>
-            {t('dishes.sort.name')}
-          </button>
-          <button className={sort === 'recent' ? 'on' : ''} onClick={() => setSort('recent')}>
-            {t('dishes.sort.recent')}
-          </button>
-        </div>
+      <div className="row gap search-row">
+        <input className="search grow" type="search" placeholder={t('dishes.search')} value={query} onChange={(e) => setQuery(e.target.value)} />
+        <button className={`chip filter-toggle ${showFilters ? 'on' : ''}`} onClick={() => setShowFilters(!showFilters)} aria-expanded={showFilters}>
+          ⚙︎ {t('suggest.filters')}
+          {active > 0 && <span className="count-badge">{active}</span>}
+        </button>
       </div>
-      <p className="muted small">{t('dishes.count', { n: list.length })}</p>
+      {showFilters && (
+        <div className="card filter-panel">
+          <FilterBar filters={filters} onChange={setFilters} />
+          <div className="row between wrap">
+            <label className="check">
+              <input type="checkbox" checked={showSides} onChange={(e) => setShowSides(e.target.checked)} /> {t('dishes.showSides')}
+            </label>
+            <div className="segmented small">
+              <button className={sort === 'name' ? 'on' : ''} onClick={() => setSort('name')}>
+                {t('dishes.sort.name')}
+              </button>
+              <button className={sort === 'recent' ? 'on' : ''} onClick={() => setSort('recent')}>
+                {t('dishes.sort.recent')}
+              </button>
+            </div>
+          </div>
+          <div className="row between">
+            <button
+              className="btn"
+              disabled={active === 0}
+              onClick={() => {
+                setFilters(DEFAULT_FILTERS)
+                setShowSides(false)
+              }}
+            >
+              {t('filter.reset')}
+            </button>
+            <button className="btn primary" onClick={() => setShowFilters(false)}>
+              {t('filter.done', { n: list.length })}
+            </button>
+          </div>
+        </div>
+      )}
+      <p className="muted small row between">
+        <span>{list.length === 1 ? t('dishes.countOne') : t('dishes.count', { n: list.length })}</span>
+        {active > 0 && !showFilters && (
+          <button
+            className="link-btn"
+            onClick={() => {
+              setFilters(DEFAULT_FILTERS)
+              setShowSides(false)
+            }}
+          >
+            {t('filter.active', { n: active })} · {t('filter.reset')}
+          </button>
+        )}
+      </p>
       <ul className="list">
         {list.map((d) => (
           <li key={d.id} className="list-row" onClick={() => ui.openDish(d.id)}>
@@ -83,9 +123,12 @@ export function DishesView() {
           </li>
         ))}
       </ul>
-      <button className="fab" onClick={() => ui.openForm()} aria-label={t('dishes.add')}>
-        ＋ {t('dishes.add')}
-      </button>
+      {/* hidden while searching so it doesn't cover results above the keyboard */}
+      {!query && (
+        <button className="fab" onClick={() => ui.openForm()} aria-label={t('dishes.add')}>
+          ＋ {t('dishes.add')}
+        </button>
+      )}
     </div>
   )
 }

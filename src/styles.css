@@ -702,3 +702,47 @@ main {
     animation: none;
   }
 }
+
+/* search + collapsible filters */
+.search-row {
+  margin-bottom: 6px;
+}
+.search-row .search {
+  margin-bottom: 0;
+}
+.filter-toggle {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.55rem 0.9rem;
+}
+.count-badge {
+  background: var(--accent);
+  color: var(--accent-text);
+  border-radius: 999px;
+  min-width: 1.4em;
+  padding: 0 0.4em;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: center;
+}
+.chip.on .count-badge {
+  background: var(--accent-text);
+  color: var(--accent);
+}
+.filter-panel {
+  display: grid;
+  gap: 12px;
+}
+.filter-panel .filters {
+  margin-bottom: 0;
+}
+.link-btn {
+  border: none;
+  background: none;
+  color: var(--accent);
+  padding: 0;
+  font-size: inherit;
+  cursor: pointer;
+}
