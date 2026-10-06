@@ -31,7 +31,7 @@ Ossobuco, Mercimek köftesi) plus the translation in the chosen language.
 
 | File | Content |
 | --- | --- |
-| `src/data/dishes/family.ts` | your paper list (numbers in comments; 25 + 91 merged) |
+| `src/data/dishes/family.ts` | your paper list (numbers in comments; merged: 25+91, 20+94, 87+90) |
 | `src/data/dishes/restaurants.ts` | eating out (72–79) |
 | `src/data/dishes/chinese.ts` | your handwritten Chinese list + added classics |
 | `src/data/dishes/indian.ts`, `indianRecipes.ts` | Kochkurs dishes with recipes, Chicken Tikka Masala, added classics |

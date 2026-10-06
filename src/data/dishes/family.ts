@@ -1,8 +1,8 @@
 import { d } from './define'
 
 /**
- * The family's own list ("Was gibt's heute?" sheet, numbers 1–96).
- * Numbers in comments refer to the paper list. 25 and 91 are merged,
+ * The family's own list ("Was gibt's heute?" sheet, numbers 1–96). Merged: 25+91, 20+94, 87+90.
+ * Numbers in comments refer to the paper list;
  * 28/36 open the meal builder, 72–79 are restaurants (see restaurants.ts).
  */
 export const familyDishes = [
@@ -25,7 +25,7 @@ export const familyDishes = [
   d({ id: 'raclette', o: 'Raclette', l: 'fr', en: 'Raclette', c: 'swiss', t: 'kids winter social', i: 'raclette_cheese potatoes gherkins pearl_onions mushrooms bell_pepper ham' }), // 17
   d({ id: 'spaghetti-bolognese', o: 'Spaghetti alla bolognese', l: 'it', de: 'Spaghetti Bolognese', en: 'Spaghetti bolognese', c: 'italian', t: 'meat kids', i: 'minced_beef spaghetti canned_tomatoes onion carrot celery parmesan' }), // 18
   d({ id: 'hamburger', o: 'Hamburger', l: 'en', en: 'Burgers', c: 'american', t: 'meat kids', i: 'minced_beef burger_buns lettuce tomato onion cheese gherkins' }), // 19
-  d({ id: 'rind-sesam-thaibasilikum', o: 'Rindfleischstreifen mit Sesam und Thaibasilikum', en: 'Beef strips with sesame and Thai basil', c: 'fusion', t: 'meat', e: 1, i: 'beef sesame thai_basil soy_sauce garlic chili rice' }), // 20
+  d({ id: 'rind-sesam-thaibasilikum', o: 'Rindfleischstreifen mit Sojasoße, Sesam und Thaibasilikum', en: 'Beef strips with soy sauce, sesame and Thai basil', c: 'fusion', t: 'meat kids', e: 1, i: 'beef soy_sauce sesame thai_basil garlic ginger spring_onion rice', n: ['Thaibasilikum und Chili nach Geschmack – für Kinder ohne Chili.', 'Thai basil and chilli to taste – no chilli for the kids.'] }), // 20 + 94
   d({ id: 'schnitzel', o: 'Schnitzel', en: 'Schnitzel (breaded cutlet)', c: 'german', t: 'meat kids', i: 'pork_cutlet breadcrumbs egg flour lemon potatoes' }), // 21
   d({ id: 'mercimek-koeftesi', o: 'Mercimek köftesi', l: 'tr', de: 'Linsenköfte', en: 'Red lentil patties', c: 'turkish', t: 'vegan kids', i: 'red_lentils bulgur onion tomato_paste spring_onion parsley lettuce lemon', n: ['Kalt in Salatblättern mit Zitrone.', 'Served cold in lettuce leaves with lemon.'] }), // 22
   d({ id: 'pfannkuchen', o: 'Pfannkuchen', en: 'Pancakes', c: 'german', t: 'veggie sweet kids', e: 1, i: 'flour egg milk apple_sauce' }), // 23
@@ -83,13 +83,11 @@ export const familyDishes = [
   d({ id: 'spaghetti-salmone', o: 'Spaghetti al salmone e limone', l: 'it', de: 'Spaghetti mit Lachs und Zitrone', en: 'Spaghetti with salmon and lemon', c: 'italian', t: 'fish kids', e: 1, i: 'salmon spaghetti lemon cream dill' }), // 83
   d({ id: 'schweinemedaillons', o: 'Schweinemedaillons mit grüner Pfeffersoße', en: 'Pork medallions with green peppercorn sauce', c: 'german', t: 'meat', i: 'pork_tenderloin green_peppercorns cream broth spaetzle' }), // 84
   d({ id: 'brotzeit', o: 'Brotzeit', en: 'Bavarian cold supper (bread, cheese, cold cuts)', c: 'german', t: 'kids', e: 1, i: 'bread butter cheese cold_cuts radish gherkins' }), // 85
-  d({ id: 'kartoffelgratin', o: 'Kartoffelgratin', en: 'Potato gratin', c: 'german', t: 'veggie kids oven', i: 'potatoes cream milk cheese garlic nutmeg' }), // 87
+  d({ id: 'kartoffelgratin', o: 'Gratin dauphinois', l: 'fr', de: 'Kartoffelgratin (Gratin dauphinois)', en: 'Potato gratin (gratin dauphinois)', c: 'french', t: 'veggie kids oven', i: 'potatoes cream milk garlic nutmeg butter cheese', n: ['Klassisch ohne Käse, gern auch mit Käse überbacken.', 'Classically without cheese, but nice topped with cheese too.'] }), // 87 + 90
   d({ id: 'zwiebelkuchen', o: 'Zwiebelkuchen', en: 'Onion tart', c: 'german', t: 'meat oven', i: 'onion flour yeast bacon sour_cream egg caraway', n: ['Klassisch im Herbst mit Federweißem.', 'Classic in autumn with new wine.'] }), // 88
   d({ id: 'hefekuchen-gemuese', o: 'Hefekuchen mit Gemüse', en: 'Savoury yeast tart with vegetables', c: 'german', t: 'veggie oven', i: 'flour yeast leek bell_pepper zucchini sour_cream egg cheese', n: ['Wie Zwiebelkuchen, nur mit anderem Gemüse.', 'Like onion tart, just with other vegetables.'] }), // 89
-  d({ id: 'gratin-dauphinois', o: 'Gratin dauphinois', l: 'fr', de: 'Gratin dauphinois (Kartoffelgratin nach Art der Dauphiné)', en: 'Gratin dauphinois (French potato gratin)', c: 'french', t: 'veggie kids oven', i: 'potatoes cream milk garlic nutmeg butter' }), // 90
   d({ id: 'lachs-risotto', o: 'Lachs mit Risotto', en: 'Salmon with risotto', c: 'italian', t: 'fish', i: 'salmon risotto_rice onion white_wine parmesan broth' }), // 92
   d({ id: 'teigtaschen-pizzateig', o: 'Teigtaschen mit Pizzateig', en: 'Filled pizza-dough pockets', c: 'italian', t: 'kids oven', i: 'flour yeast canned_tomatoes cheese ham bell_pepper', n: ['Ähnlich wie Calzone.', 'Similar to calzone.'] }), // 93
-  d({ id: 'rind-sojasosse-sesam', o: 'Rindfleischstreifen mit Sojasoße und Sesam', en: 'Beef strips with soy sauce and sesame', c: 'fusion', t: 'meat kids', e: 1, i: 'beef soy_sauce sesame garlic ginger spring_onion rice' }), // 94
   d({ id: 'kartoffelrolle', o: 'Kartoffelrolle', en: 'Potato roll', c: 'german', t: 'kids', i: 'potatoes' }), // 95
   d({ id: 'nudeln-erdnusssauce', o: 'Selbstgemachte Nudeln mit Erdnusssauce', en: 'Homemade noodles with peanut sauce', c: 'fusion', t: 'veggie kids', i: 'flour egg peanut_butter soy_sauce garlic ginger cucumber spring_onion' }), // 96
 ]
