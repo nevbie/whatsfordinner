@@ -43,7 +43,7 @@ export function DishesView() {
   const list = useMemo(() => {
     const favs = new Set(state.favorites)
     const out = dishes.filter((d) => {
-      if (d.kind === 'side' && !showSides) return false
+      if ((d.kind === 'side' || d.kind === 'party') && !showSides) return false
       // restaurants only with the "eating out" chip (or when searching for them)
       if (d.kind === 'eatout') {
         if (!filters.eatOut && !query) return false

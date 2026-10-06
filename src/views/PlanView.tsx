@@ -4,13 +4,14 @@ import { formatDay } from '../components/format'
 import { useLang } from '../i18n'
 import { addDays, todayISO, weekStart } from '../logic/dates'
 import { DEFAULT_FILTERS } from '../logic/filters'
+import { guestTotal, newParty } from '../logic/party'
 import { suggest } from '../logic/suggest'
 import { useStore } from '../store/StoreContext'
 import { useUI } from '../ui'
 
 export function PlanView() {
   const { t, lang } = useLang()
-  const { state, dishes, dishById, setDay } = useStore()
+  const { state, dishes, dishById, setDay, saveParty } = useStore()
   const ui = useUI()
   const today = todayISO()
   const [start, setStart] = useState(() => weekStart(today))
@@ -28,7 +29,7 @@ export function PlanView() {
   const removeDish = (date: string, index: number) => {
     const entry = state.plan[date]
     const next = entry.dishes.filter((_, i) => i !== index)
-    setDay(date, next.length ? { ...entry, dishes: next } : null)
+    setDay(date, next.length || entry.done ? { ...entry, dishes: next } : null)
   }
 
   /** Suggest dishes for the given (empty) days, avoiding repeats within the week. */
@@ -43,7 +44,13 @@ export function PlanView() {
     })
   }
 
-  const emptyFuture = days.filter((d) => d >= today && !state.plan[d])
+  const emptyFuture = days.filter((d) => d >= today && !state.plan[d]?.dishes.length)
+  const partiesOn = (date: string) => Object.values(state.parties).filter((p) => p.date === date)
+  const createParty = (date: string) => {
+    const party = newParty(date, state.settings, lang)
+    saveParty(party)
+    ui.openParty(party.id)
+  }
 
   return (
     <div className="view">
@@ -74,7 +81,7 @@ export function PlanView() {
                 </span>
                 <span className="muted small">{formatDay(date, lang, { day: 'numeric', month: 'numeric' })}</span>
               </div>
-              {entry ? (
+              {entry?.dishes.length ? (
                 <ul className="day-dishes">
                   {entry.dishes.map((id, i) => {
                     const d = dishById.get(id)
@@ -98,15 +105,28 @@ export function PlanView() {
                   })}
                 </ul>
               ) : (
-                <p className="muted small">{t('plan.empty')}</p>
+                !partiesOn(date).length && <p className="muted small">{t('plan.empty')}</p>
+              )}
+              {partiesOn(date).map((p) => (
+                <button key={p.id} className="link-row party-link" onClick={() => ui.openParty(p.id)}>
+                  🎉 <strong>{p.title}</strong>
+                  <span className="muted small">
+                    {p.time ? ` · ${p.time}` : ''} · {t('party.guestsCount', { n: guestTotal(p) })}
+                  </span>
+                </button>
+              ))}
+              {isToday && (
+                <label className="check small">
+                  <input type="checkbox" checked={!!entry?.done} onChange={(e) => setDay(date, { ...(entry ?? { dishes: [] }), done: e.target.checked })} /> {t('plan.done')}
+                </label>
               )}
               <div className="day-actions">
                 <button className="chip" onClick={() => addDish(date)}>
                   ＋ {t('plan.add')}
                 </button>
-                {!entry && (
-                  <button className="chip" onClick={() => fill([date])}>
-                    🎲 {t('plan.suggest')}
+                {!entry?.dishes.length && date >= today && (
+                  <button className="chip" onClick={() => fill([date])} aria-label={t('plan.suggest')} title={t('plan.suggest')}>
+                    🎲
                   </button>
                 )}
                 <button className="chip" onClick={() => ui.openCombo('chinese', undefined, date)} aria-label={t('combo.chinese')} title={t('combo.chinese')}>
@@ -114,6 +134,9 @@ export function PlanView() {
                 </button>
                 <button className="chip" onClick={() => ui.openCombo('indian', undefined, date)} aria-label={t('combo.indian')} title={t('combo.indian')}>
                   🍛
+                </button>
+                <button className="chip" onClick={() => createParty(date)} aria-label={t('party.new')} title={t('party.new')}>
+                  🎉
                 </button>
               </div>
             </li>

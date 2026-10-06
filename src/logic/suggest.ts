@@ -43,7 +43,7 @@ export interface SuggestContext {
 /** Relative chance of a dish being suggested; 0 = never. */
 export function weight(dish: Dish, ctx: SuggestContext, last: Map<string, string>, soon: Set<string>): number {
   const favorites = new Set(ctx.state.favorites)
-  if (dish.kind === 'side') return 0
+  if (dish.kind === 'side' || dish.kind === 'party') return 0
   if (!matchesFilters(dish, ctx.filters, favorites)) return 0
   if (soon.has(dish.id)) return 0
 

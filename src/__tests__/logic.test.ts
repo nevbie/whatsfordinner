@@ -6,6 +6,7 @@ import { addDays, weekStart } from '../logic/dates'
 import { DEFAULT_FILTERS, matchesFilters, normalizeFilters } from '../logic/filters'
 import { regionOf, staplesOf } from '../data/classify'
 import { suggest } from '../logic/suggest'
+import { defaultTodos, newParty, shoppingList, suggestPartyItems } from '../logic/party'
 
 /** deterministic RNG */
 function seeded(seed = 1) {
@@ -142,5 +143,55 @@ describe('region and staple filters', () => {
   it('ignores outdated stored filter values', () => {
     expect(normalizeFilters({ cuisine: 'european' as never }).cuisine).toBe('any')
     expect(normalizeFilters({}).staples).toEqual([])
+  })
+})
+
+describe('party planner', () => {
+  const base = () => {
+    const p = newParty('2026-12-12', emptyState().settings, 'de')
+    return p
+  }
+  const ctx = (seed: number) => ({ pool: builtinDishes, favorites: new Set<string>(), today: TODAY, rng: seeded(seed) })
+  const dishesOf = (items: { dishId?: string }[]) => items.map((i) => byId.get(i.dishId!)!)
+
+  it('suggests a full menu with a vegetarian alternative', () => {
+    for (let s = 1; s < 20; s++) {
+      const p = { ...base(), veggie: 2 }
+      const items = suggestPartyItems(p, ctx(s))
+      const courses = items.map((i) => i.course)
+      expect(courses.filter((c) => c === 'main')).toHaveLength(2)
+      for (const c of ['starter', 'side', 'dessert', 'drink']) expect(courses).toContain(c)
+      expect(dishesOf(items.filter((i) => i.course === 'main')).some((d) => d.tags.includes('veggie'))).toBe(true)
+      expect(new Set(items.map((i) => i.dishId)).size).toBe(items.length)
+    }
+  })
+
+  it('makes everything vegan when all guests are vegan', () => {
+    const p = { ...base(), format: 'buffet' as const, adults: 6, kids: 0, vegan: 6 }
+    for (const d of dishesOf(suggestPartyItems(p, ctx(3)))) expect(d.tags, d.id).toContain('vegan')
+  })
+
+  it('uses interactive mains (raclette, fondue, BBQ …) for the interactive format', () => {
+    const p = { ...base(), format: 'interactive' as const }
+    const main = suggestPartyItems(p, ctx(5)).find((i) => i.course === 'main')!
+    expect(byId.get(main.dishId!)!.tags).toContain('social')
+  })
+
+  it('keeps hand-picked and brought items when re-suggesting', () => {
+    const p = { ...base(), items: [{ id: 'x', course: 'dessert' as const, dishId: 'tiramisu', locked: true }, { id: 'y', course: 'drink' as const, text: 'Wein', broughtBy: 'g1' }] }
+    const items = suggestPartyItems(p, ctx(9))
+    expect(items.filter((i) => i.course === 'dessert').map((i) => i.dishId)).toEqual(['tiramisu'])
+    expect(items.filter((i) => i.course === 'drink')).toHaveLength(1)
+  })
+
+  it('builds a shopping list without what guests bring', () => {
+    const p = { ...base(), items: [{ id: 'a', course: 'dessert' as const, dishId: 'tiramisu' }, { id: 'b', course: 'dip' as const, dishId: 'guacamole', broughtBy: 'g1' }] }
+    const keys = shoppingList(p, byId).map((e) => e.key)
+    expect(keys).toContain('mascarpone')
+    expect(keys).not.toContain('avocado')
+  })
+
+  it('creates a default checklist for the format', () => {
+    expect(defaultTodos({ format: 'interactive', kids: 2 }, 'en').map((t) => t.text).join()).toMatch(/raclette/i)
   })
 })

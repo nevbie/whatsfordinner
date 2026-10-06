@@ -746,3 +746,161 @@ main {
   font-size: inherit;
   cursor: pointer;
 }
+
+/* compact suggest page: everything on one phone screen */
+.view.compact h2 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+.title-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.title-row h1 {
+  font-size: 1.35rem;
+  margin: 0;
+}
+.view.compact .card {
+  padding: 10px 14px;
+  margin-bottom: 8px;
+}
+.today-dishes {
+  display: flex;
+  flex-direction: column;
+}
+.done-row {
+  margin: 6px 0 0;
+}
+.section-head {
+  margin: 12px 0 8px;
+}
+.gap-sm {
+  gap: 6px;
+}
+.stack.tight {
+  gap: 8px;
+}
+.view.compact .actions {
+  margin-top: 8px;
+  gap: 6px;
+}
+.btn.sm {
+  padding: 0.35rem 0.85rem;
+  font-size: 0.9rem;
+}
+.view.compact .dn-md .dn-orig {
+  font-size: 1.05rem;
+}
+.quick-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 10px;
+}
+.btn.quick {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: var(--radius);
+  padding: 8px 10px;
+  white-space: normal;
+  text-align: left;
+  font-size: 1.3rem;
+}
+.btn.quick > span:last-child {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.85rem;
+  line-height: 1.2;
+}
+.btn.quick .small {
+  font-size: 0.72rem;
+}
+
+/* party planner */
+.party-icon {
+  font-size: 1.6rem;
+}
+.past summary {
+  cursor: pointer;
+  list-style: none;
+}
+.past summary h2 {
+  display: inline;
+}
+.party-head {
+  margin-bottom: 8px;
+}
+.format-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.format-grid .chip {
+  padding: 0.5rem 0.6rem;
+  text-align: left;
+}
+.tabs-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  width: 100%;
+}
+.course-block {
+  border-top: 1px solid var(--line);
+  margin-top: 12px;
+  padding-top: 2px;
+}
+.party-items {
+  display: grid;
+  gap: 6px;
+}
+.party-item {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 6px 6px 8px 12px;
+}
+select.who {
+  width: auto;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.85rem;
+  margin-top: 2px;
+}
+.small-input {
+  padding: 0.35rem 0.6rem;
+  font-size: 0.9rem;
+}
+.add-course {
+  margin-top: 12px;
+}
+.guest-row {
+  padding: 4px 0;
+  border-bottom: 1px solid var(--line);
+}
+.shopping li {
+  padding: 4px 0;
+}
+.check.ticked span {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+.check {
+  align-items: flex-start;
+}
+.check input {
+  margin-top: 3px;
+}
+.todo-add {
+  margin-top: 12px;
+}
+.todo-add {
+  flex-direction: column;
+  align-items: stretch;
+}
+.party-link {
+  margin: 2px 0;
+}

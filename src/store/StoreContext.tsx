@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { builtinDishes } from '../data/dishes'
-import type { DayEntry, Dish, FamilySettings, FamilyState } from '../data/types'
+import type { DayEntry, Dish, FamilySettings, FamilyState, Party } from '../data/types'
 import { firebaseConfig } from '../firebaseConfig'
 import type { Backend } from './backend'
 import { localBackend, readLocal, writeLocal } from './local'
@@ -19,6 +19,8 @@ interface StoreValue {
   saveDish(dish: Dish): void
   deleteDish(id: string): void
   updateSettings(patch: Partial<FamilySettings>): void
+  saveParty(party: Party): void
+  deleteParty(id: string): void
   createFamily(): Promise<string>
   joinFamily(code: string): Promise<boolean>
   leaveFamily(): void
@@ -106,6 +108,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     saveDish: (dish) => run(backend?.saveDish(dish)),
     deleteDish: (id) => run(backend?.deleteDish(id)),
     updateSettings: (patch) => run(backend?.updateSettings(patch)),
+    saveParty: (party) => run(backend?.saveParty(party)),
+    deleteParty: (id) => run(backend?.deleteParty(id)),
     async createFamily() {
       const m = await loadFirebase()
       const code = m.newFamilyCode()

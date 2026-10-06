@@ -21,7 +21,7 @@ export function HistoryView() {
   const past = useMemo(
     () =>
       Object.entries(state.plan)
-        .filter(([date]) => date <= today)
+        .filter(([date, e]) => date <= today && e.dishes.length > 0)
         .sort(([a], [b]) => b.localeCompare(a)),
     [state.plan, today],
   )

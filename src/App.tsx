@@ -8,6 +8,8 @@ import { DishesView } from './views/DishesView'
 import { DishForm } from './views/DishForm'
 import { HistoryView } from './views/HistoryView'
 import { DayPicker, DishPicker } from './views/Pickers'
+import { PartyListView } from './views/PartyListView'
+import { PartyView } from './views/PartyView'
 import { PlanView } from './views/PlanView'
 import { SettingsView } from './views/SettingsView'
 import { SuggestView } from './views/SuggestView'
@@ -16,8 +18,9 @@ const TABS = [
   { id: 'suggest', icon: '🎲', label: 'nav.suggest' },
   { id: 'plan', icon: '📅', label: 'nav.plan' },
   { id: 'dishes', icon: '📖', label: 'nav.dishes' },
+  { id: 'party', icon: '🎉', label: 'nav.party' },
   { id: 'history', icon: '🕘', label: 'nav.history' },
-  { id: 'settings', icon: '⚙︎', label: 'nav.settings' },
+  { id: 'settings', icon: '⚙︎', label: 'nav.settingsShort' },
 ] as const satisfies readonly { id: string; icon: string; label: I18nKey }[]
 
 type TabId = (typeof TABS)[number]['id']
@@ -63,6 +66,7 @@ export function App() {
         {tab === 'suggest' && <SuggestView />}
         {tab === 'plan' && <PlanView />}
         {tab === 'dishes' && <DishesView />}
+        {tab === 'party' && <PartyListView />}
         {tab === 'history' && <HistoryView />}
         {tab === 'settings' && <SettingsView />}
       </main>
@@ -84,6 +88,8 @@ export function App() {
             return <ComboBuilder key={i} combo={o.combo} seedId={o.seedId} date={o.date} />
           case 'form':
             return <DishForm key={i} id={o.id} />
+          case 'party':
+            return <PartyView key={i} id={o.id} />
           case 'pickDish':
             return <DishPicker key={i} title={o.title} filter={o.filter} />
           case 'pickDay':

@@ -1,5 +1,5 @@
 import type { FamilyState } from '../data/types'
-import { normalize, type Backend } from './backend'
+import { keepEntry, normalize, type Backend } from './backend'
 
 const KEY = 'wfd:state'
 
@@ -49,7 +49,7 @@ export function localBackend(): Backend {
     setDay: (date, entry) =>
       update((s) => {
         const plan = { ...s.plan }
-        if (entry && entry.dishes.length) plan[date] = entry
+        if (keepEntry(entry)) plan[date] = entry
         else delete plan[date]
         return { ...s, plan }
       }),
@@ -63,5 +63,12 @@ export function localBackend(): Backend {
         return { ...s, customDishes }
       }),
     updateSettings: (patch) => update((s) => ({ ...s, settings: { ...s.settings, ...patch } })),
+    saveParty: (party) => update((s) => ({ ...s, parties: { ...s.parties, [party.id]: party } })),
+    deleteParty: (id) =>
+      update((s) => {
+        const parties = { ...s.parties }
+        delete parties[id]
+        return { ...s, parties }
+      }),
   }
 }

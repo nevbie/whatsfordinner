@@ -19,7 +19,7 @@ export function DishPicker({ title, filter }: { title: string; filter?: (d: Dish
     const favs = new Set(state.favorites)
     return dishes
       .filter((d) => (filter ? filter(d) : true) && (!query || matchesQuery(d, query)))
-      .sort((a, b) => Number(favs.has(b.id)) - Number(favs.has(a.id)) || Number(a.kind === 'side') - Number(b.kind === 'side') || sortByName(a, b, lang))
+      .sort((a, b) => Number(favs.has(b.id)) - Number(favs.has(a.id)) || Number(a.kind === 'side' || a.kind === 'party') - Number(b.kind === 'side' || b.kind === 'party') || sortByName(a, b, lang))
   }, [dishes, filter, query, lang, state.favorites])
 
   return (

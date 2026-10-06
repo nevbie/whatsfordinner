@@ -17,7 +17,7 @@ import {
 } from 'firebase/firestore'
 import type { FamilyState } from '../data/types'
 import { firebaseConfig } from '../firebaseConfig'
-import { normalize, type Backend } from './backend'
+import { keepEntry, normalize, type Backend } from './backend'
 
 /**
  * One Firestore document per family: families/{CODE}. The code is a long random
@@ -88,7 +88,7 @@ export function firebaseBackend(code: string): Backend {
     },
     async setDay(date, entry) {
       const r = await ref()
-      await updateDoc(r, new FieldPath('plan', date), entry && entry.dishes.length ? entry : deleteField())
+      await updateDoc(r, new FieldPath('plan', date), keepEntry(entry) ? entry : deleteField())
     },
     async setFavorite(id, on) {
       await updateDoc(await ref(), { favorites: on ? arrayUnion(id) : arrayRemove(id) })
@@ -98,6 +98,12 @@ export function firebaseBackend(code: string): Backend {
     },
     async deleteDish(id) {
       await updateDoc(await ref(), new FieldPath('customDishes', id), deleteField())
+    },
+    async saveParty(party) {
+      await updateDoc(await ref(), new FieldPath('parties', party.id), party)
+    },
+    async deleteParty(id) {
+      await updateDoc(await ref(), new FieldPath('parties', id), deleteField())
     },
     async updateSettings(patch) {
       const r = await ref()

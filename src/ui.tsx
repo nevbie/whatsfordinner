@@ -6,6 +6,7 @@ export type Overlay =
   | { type: 'dish'; id: string }
   | { type: 'combo'; combo: ComboType; seedId?: string; date?: string }
   | { type: 'form'; id?: string }
+  | { type: 'party'; id: string }
   | { type: 'pickDish'; title: string; filter?: (d: Dish) => boolean; resolve(id: string | null): void }
   | { type: 'pickDay'; resolve(date: string | null): void }
 
@@ -18,6 +19,7 @@ interface UIValue {
   openDish(id: string): void
   openCombo(combo: ComboType, seedId?: string, date?: string): void
   openForm(id?: string): void
+  openParty(id: string): void
   pickDish(title: string, filter?: (d: Dish) => boolean): Promise<string | null>
   pickDay(): Promise<string | null>
 }
@@ -73,6 +75,7 @@ export function UIProvider({ children }: { children: ReactNode }) {
     openDish: (id) => open({ type: 'dish', id }),
     openCombo: (combo, seedId, date) => open({ type: 'combo', combo, seedId, date }),
     openForm: (id) => open({ type: 'form', id }),
+    openParty: (id) => open({ type: 'party', id }),
     pickDish: (title, filter) =>
       new Promise((resolve) => {
         let done = false

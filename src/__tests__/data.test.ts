@@ -30,7 +30,7 @@ describe('dish data', () => {
 
   it('gives every Chinese and Indian dish a course for the meal builder', () => {
     for (const d of builtinDishes) {
-      if ((d.cuisine === 'chinese' || d.cuisine === 'indian') && d.kind !== 'combo') expect(d.course, d.id).toBeDefined()
+      if ((d.cuisine === 'chinese' || d.cuisine === 'indian') && d.kind !== 'combo' && d.kind !== 'party') expect(d.course, d.id).toBeDefined()
     }
   })
 

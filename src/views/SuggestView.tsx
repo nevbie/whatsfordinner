@@ -5,7 +5,7 @@ import { FilterBar, usePersistentFilters } from '../components/FilterBar'
 import { formatDay } from '../components/format'
 import type { Dish } from '../data/types'
 import { useLang } from '../i18n'
-import { todayISO } from '../logic/dates'
+import { addDays, todayISO } from '../logic/dates'
 import { activeFilterCount } from '../logic/filters'
 import { suggest } from '../logic/suggest'
 import { useStore } from '../store/StoreContext'
@@ -40,13 +40,20 @@ export function SuggestView() {
     })
   }, [filters, round])
 
-  const todayEntry = state.plan[today]
+  // Once today's dinner is marked as over, everything here is about tomorrow.
+  const todayDone = !!state.plan[today]?.done
+  const target = todayDone ? addDays(today, 1) : today
+  const targetEntry = state.plan[target]
   const suggestions = ids.map((id) => dishById.get(id)).filter((d): d is Dish => !!d)
 
-  const takeToday = (dish: Dish) => {
+  const setTodayDone = (done: boolean) => {
+    const entry = state.plan[today] ?? { dishes: [] }
+    setDay(today, { ...entry, done })
+  }
+  const take = (dish: Dish) => {
     const combo = comboTypeOf(dish)
-    if (dish.kind === 'combo' && combo) return ui.openCombo(combo, undefined, today)
-    setDay(today, { dishes: [dish.id] })
+    if (dish.kind === 'combo' && combo) return ui.openCombo(combo, undefined, target)
+    setDay(target, { dishes: [dish.id] })
   }
   const planLater = async (dish: Dish) => {
     if (dish.kind === 'combo' && dish.combo) return ui.openCombo(dish.combo)
@@ -55,67 +62,80 @@ export function SuggestView() {
   }
 
   return (
-    <div className="view">
-      <header className="hero">
-        <h1>{t('appTitle')}</h1>
-        <p className="muted">{formatDay(today, lang, { weekday: 'long', day: 'numeric', month: 'long' })}</p>
+    <div className="view compact">
+      <header className="title-row">
+        <h1>{todayDone ? t('appTitleTomorrow') : t('appTitle')}</h1>
+        <span className="muted small">{formatDay(today, lang, { weekday: 'long', day: 'numeric', month: 'long' })}</span>
       </header>
 
       <section className="card today">
-        {todayEntry ? (
-          <>
-            <div className="eyebrow">{t('suggest.today')}</div>
-            <ul className="plain">
-              {todayEntry.dishes.map((id) => {
-                const d = dishById.get(id)
-                return d ? (
-                  <li key={id}>
-                    <button className="link-row" onClick={() => ui.openDish(id)}>
-                      <DishName dish={d} size="sm" />
-                    </button>
-                  </li>
-                ) : null
-              })}
-            </ul>
-          </>
+        <div className="eyebrow">{todayDone ? t('suggest.tomorrow') : t('suggest.today')}</div>
+        {targetEntry?.dishes.length ? (
+          <div className="today-dishes">
+            {targetEntry.dishes.map((id) => {
+              const d = dishById.get(id)
+              return d ? (
+                <button key={id} className="link-row" onClick={() => ui.openDish(id)}>
+                  <DishName dish={d} size="sm" />
+                </button>
+              ) : null
+            })}
+          </div>
         ) : (
-          <p className="muted">{t('suggest.nothingToday')}</p>
+          <p className="muted small">{todayDone ? t('suggest.nothingTomorrow') : t('suggest.nothingToday')}</p>
+        )}
+        {todayDone ? (
+          <p className="small done-row">
+            ✓ {t('suggest.todayDone')}{' '}
+            <button className="link-btn" onClick={() => setTodayDone(false)}>
+              {t('undo')}
+            </button>
+          </p>
+        ) : (
+          <label className="check small done-row">
+            <input type="checkbox" checked={false} onChange={() => setTodayDone(true)} /> {t('suggest.markDone')}
+          </label>
         )}
       </section>
 
-      <div className="row between">
-        <h2>{t('nav.suggest')}</h2>
-        <button className={`chip ${showFilters ? 'on' : ''}`} onClick={() => setShowFilters(!showFilters)} aria-expanded={showFilters}>
-          ⚙︎ {t('suggest.filters')}
-          {activeFilterCount(filters) > 0 && <span className="count-badge">{activeFilterCount(filters)}</span>}
-        </button>
+      <div className="row between section-head">
+        <h2>{t('suggest.ideas')}</h2>
+        <div className="row gap-sm">
+          <button className="chip" onClick={() => setRound((r) => r + 1)}>
+            🎲 {t('suggest.more')}
+          </button>
+          <button className={`chip ${showFilters ? 'on' : ''}`} onClick={() => setShowFilters(!showFilters)} aria-expanded={showFilters}>
+            ⚙︎ {t('suggest.filters')}
+            {activeFilterCount(filters) > 0 && <span className="count-badge">{activeFilterCount(filters)}</span>}
+          </button>
+        </div>
       </div>
       {showFilters && <FilterBar filters={filters} onChange={setFilters} />}
 
       {suggestions.length === 0 && <p className="muted">{t('suggest.none')}</p>}
-      <div className="stack">
+      <div className="stack tight">
         {suggestions.map((dish) => {
           const combo = comboTypeOf(dish)
           return (
             <article key={dish.id} className="card suggestion" onClick={() => ui.openDish(dish.id)}>
               <div className="row between top">
-                <DishName dish={dish} size="lg" />
+                <DishName dish={dish} size="md" />
                 {dish.kind !== 'combo' && <FavButton dish={dish} />}
               </div>
               <DishMeta dish={dish} />
               <div className="actions" onClick={(e) => e.stopPropagation()}>
                 {dish.kind !== 'combo' && (
-                  <button className="btn primary" onClick={() => takeToday(dish)}>
-                    {t('suggest.takeToday')}
+                  <button className="btn sm primary" onClick={() => take(dish)}>
+                    {todayDone ? t('suggest.takeTomorrow') : t('suggest.takeToday')}
                   </button>
                 )}
                 {dish.kind !== 'combo' && (
-                  <button className="btn" onClick={() => planLater(dish)}>
+                  <button className="btn sm" onClick={() => planLater(dish)}>
                     {t('suggest.plan')}
                   </button>
                 )}
                 {combo && (
-                  <button className={`btn ${dish.kind === 'combo' ? 'primary' : ''}`} onClick={() => ui.openCombo(combo, dish.kind === 'combo' ? undefined : dish.id)}>
+                  <button className={`btn sm ${dish.kind === 'combo' ? 'primary' : ''}`} onClick={() => ui.openCombo(combo, dish.kind === 'combo' ? undefined : dish.id, dish.kind === 'combo' ? target : undefined)}>
                     {comboIcon(combo)} {t('suggest.buildMeal')}
                   </button>
                 )}
@@ -124,21 +144,28 @@ export function SuggestView() {
           )
         })}
       </div>
-      <button className="btn wide" onClick={() => setRound((r) => r + 1)}>
-        🎲 {t('suggest.more')}
-      </button>
 
-      <h2>{t('suggest.mealBuilder')}</h2>
-      <div className="row gap">
-        <button className="btn tile" onClick={() => ui.openCombo('chinese')}>
-          <span className="tile-icon">🥢</span>
-          <span lang="zh">家常菜</span>
-          <span className="muted">{t('suggest.buildChinese')}</span>
+      <div className="quick-row">
+        <button className="btn quick" onClick={() => ui.openCombo('chinese', undefined, target)}>
+          <span aria-hidden>🥢</span>
+          <span>
+            <span lang="zh">家常菜</span>
+            <span className="muted small">{t('suggest.buildChinese')}</span>
+          </span>
         </button>
-        <button className="btn tile" onClick={() => ui.openCombo('indian')}>
-          <span className="tile-icon">🍛</span>
-          <span lang="hi">थाली</span>
-          <span className="muted">{t('suggest.buildIndian')}</span>
+        <button className="btn quick" onClick={() => ui.openCombo('indian', undefined, target)}>
+          <span aria-hidden>🍛</span>
+          <span>
+            <span lang="hi">थाली</span>
+            <span className="muted small">Thali</span>
+          </span>
+        </button>
+        <button className="btn quick" onClick={() => (location.hash = '#/party')}>
+          <span aria-hidden>🎉</span>
+          <span>
+            <span>{t('nav.party')}</span>
+            <span className="muted small">{t('suggest.hosting')}</span>
+          </span>
         </button>
       </div>
     </div>
