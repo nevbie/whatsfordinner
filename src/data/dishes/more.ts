@@ -16,6 +16,8 @@ export const moreDishes = [
   d({ id: 'kartoffelsalat-wuerstchen', o: 'Kartoffelsalat mit Würstchen', en: 'Potato salad with sausages', c: 'german', t: 'meat kids summer', e: 1, i: 'potatoes frankfurters gherkins onion broth mustard' }),
   d({ id: 'gruene-sosse', o: 'Grie Soß', de: 'Frankfurter Grüne Soße', en: 'Frankfurt green sauce with eggs and potatoes', c: 'german', t: 'veggie summer', e: 1, i: 'herbs egg potatoes sour_cream yogurt' }),
   d({ id: 'arme-ritter', o: 'Arme Ritter', en: 'French toast', c: 'german', t: 'veggie sweet kids', e: 1, i: 'bread egg milk cinnamon sugar' }),
+  d({ id: 'dampfnudeln', s: 'dough', o: 'Dampfnudeln mit Vanillesoße', en: 'Steamed yeast dumplings with vanilla sauce', c: 'german', t: 'veggie sweet kids winter', e: 3, i: 'flour yeast milk butter sugar vanilla' }),
+  d({ id: 'scheiterhaufen', o: 'Scheiterhaufen', en: 'Bread and apple pudding', c: 'german', t: 'veggie sweet kids oven', i: 'bread_roll apples milk egg sugar raisins cinnamon', n: ['Auflauf aus altbackenen Brötchen und Äpfeln – gut für Reste.', 'Bake of stale rolls and apples – great for leftovers.'] }),
   d({ id: 'germknoedel', s: 'dough', o: 'Germknödel', en: 'Yeast dumplings with plum jam and poppy seeds', c: 'austrian', t: 'veggie sweet kids winter', e: 3, i: 'flour yeast milk plum_jam poppy_seeds butter' }),
   // Italian / Mediterranean
   d({ id: 'carbonara', o: 'Spaghetti alla carbonara', l: 'it', de: 'Spaghetti Carbonara', en: 'Spaghetti carbonara', c: 'italian', t: 'meat kids', e: 1, i: 'spaghetti guanciale egg pecorino black_pepper' }),

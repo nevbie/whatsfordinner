@@ -11,6 +11,8 @@ export interface Filters {
   noSpicy: boolean
   maxEffort: 1 | 2 | 3
   favoritesOnly: boolean
+  /** only sweet dishes (Grießbrei, Arme Ritter, Kaiserschmarrn …) */
+  sweetOnly: boolean
   eatOut: boolean
   cuisine: CuisineGroup
   /** empty = all regions */
@@ -25,6 +27,7 @@ export const DEFAULT_FILTERS: Filters = {
   noSpicy: false,
   maxEffort: 3,
   favoritesOnly: false,
+  sweetOnly: false,
   eatOut: false,
   cuisine: 'any',
   regions: [],
@@ -54,12 +57,13 @@ export function inCuisineGroup(dish: Dish, group: CuisineGroup): boolean {
 }
 
 /** Diet / kids / spice / effort checks shared by suggestions, the dish list and the meal builder. */
-export function matchesDiet(dish: Dish, f: Pick<Filters, 'diet' | 'kids' | 'noSpicy' | 'maxEffort'>): boolean {
+export function matchesDiet(dish: Dish, f: Pick<Filters, 'diet' | 'kids' | 'noSpicy' | 'maxEffort'> & { sweetOnly?: boolean }): boolean {
   if (dish.kind === 'eatout' || dish.kind === 'combo') return true
   if (f.diet === 'veggie' && !dish.tags.includes('veggie')) return false
   if (f.diet === 'vegan' && !dish.tags.includes('vegan')) return false
   if (f.kids && !dish.tags.includes('kids')) return false
   if (f.noSpicy && dish.tags.includes('spicy')) return false
+  if (f.sweetOnly && !dish.tags.includes('sweet')) return false
   if (dish.effort > f.maxEffort) return false
   return true
 }
@@ -67,6 +71,7 @@ export function matchesDiet(dish: Dish, f: Pick<Filters, 'diet' | 'kids' | 'noSp
 export function matchesFilters(dish: Dish, f: Filters, favorites: ReadonlySet<string>): boolean {
   if (dish.kind === 'eatout') return f.eatOut && (!f.favoritesOnly || favorites.has(dish.id))
   if (f.favoritesOnly && !favorites.has(dish.id)) return false
+  if (f.sweetOnly && dish.kind === 'combo') return false
   if (f.regions.length) {
     const region = regionOf(dish)
     if (!region || !f.regions.includes(region)) return false
@@ -87,6 +92,7 @@ export function activeFilterCount(f: Filters): number {
     Number(f.noSpicy) +
     Number(f.maxEffort < 3) +
     Number(f.favoritesOnly) +
+    Number(f.sweetOnly) +
     Number(f.eatOut)
   )
 }

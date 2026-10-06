@@ -191,10 +191,14 @@ main {
   font-weight: 650;
   overflow-wrap: anywhere;
 }
+.dn-line {
+  overflow-wrap: anywhere;
+}
 .dn-roman {
   font-style: italic;
+  font-weight: 400;
   color: var(--muted);
-  font-size: 0.85em;
+  font-size: 0.72em;
 }
 .dn-trans {
   color: var(--muted);

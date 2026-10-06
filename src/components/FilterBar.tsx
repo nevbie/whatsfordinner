@@ -34,7 +34,7 @@ export function usePersistentFilters(key: string): [Filters, (f: Filters) => voi
 
 export function FilterBar({ filters, onChange, showEatOut = true }: { filters: Filters; onChange(f: Filters): void; showEatOut?: boolean }) {
   const { t } = useLang()
-  const toggle = (k: 'kids' | 'noSpicy' | 'favoritesOnly' | 'eatOut') => onChange({ ...filters, [k]: !filters[k] })
+  const toggle = (k: 'kids' | 'noSpicy' | 'favoritesOnly' | 'sweetOnly' | 'eatOut') => onChange({ ...filters, [k]: !filters[k] })
   const effortChip = (max: 1 | 2, label: string) => (
     <button className={`chip ${filters.maxEffort === max ? 'on' : ''}`} aria-pressed={filters.maxEffort === max} onClick={() => onChange({ ...filters, maxEffort: filters.maxEffort === max ? 3 : max })}>
       {label}
@@ -79,6 +79,9 @@ export function FilterBar({ filters, onChange, showEatOut = true }: { filters: F
         </button>
         {effortChip(1, `⏱ ${t('filter.quick')}`)}
         {effortChip(2, t('filter.noProject'))}
+        <button className={`chip ${filters.sweetOnly ? 'on' : ''}`} aria-pressed={filters.sweetOnly} onClick={() => toggle('sweetOnly')}>
+          🍮 {t('filter.sweet')}
+        </button>
         <button className={`chip ${filters.favoritesOnly ? 'on' : ''}`} aria-pressed={filters.favoritesOnly} onClick={() => toggle('favoritesOnly')}>
           ♥ {t('filter.favorites')}
         </button>

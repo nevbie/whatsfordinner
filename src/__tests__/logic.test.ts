@@ -195,3 +195,13 @@ describe('party planner', () => {
     expect(defaultTodos({ format: 'interactive', kids: 2 }, 'en').map((t) => t.text).join()).toMatch(/raclette/i)
   })
 })
+
+describe('sweet dishes filter', () => {
+  it('shows only Süßspeisen like Grießbrei and Arme Ritter', () => {
+    const f = { ...DEFAULT_FILTERS, sweetOnly: true }
+    const sweet = builtinDishes.filter((d) => d.kind === 'dish' && matchesFilters(d, f, new Set())).map((d) => d.id)
+    expect(sweet).toEqual(expect.arrayContaining(['griessbrei', 'arme-ritter', 'kaiserschmarrn', 'milchreis']))
+    for (const id of sweet) expect(byId.get(id)!.tags).toContain('sweet')
+    expect(matchesFilters(byId.get('chinesisch')!, f, new Set())).toBe(false)
+  })
+})
