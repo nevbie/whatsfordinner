@@ -11,7 +11,8 @@ Ossobuco, Mercimek köftesi) plus the translation in the chosen language.
 
 - **Suggest** – three ideas at a time, weighted: favourites more often, nothing eaten in the
   last *n* days (default 10) or already planned this week, seasonal dishes in their season.
-  Filters: vegetarian/vegan, kids' favourites, not spicy, quick, cuisine, favourites only,
+  Filters: vegetarian/vegan, region (European / Asian / Middle East & Americas), staple
+  (bread, pasta & noodles, rice, potatoes, dough), kids' favourites, not spicy, quick, cuisine, favourites only,
   eating out (your restaurants).
 - **Meal builder** for Chinese and Indian dinners
   - Chinese: about one dish per person (adults + ½ per child) – meat/fish/tofu, vegetables,

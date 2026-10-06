@@ -2,6 +2,7 @@ import { comboIcon, DishMeta, FavButton } from '../components/DishMeta'
 import { DishName } from '../components/DishName'
 import { Sheet } from '../components/Sheet'
 import { useDishStats } from '../components/useDishStats'
+import { regionOf, staplesOf } from '../data/classify'
 import { builtinDishes } from '../data/dishes'
 import { ingredientName } from '../data/ingredients'
 import { COURSE_LABELS, TAG_LABELS, useLang } from '../i18n'
@@ -36,6 +37,12 @@ export function DishDetail({ id }: { id: string }) {
         {dish.kind !== 'combo' && <FavButton dish={dish} />}
       </div>
       <div className="chips static">
+        {regionOf(dish) && <span className="chip">{t(`region.${regionOf(dish)!}`)}</span>}
+        {staplesOf(dish).map((st) => (
+          <span key={st} className="chip">
+            {t(`staple.${st}`)}
+          </span>
+        ))}
         {dish.course && <span className="chip">{pick(COURSE_LABELS[dish.course])}</span>}
         {dish.tags.map((tag) => (
           <span key={tag} className="chip">

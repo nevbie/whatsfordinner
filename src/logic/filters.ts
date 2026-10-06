@@ -1,6 +1,9 @@
-import type { Dish } from '../data/types'
+import { regionOf, staplesOf } from '../data/classify'
+import type { Dish, Region, Staple } from '../data/types'
 
-export type CuisineGroup = 'any' | 'german' | 'european' | 'asian' | 'chinese' | 'indian' | 'world'
+/** Finer cuisine choice on top of the region chips. */
+export type CuisineGroup = 'any' | 'german' | 'italian' | 'chinese' | 'indian'
+export const CUISINE_GROUPS: CuisineGroup[] = ['any', 'german', 'italian', 'chinese', 'indian']
 
 export interface Filters {
   diet: 'any' | 'veggie' | 'vegan'
@@ -10,6 +13,10 @@ export interface Filters {
   favoritesOnly: boolean
   eatOut: boolean
   cuisine: CuisineGroup
+  /** empty = all regions */
+  regions: Region[]
+  /** empty = any staple; otherwise the dish needs at least one of them */
+  staples: Staple[]
 }
 
 export const DEFAULT_FILTERS: Filters = {
@@ -20,10 +27,18 @@ export const DEFAULT_FILTERS: Filters = {
   favoritesOnly: false,
   eatOut: false,
   cuisine: 'any',
+  regions: [],
+  staples: [],
 }
 
-const EUROPEAN = new Set(['german', 'austrian', 'swiss', 'french', 'italian', 'spanish', 'greek', 'eastern'])
-const ASIAN = new Set(['chinese', 'indian', 'thai', 'vietnamese', 'japanese', 'korean', 'fusion'])
+/** Merge stored filters (possibly from an older app version) with the defaults. */
+export function normalizeFilters(raw: Partial<Filters> | null | undefined): Filters {
+  const f = { ...DEFAULT_FILTERS, ...(raw ?? {}) }
+  if (!CUISINE_GROUPS.includes(f.cuisine)) f.cuisine = 'any'
+  if (!Array.isArray(f.regions)) f.regions = []
+  if (!Array.isArray(f.staples)) f.staples = []
+  return f
+}
 
 export function inCuisineGroup(dish: Dish, group: CuisineGroup): boolean {
   switch (group) {
@@ -31,15 +46,10 @@ export function inCuisineGroup(dish: Dish, group: CuisineGroup): boolean {
       return true
     case 'german':
       return dish.cuisine === 'german' || dish.cuisine === 'austrian'
-    case 'european':
-      return EUROPEAN.has(dish.cuisine)
-    case 'asian':
-      return ASIAN.has(dish.cuisine)
+    case 'italian':
     case 'chinese':
     case 'indian':
       return dish.cuisine === group
-    case 'world':
-      return !EUROPEAN.has(dish.cuisine) && dish.cuisine !== 'restaurant'
   }
 }
 
@@ -57,7 +67,11 @@ export function matchesDiet(dish: Dish, f: Pick<Filters, 'diet' | 'kids' | 'noSp
 export function matchesFilters(dish: Dish, f: Filters, favorites: ReadonlySet<string>): boolean {
   if (dish.kind === 'eatout') return f.eatOut && (!f.favoritesOnly || favorites.has(dish.id))
   if (f.favoritesOnly && !favorites.has(dish.id)) return false
-  if (dish.kind === 'combo') return f.cuisine === 'any' || f.cuisine === 'asian' || f.cuisine === 'world' || f.cuisine === dish.combo
+  if (f.regions.length) {
+    const region = regionOf(dish)
+    if (!region || !f.regions.includes(region)) return false
+  }
+  if (f.staples.length && !staplesOf(dish).some((s) => f.staples.includes(s))) return false
   if (!inCuisineGroup(dish, f.cuisine)) return false
   return matchesDiet(dish, f)
 }

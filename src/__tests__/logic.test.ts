@@ -3,7 +3,8 @@ import { builtinDishes } from '../data/dishes'
 import { emptyState, type Dish } from '../data/types'
 import { chineseDishCount, fillEntries, initialEntries, rerollEntry, type ComboOptions } from '../logic/combos'
 import { addDays, weekStart } from '../logic/dates'
-import { DEFAULT_FILTERS } from '../logic/filters'
+import { DEFAULT_FILTERS, matchesFilters, normalizeFilters } from '../logic/filters'
+import { regionOf, staplesOf } from '../data/classify'
 import { suggest } from '../logic/suggest'
 
 /** deterministic RNG */
@@ -103,5 +104,43 @@ describe('combos', () => {
     const filled = fillEntries(initialEntries(o, byId.get('jiaozi')), builtinDishes, ctx(o), seeded(2))
     expect(filled.map((e) => e.dishId)[0]).toBe('jiaozi')
     expect(filled).toHaveLength(2)
+  })
+})
+
+describe('region and staple filters', () => {
+  const favs = new Set<string>()
+  const f = (o: Partial<typeof DEFAULT_FILTERS>) => ({ ...DEFAULT_FILTERS, ...o })
+
+  it('classifies staples from ingredients, overrides and eating habits', () => {
+    expect(staplesOf(byId.get('spaghetti-bolognese')!)).toEqual(['pasta'])
+    expect(staplesOf(byId.get('pizza')!)).toEqual(['dough'])
+    expect(staplesOf(byId.get('jiaozi')!)).toEqual(['dough'])
+    expect(staplesOf(byId.get('raclette')!)).toEqual(['potatoes'])
+    // curries and Chinese mains are eaten with rice (and roti)
+    expect(staplesOf(byId.get('palak-paneer')!)).toEqual(['bread', 'rice'])
+    expect(staplesOf(byId.get('mapo-doufu')!)).toEqual(['rice'])
+  })
+
+  it('filters by region', () => {
+    expect(matchesFilters(byId.get('lasagne')!, f({ regions: ['europe'] }), favs)).toBe(true)
+    expect(matchesFilters(byId.get('lasagne')!, f({ regions: ['asia'] }), favs)).toBe(false)
+    expect(matchesFilters(byId.get('chinesisch')!, f({ regions: ['asia'] }), favs)).toBe(true)
+    expect(matchesFilters(byId.get('falafel')!, f({ regions: ['europe', 'other'] }), favs)).toBe(true)
+  })
+
+  it('filters by staple (any of the chosen)', () => {
+    expect(matchesFilters(byId.get('lasagne')!, f({ staples: ['rice', 'pasta'] }), favs)).toBe(true)
+    expect(matchesFilters(byId.get('lasagne')!, f({ staples: ['potatoes'] }), favs)).toBe(false)
+    const out = suggest(builtinDishes, { state: emptyState(), filters: f({ staples: ['potatoes'], regions: ['europe'] }), today: TODAY }, 30, new Set(), seeded(4))
+    expect(out.length).toBeGreaterThan(10)
+    for (const d of out) {
+      expect(staplesOf(d)).toContain('potatoes')
+      expect(regionOf(d)).toBe('europe')
+    }
+  })
+
+  it('ignores outdated stored filter values', () => {
+    expect(normalizeFilters({ cuisine: 'european' as never }).cuisine).toBe('any')
+    expect(normalizeFilters({}).staples).toEqual([])
   })
 })

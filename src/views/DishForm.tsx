@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Sheet } from '../components/Sheet'
 import { INGREDIENTS, ingredientName } from '../data/ingredients'
-import type { Course, Cuisine, Dish, DishKind, Tag } from '../data/types'
+import { STAPLES, staplesOf } from '../data/classify'
+import type { Course, Cuisine, Dish, DishKind, Staple, Tag } from '../data/types'
 import { COURSE_LABELS, CUISINE_LABELS, LANG_NAMES, TAG_LABELS, useLang } from '../i18n'
 import { useStore } from '../store/StoreContext'
 import { useUI } from '../ui'
@@ -41,6 +42,7 @@ export function DishForm({ id }: { id?: string }) {
   const [course, setCourse] = useState<Course | ''>(existing?.course ?? '')
   const [tags, setTags] = useState<Tag[]>(existing?.tags ?? [])
   const [effort, setEffort] = useState<1 | 2 | 3>(existing?.effort ?? 2)
+  const [staples, setStaples] = useState<Staple[]>(existing ? staplesOf(existing) : [])
   const [ingredients, setIngredients] = useState((existing?.ingredients ?? []).map((i) => ingredientName(i, lang)).join(', '))
   const [note, setNote] = useState(existing?.note?.[lang] ?? '')
   const [error, setError] = useState('')
@@ -60,6 +62,7 @@ export function DishForm({ id }: { id?: string }) {
       course: courses.includes(course as Course) ? (course as Course) : undefined,
       tags: finalTags,
       effort,
+      staples,
       ingredients: parseIngredients(ingredients),
       // the note is entered once; keep the other language's text if it existed
       note: note.trim() ? { de: lang === 'de' ? note.trim() : existing?.note?.de ?? note.trim(), en: lang === 'en' ? note.trim() : existing?.note?.en ?? note.trim() } : undefined,
@@ -166,6 +169,22 @@ export function DishForm({ id }: { id?: string }) {
                     onClick={() => setTags(tags.includes(tag) ? tags.filter((x) => x !== tag) : [...tags, tag])}
                   >
                     {pick(TAG_LABELS[tag])}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <div className="label">{t('filter.staple')}</div>
+              <div className="chips">
+                {STAPLES.map((st) => (
+                  <button
+                    key={st}
+                    type="button"
+                    className={`chip ${staples.includes(st) ? 'on' : ''}`}
+                    aria-pressed={staples.includes(st)}
+                    onClick={() => setStaples(staples.includes(st) ? staples.filter((x) => x !== st) : [...staples, st])}
+                  >
+                    {t(`staple.${st}`)}
                   </button>
                 ))}
               </div>

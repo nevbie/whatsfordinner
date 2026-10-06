@@ -81,6 +81,11 @@ export type DishKind = 'dish' | 'side' | 'combo' | 'eatout'
 
 export type ComboType = 'chinese' | 'indian'
 
+/** Main filling component of a meal. 'dough' = pizza, tarts, dumplings, pancakes … */
+export type Staple = 'bread' | 'pasta' | 'rice' | 'potatoes' | 'dough'
+
+export type Region = 'europe' | 'asia' | 'other'
+
 export interface DishName {
   /** Name in the original language/script, e.g. 麻婆豆腐 or पालक पनीर. */
   orig: string
@@ -122,6 +127,8 @@ export interface Dish {
   note?: I18nText
   /** Dish ids that go well with this one. */
   pairsWith?: string[]
+  /** Main staple(s); derived from the ingredients when not given (see classify.ts). */
+  staples?: Staple[]
   /** For kind === 'combo'. */
   combo?: ComboType
   recipe?: Recipe

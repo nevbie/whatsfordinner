@@ -1,15 +1,22 @@
 import { useState } from 'react'
 import { useLang } from '../i18n'
-import type { CuisineGroup, Filters } from '../logic/filters'
-import { DEFAULT_FILTERS } from '../logic/filters'
+import { STAPLES } from '../data/classify'
+import type { Region, Staple } from '../data/types'
+import { CUISINE_GROUPS, DEFAULT_FILTERS, normalizeFilters, type CuisineGroup, type Filters } from '../logic/filters'
 
-const CUISINES: CuisineGroup[] = ['any', 'german', 'european', 'asian', 'chinese', 'indian', 'world']
+const REGIONS: Region[] = ['europe', 'asia', 'other']
+
+const STAPLE_ICONS: Record<Staple, string> = { bread: '🥖', pasta: '🍝', rice: '🍚', potatoes: '🥔', dough: '🥟' }
+
+function toggleIn<T>(list: T[], item: T): T[] {
+  return list.includes(item) ? list.filter((x) => x !== item) : [...list, item]
+}
 
 /** Filters persisted per device. */
 export function usePersistentFilters(key: string): [Filters, (f: Filters) => void] {
   const [filters, setFilters] = useState<Filters>(() => {
     try {
-      return { ...DEFAULT_FILTERS, ...JSON.parse(localStorage.getItem(key) ?? '{}') }
+      return normalizeFilters(JSON.parse(localStorage.getItem(key) ?? '{}'))
     } catch {
       return DEFAULT_FILTERS
     }
@@ -42,9 +49,23 @@ export function FilterBar({ filters, onChange, showEatOut = true }: { filters: F
           </button>
         ))}
       </div>
+      <div className="chips" role="group" aria-label={t('filter.region')}>
+        {REGIONS.map((r) => (
+          <button key={r} className={`chip ${filters.regions.includes(r) ? 'on' : ''}`} aria-pressed={filters.regions.includes(r)} onClick={() => onChange({ ...filters, regions: toggleIn(filters.regions, r) })}>
+            {t(`region.${r}`)}
+          </button>
+        ))}
+      </div>
+      <div className="chips" role="group" aria-label={t('filter.staple')}>
+        {STAPLES.map((s) => (
+          <button key={s} className={`chip ${filters.staples.includes(s) ? 'on' : ''}`} aria-pressed={filters.staples.includes(s)} onClick={() => onChange({ ...filters, staples: toggleIn(filters.staples, s) })}>
+            {STAPLE_ICONS[s]} {t(`staple.${s}`)}
+          </button>
+        ))}
+      </div>
       <div className="chips">
         <select className="chip select" value={filters.cuisine} onChange={(e) => onChange({ ...filters, cuisine: e.target.value as CuisineGroup })} aria-label={t('filter.cuisine')}>
-          {CUISINES.map((c) => (
+          {CUISINE_GROUPS.map((c) => (
             <option key={c} value={c}>
               {t(`cg.${c}`)}
             </option>

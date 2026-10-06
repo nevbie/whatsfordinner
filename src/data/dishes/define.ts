@@ -1,4 +1,4 @@
-import type { ComboType, Course, Cuisine, Dish, DishKind, Recipe, Tag } from '../types'
+import type { ComboType, Course, Cuisine, Dish, DishKind, Recipe, Staple, Tag } from '../types'
 
 /** Compact dish definition used by the data files. */
 export interface Def {
@@ -24,6 +24,8 @@ export interface Def {
   i: string
   /** note [de, en] */
   n?: [string, string]
+  /** space separated staples, overriding the ones derived from the ingredients */
+  s?: string
   /** space separated ids of dishes that go well with it */
   p?: string
   combo?: ComboType
@@ -43,6 +45,7 @@ export function d(def: Def): Dish {
     effort: def.e ?? 2,
     ingredients: def.i.split(/\s+/).filter(Boolean),
     note: def.n ? { de: def.n[0], en: def.n[1] } : undefined,
+    staples: def.s !== undefined ? (def.s.split(/\s+/).filter(Boolean) as Staple[]) : undefined,
     pairsWith: def.p ? def.p.split(/\s+/) : undefined,
     combo: def.combo,
     recipe: def.recipe,
