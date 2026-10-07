@@ -799,31 +799,6 @@ main {
 .view.compact .dn-md .dn-orig {
   font-size: 1.05rem;
 }
-.quick-row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin-top: 10px;
-}
-.btn.quick {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  border-radius: var(--radius);
-  padding: 8px 10px;
-  white-space: normal;
-  text-align: left;
-  font-size: 1.3rem;
-}
-.btn.quick > span:last-child {
-  display: flex;
-  flex-direction: column;
-  font-size: 0.85rem;
-  line-height: 1.2;
-}
-.btn.quick .small {
-  font-size: 0.72rem;
-}
 
 /* party planner */
 .party-icon {
@@ -957,4 +932,68 @@ select.who {
 }
 .label-list li {
   margin-bottom: 6px;
+}
+
+/* suggest page, one-screen layout */
+.today-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+}
+.view.compact .today .done-row {
+  margin-top: 4px;
+}
+.view.compact .suggestion {
+  padding: 8px 12px 10px;
+}
+.view.compact .suggestion .fav {
+  width: 34px;
+  height: 34px;
+}
+.view.compact .dn-md .dn-orig {
+  font-size: 1rem;
+}
+.view.compact .dn-trans {
+  font-size: 0.85em;
+}
+.card-foot {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin-top: 2px;
+}
+.card-actions {
+  display: flex;
+  gap: 6px;
+  flex: none;
+}
+.btn.icon-only {
+  padding: 0.35rem 0.55rem;
+}
+.view.compact .section-head {
+  margin: 10px 0 6px;
+}
+.quick-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  margin-top: 10px;
+}
+.btn.quick {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 2px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.quick-icon {
+  font-size: 1.3rem;
+  line-height: 1.1;
 }

@@ -26,7 +26,7 @@ export function FavButton({ dish }: { dish: Dish }) {
 }
 
 /** "Italian · quick · last eaten 12 days ago" */
-export function DishMeta({ dish, showLast = true }: { dish: Dish; showLast?: boolean }) {
+export function DishMeta({ dish, showLast = true, compact = false }: { dish: Dish; showLast?: boolean; compact?: boolean }) {
   const { t, pick, lang } = useLang()
   const { last, next, today } = useDishStats()
   const parts: string[] = []
@@ -42,7 +42,7 @@ export function DishMeta({ dish, showLast = true }: { dish: Dish; showLast?: boo
     else if (lastDate) {
       const n = daysBetween(lastDate, today)
       parts.push(n === 0 ? t('dish.lastEatenToday') : t('dish.lastEaten', { n }))
-    } else if (dish.kind !== 'combo') parts.push(t('dish.neverEaten'))
+    } else if (dish.kind !== 'combo' && !compact) parts.push(t('dish.neverEaten'))
   }
   return (
     <span className="meta">

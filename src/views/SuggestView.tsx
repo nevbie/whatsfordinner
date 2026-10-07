@@ -70,7 +70,8 @@ export function SuggestView() {
       </header>
 
       <section className="card today">
-        <div className="eyebrow">{todayDone ? t('suggest.tomorrow') : t('suggest.today')}</div>
+        <div className="today-line">
+        <span className="eyebrow">{todayDone ? t('suggest.tomorrow') : t('suggest.today')}</span>
         {targetEntry?.dishes.length ? (
           <div className="today-dishes">
             {targetEntry.dishes.map((id) => {
@@ -83,8 +84,9 @@ export function SuggestView() {
             })}
           </div>
         ) : (
-          <p className="muted small">{todayDone ? t('suggest.nothingTomorrow') : t('suggest.nothingToday')}</p>
+          <span className="muted small">{todayDone ? t('suggest.nothingTomorrow') : t('suggest.nothingToday')}</span>
         )}
+        </div>
         {todayDone ? (
           <p className="small done-row">
             ✓ {t('suggest.todayDone')}{' '}
@@ -123,24 +125,34 @@ export function SuggestView() {
                 <DishName dish={dish} size="md" />
                 {dish.kind !== 'combo' && <FavButton dish={dish} />}
               </div>
-              <DishMeta dish={dish} />
-              <FanTags dish={dish} />
-              <div className="actions" onClick={(e) => e.stopPropagation()}>
-                {dish.kind !== 'combo' && (
-                  <button className="btn sm primary" onClick={() => take(dish)}>
-                    {todayDone ? t('suggest.takeTomorrow') : t('suggest.takeToday')}
-                  </button>
-                )}
-                {dish.kind !== 'combo' && (
-                  <button className="btn sm" onClick={() => planLater(dish)}>
-                    {t('suggest.plan')}
-                  </button>
-                )}
-                {combo && (
-                  <button className={`btn sm ${dish.kind === 'combo' ? 'primary' : ''}`} onClick={() => ui.openCombo(combo, dish.kind === 'combo' ? undefined : dish.id, dish.kind === 'combo' ? target : undefined)}>
-                    {comboIcon(combo)} {t('suggest.buildMeal')}
-                  </button>
-                )}
+              <div className="card-foot">
+                <div className="grow">
+                  <DishMeta dish={dish} compact />
+                  <FanTags dish={dish} />
+                </div>
+                <div className="card-actions" onClick={(e) => e.stopPropagation()}>
+                  {dish.kind !== 'combo' && (
+                    <button className="btn sm primary" onClick={() => take(dish)}>
+                      {todayDone ? t('suggest.tomorrowShort') : t('suggest.todayShort')}
+                    </button>
+                  )}
+                  {dish.kind !== 'combo' && (
+                    <button className="btn sm icon-only" onClick={() => planLater(dish)} aria-label={t('suggest.plan')} title={t('suggest.plan')}>
+                      📅
+                    </button>
+                  )}
+                  {combo && (
+                    <button
+                      className={`btn sm ${dish.kind === 'combo' ? 'primary' : 'icon-only'}`}
+                      onClick={() => ui.openCombo(combo, dish.kind === 'combo' ? undefined : dish.id, dish.kind === 'combo' ? target : undefined)}
+                      aria-label={t('suggest.buildMeal')}
+                      title={t('suggest.buildMeal')}
+                    >
+                      {comboIcon(combo)}
+                      {dish.kind === 'combo' ? ` ${t('suggest.buildShort')}` : ''}
+                    </button>
+                  )}
+                </div>
               </div>
             </article>
           )
@@ -148,40 +160,25 @@ export function SuggestView() {
       </div>
 
       <div className="quick-row">
-        <button className="btn quick" onClick={() => ui.openCombo('chinese', undefined, target)}>
-          <span aria-hidden>🥢</span>
-          <span>
-            <span lang="zh">家常菜</span>
-            <span className="muted small">{t('suggest.buildChinese')}</span>
-          </span>
+        <button className="btn quick" onClick={() => ui.openCombo('chinese', undefined, target)} title={t('combo.chinese')}>
+          <span className="quick-icon" aria-hidden>🥢</span>
+          <span lang="zh">家常菜</span>
         </button>
-        <button className="btn quick" onClick={() => ui.openCombo('indian', undefined, target)}>
-          <span aria-hidden>🍛</span>
-          <span>
-            <span lang="hi">थाली</span>
-            <span className="muted small">Thali</span>
-          </span>
+        <button className="btn quick" onClick={() => ui.openCombo('indian', undefined, target)} title={t('combo.indian')}>
+          <span className="quick-icon" aria-hidden>🍛</span>
+          <span lang="hi">थाली</span>
         </button>
-        <button className="btn quick" onClick={() => ui.openCombo('tapas', undefined, target)}>
-          <span aria-hidden>🫒</span>
-          <span>
-            <span lang="es">Tapas</span>
-            <span className="muted small">{t('suggest.tapasEvening')}</span>
-          </span>
+        <button className="btn quick" onClick={() => ui.openCombo('tapas', undefined, target)} title={t('combo.tapas')}>
+          <span className="quick-icon" aria-hidden>🫒</span>
+          <span lang="es">Tapas</span>
         </button>
-        <button className="btn quick" onClick={() => ui.openCombo('abendbrot', undefined, target)}>
-          <span aria-hidden>🥨</span>
-          <span>
-            <span>{t('combo.abendbrot')}</span>
-            <span className="muted small">{t('suggest.abendbrotSub')}</span>
-          </span>
+        <button className="btn quick" onClick={() => ui.openCombo('abendbrot', undefined, target)} title={t('combo.abendbrot')}>
+          <span className="quick-icon" aria-hidden>🥨</span>
+          <span>{t('combo.abendbrot')}</span>
         </button>
-        <button className="btn quick" onClick={() => (location.hash = '#/party')}>
-          <span aria-hidden>🎉</span>
-          <span>
-            <span>{t('nav.party')}</span>
-            <span className="muted small">{t('suggest.hosting')}</span>
-          </span>
+        <button className="btn quick" onClick={() => (location.hash = '#/party')} title={t('suggest.hosting')}>
+          <span className="quick-icon" aria-hidden>🎉</span>
+          <span>{t('nav.party')}</span>
         </button>
       </div>
     </div>
