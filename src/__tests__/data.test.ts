@@ -57,3 +57,14 @@ describe('dish data', () => {
     }
   })
 })
+
+describe('Kinderlieblinge', () => {
+  it('tags exactly the reviewed dinners', async () => {
+    const { KIDS_FAVOURITES } = await import('../data/dishes/kids')
+    const ids = new Set(builtinDishes.map((d) => d.id))
+    for (const id of KIDS_FAVOURITES) expect(ids.has(id), id).toBe(true)
+    const tagged = builtinDishes.filter((d) => d.kind === 'dish' && d.tags.includes('kids')).map((d) => d.id)
+    expect(new Set(tagged)).toEqual(KIDS_FAVOURITES)
+    for (const removed of ['arme-ritter', 'dampfnudeln', 'raclette', 'dan-chaofan', 'butter-chicken', 'pasta-pesto']) expect(tagged).not.toContain(removed)
+  })
+})
