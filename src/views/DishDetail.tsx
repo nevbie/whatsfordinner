@@ -141,6 +141,16 @@ export function DishDetail({ id }: { id: string }) {
 
       {dish.note && <p>{dish.note[lang]}</p>}
 
+      {dish.kind === 'eatout' && (dish.address || dish.phone) && (
+        <p className="small">
+          {dish.address && <>📍 {dish.address}</>}
+          {dish.phone && (
+            <>
+              {dish.address && <br />}☎️ <a href={`tel:${dish.phone.replace(/\s/g, '')}`}>{dish.phone}</a>
+            </>
+          )}
+        </p>
+      )}
       {dish.kind === 'eatout' && (
         <section className="visit-box">
           <div className="row between wrap gap-sm">
@@ -167,7 +177,7 @@ export function DishDetail({ id }: { id: string }) {
               {t('dish.menuLink')}
             </a>
           )}
-          <a className="btn" href={`https://www.google.com/maps/search/${encodeURIComponent(dish.name.orig)}/@49.075,8.39,13z`} target="_blank" rel="noopener noreferrer">
+          <a className="btn" href={`https://www.google.com/maps/search/${encodeURIComponent(dish.address ? `${dish.name.orig}, ${dish.address}` : `${dish.name.orig} ${dish.place ?? ''}`.trim())}/@49.075,8.39,13z`} target="_blank" rel="noopener noreferrer">
             {t('dish.mapsLink')}
           </a>
         </div>

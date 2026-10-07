@@ -57,6 +57,7 @@ export function DishForm({ id, kind: initialKind }: { id?: string; kind?: DishKi
   const [url, setUrl] = useState(existing?.url ?? '')
   const [takeaway, setTakeaway] = useState(!!existing?.takeaway)
   const [place, setPlace] = useState(existing?.place ?? '')
+  const [address, setAddress] = useState(existing?.address ?? '')
   const [rating, setRating] = useState(existing?.rating ?? 0)
   const [error, setError] = useState('')
 
@@ -83,7 +84,7 @@ export function DishForm({ id, kind: initialKind }: { id?: string; kind?: DishKi
       // the note is entered once; keep the other language's text if it existed
       note: note.trim() ? { de: lang === 'de' ? note.trim() : existing?.note?.de ?? note.trim(), en: lang === 'en' ? note.trim() : existing?.note?.en ?? note.trim() } : undefined,
       custom: true,
-      ...(kind === 'eatout' ? { url: url.trim() || undefined, takeaway, place: place.trim() || undefined, rating: rating || undefined } : {}),
+      ...(kind === 'eatout' ? { url: url.trim() || undefined, takeaway, place: place.trim() || undefined, address: address.trim() || undefined, rating: rating || undefined } : {}),
     }
     saveDish(dish)
     ui.close()
@@ -168,6 +169,10 @@ export function DishForm({ id, kind: initialKind }: { id?: string; kind?: DishKi
             <label>
               {t('form.place')}
               <input value={place} onChange={(e) => setPlace(e.target.value)} placeholder={t('form.placeHint')} />
+            </label>
+            <label>
+              {t('form.address')}
+              <input value={address} onChange={(e) => setAddress(e.target.value)} />
             </label>
             <div>
               <div className="label">{t('dish.rating')}</div>

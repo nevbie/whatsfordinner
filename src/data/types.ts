@@ -177,6 +177,9 @@ export interface Dish {
   url?: string
   /** eatout: town / where it is (e.g. on holiday) */
   place?: string
+  /** eatout: street address (used for the map link) */
+  address?: string
+  phone?: string
   /** family rating 1–5 */
   rating?: number
 }
