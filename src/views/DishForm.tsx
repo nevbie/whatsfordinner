@@ -120,7 +120,7 @@ export function DishForm({ id }: { id?: string }) {
           <label className="grow">
             {t('form.kind')}
             <select value={kind} onChange={(e) => setKind(e.target.value as DishKind)}>
-              {(['dish', 'side', 'eatout'] as const).map((k) => (
+              {(['dish', 'side', 'bake', 'eatout'] as const).map((k) => (
                 <option key={k} value={k}>
                   {t(`form.kind.${k}`)}
                 </option>

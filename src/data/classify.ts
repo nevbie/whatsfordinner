@@ -1,6 +1,6 @@
 import type { Course, Cuisine, Dish, Region, Staple } from './types'
 
-const EUROPE = new Set<Cuisine>(['german', 'austrian', 'swiss', 'french', 'italian', 'spanish', 'greek', 'eastern'])
+const EUROPE = new Set<Cuisine>(['german', 'austrian', 'swiss', 'french', 'italian', 'spanish', 'greek', 'eastern', 'georgian'])
 const ASIA = new Set<Cuisine>(['chinese', 'indian', 'thai', 'vietnamese', 'japanese', 'korean', 'fusion'])
 
 export function regionOf(dish: Dish): Region | undefined {
@@ -36,7 +36,7 @@ export const STAPLES: Staple[] = ['bread', 'pasta', 'rice', 'potatoes', 'dough']
 export function staplesOf(dish: Dish): Staple[] {
   if (dish.staples) return dish.staples
   if (dish.kind === 'combo') {
-    const byCombo: Record<string, Staple[]> = { chinese: ['rice'], indian: ['bread', 'rice'], tapas: ['bread', 'potatoes'], abendbrot: ['bread'] }
+    const byCombo: Record<string, Staple[]> = { chinese: ['rice'], indian: ['bread', 'rice'], tapas: ['bread', 'potatoes'], abendbrot: ['bread'], teller: ['potatoes'], salad: [] }
     return dish.combo ? byCombo[dish.combo] : []
   }
   const found = new Set<Staple>()

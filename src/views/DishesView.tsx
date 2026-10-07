@@ -4,9 +4,9 @@ import { DishName } from '../components/DishName'
 import { FanTags } from '../components/FanTags'
 import { FilterBar, usePersistentFilters } from '../components/FilterBar'
 import { useDishStats } from '../components/useDishStats'
-import type { Dish, Lang } from '../data/types'
+import type { Course, Dish, Lang } from '../data/types'
 import { ingredientName } from '../data/ingredients'
-import { useLang } from '../i18n'
+import { COURSE_LABELS, useLang } from '../i18n'
 import { activeFilterCount, DEFAULT_FILTERS, matchesFilters } from '../logic/filters'
 import { useStore } from '../store/StoreContext'
 import { useUI } from '../ui'
@@ -29,7 +29,101 @@ export function sortByName(a: Dish, b: Dish, lang: Lang) {
   return (a.name[lang] || a.name.orig).localeCompare(b.name[lang] || b.name.orig, lang)
 }
 
+const BAKE_COURSES: Course[] = ['bkCake', 'bkDessert', 'bkPastry', 'bkSweets']
+
+function loadTab(): 'food' | 'bake' {
+  try {
+    return localStorage.getItem('wfd:dishes:tab') === 'bake' ? 'bake' : 'food'
+  } catch {
+    return 'food'
+  }
+}
+
 export function DishesView() {
+  const [tab, setTabState] = useState<'food' | 'bake'>(loadTab)
+  const setTab = (v: 'food' | 'bake') => {
+    setTabState(v)
+    try {
+      localStorage.setItem('wfd:dishes:tab', v)
+    } catch {
+      /* ignore */
+    }
+  }
+  return tab === 'bake' ? <BakeList tab={tab} setTab={setTab} /> : <FoodList tab={tab} setTab={setTab} />
+}
+
+function DishTabs({ tab, setTab }: { tab: 'food' | 'bake'; setTab(v: 'food' | 'bake'): void }) {
+  const { t } = useLang()
+  return (
+    <div className="segmented dish-tabs" role="tablist">
+      {(['food', 'bake'] as const).map((v) => (
+        <button key={v} role="tab" aria-selected={tab === v} className={tab === v ? 'on' : ''} onClick={() => setTab(v)}>
+          {t(`dishes.tab.${v}`)}
+        </button>
+      ))}
+    </div>
+  )
+}
+
+function DishRow({ d }: { d: Dish }) {
+  const ui = useUI()
+  return (
+    <li className="list-row" onClick={() => ui.openDish(d.id)}>
+      <div className="grow">
+        <DishName dish={d} size="sm" />
+        <DishMeta dish={d} />
+        <FanTags dish={d} />
+      </div>
+      {d.kind !== 'combo' && <FavButton dish={d} />}
+    </li>
+  )
+}
+
+/** Backen & Desserts: cakes, desserts, pastries and sweets, grouped. */
+function BakeList({ tab, setTab }: { tab: 'food' | 'bake'; setTab(v: 'food' | 'bake'): void }) {
+  const { t, lang, pick } = useLang()
+  const { dishes } = useStore()
+  const ui = useUI()
+  const [query, setQuery] = useState('')
+  const [only, setOnly] = useState<Course | null>(null)
+  const bakes = useMemo(() => dishes.filter((d) => d.kind === 'bake' && (!query || matchesQuery(d, query))).sort((a, b) => sortByName(a, b, lang)), [dishes, query, lang])
+  const groups = BAKE_COURSES.filter((c) => !only || c === only).map((c) => [c, bakes.filter((d) => (d.course ?? 'bkCake') === c)] as const)
+  return (
+    <div className="view">
+      <h1>{t('nav.dishes')}</h1>
+      <DishTabs tab={tab} setTab={setTab} />
+      <input className="search" type="search" placeholder={t('dishes.search')} value={query} onChange={(e) => setQuery(e.target.value)} />
+      <div className="chips">
+        {BAKE_COURSES.map((c) => (
+          <button key={c} className={`chip ${only === c ? 'on' : ''}`} aria-pressed={only === c} onClick={() => setOnly(only === c ? null : c)}>
+            {pick(COURSE_LABELS[c])}
+          </button>
+        ))}
+      </div>
+      {groups.map(([c, list]) =>
+        list.length ? (
+          <section key={c}>
+            <h2 className="group-head">
+              {pick(COURSE_LABELS[c])} <span className="muted small">{list.length}</span>
+            </h2>
+            <ul className="list">
+              {list.map((d) => (
+                <DishRow key={d.id} d={d} />
+              ))}
+            </ul>
+          </section>
+        ) : null,
+      )}
+      {!query && (
+        <button className="fab" onClick={() => ui.openForm()} aria-label={t('dishes.add')}>
+          ＋ {t('dishes.add')}
+        </button>
+      )}
+    </div>
+  )
+}
+
+function FoodList({ tab, setTab }: { tab: 'food' | 'bake'; setTab(v: 'food' | 'bake'): void }) {
   const { t, lang } = useLang()
   const { dishes, state } = useStore()
   const ui = useUI()
@@ -44,6 +138,7 @@ export function DishesView() {
   const list = useMemo(() => {
     const favs = new Set(state.favorites)
     const out = dishes.filter((d) => {
+      if (d.kind === 'bake') return false
       if ((d.kind === 'side' || d.kind === 'party') && !showSides) return false
       // restaurants only with the "eating out" chip (or when searching for them)
       if (d.kind === 'eatout') {
@@ -59,6 +154,7 @@ export function DishesView() {
   return (
     <div className="view">
       <h1>{t('nav.dishes')}</h1>
+      <DishTabs tab={tab} setTab={setTab} />
       <div className="row gap search-row">
         <input className="search grow" type="search" placeholder={t('dishes.search')} value={query} onChange={(e) => setQuery(e.target.value)} />
         <button className={`chip filter-toggle ${showFilters ? 'on' : ''}`} onClick={() => setShowFilters(!showFilters)} aria-expanded={showFilters}>
@@ -115,14 +211,7 @@ export function DishesView() {
       </p>
       <ul className="list">
         {list.map((d) => (
-          <li key={d.id} className="list-row" onClick={() => ui.openDish(d.id)}>
-            <div className="grow">
-              <DishName dish={d} size="sm" />
-              <DishMeta dish={d} />
-              <FanTags dish={d} />
-            </div>
-            {d.kind !== 'combo' && <FavButton dish={d} />}
-          </li>
+          <DishRow key={d.id} d={d} />
         ))}
       </ul>
       {/* hidden while searching so it doesn't cover results above the keyboard */}

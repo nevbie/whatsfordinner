@@ -27,6 +27,7 @@ export type Cuisine =
   | 'vietnamese'
   | 'japanese'
   | 'korean'
+  | 'georgian'
   | 'fusion'
   | 'restaurant'
 
@@ -81,6 +82,20 @@ export type Course =
   | 'abSpread'
   | 'abVeg'
   | 'abExtra'
+  /** Teller: main dish that wants a starch + vegetable side */
+  | 'plMain'
+  | 'plStarch'
+  | 'plVeg'
+  /** salad builder */
+  | 'slBase'
+  | 'slExtra'
+  | 'slTopping'
+  | 'slDressing'
+  /** baking & desserts */
+  | 'bkCake'
+  | 'bkDessert'
+  | 'bkPastry'
+  | 'bkSweets'
 
 /**
  * dish   – a dinner on its own (may also be part of a combo when it has a course)
@@ -88,10 +103,11 @@ export type Course =
  * combo  – placeholder like "Chinesisch (diverse)" that opens the meal builder
  * eatout – restaurant / takeaway
  * party  – starters, finger food, dips, desserts, cakes, drinks for hosting guests
+ * bake   – cakes, desserts, pastries, sweets (Backen & Desserts) – never a dinner suggestion
  */
-export type DishKind = 'dish' | 'side' | 'combo' | 'eatout' | 'party'
+export type DishKind = 'dish' | 'side' | 'combo' | 'eatout' | 'party' | 'bake'
 
-export type ComboType = 'chinese' | 'indian' | 'tapas' | 'abendbrot'
+export type ComboType = 'chinese' | 'indian' | 'tapas' | 'abendbrot' | 'teller' | 'salad'
 
 /** Main filling component of a meal. 'dough' = pizza, tarts, dumplings, pancakes … */
 export type Staple = 'bread' | 'pasta' | 'rice' | 'potatoes' | 'dough'
@@ -121,6 +137,8 @@ export interface Recipe {
   tip?: I18nText
   kids?: I18nText
   source?: string
+  /** handwritten family recipe */
+  family?: boolean
 }
 
 export interface Dish {

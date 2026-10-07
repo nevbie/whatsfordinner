@@ -1,4 +1,4 @@
-import type { Dish } from '../data/types'
+import type { ComboType, Dish } from '../data/types'
 import { CUISINE_LABELS, useLang } from '../i18n'
 import { daysBetween } from '../logic/dates'
 import { useStore } from '../store/StoreContext'
@@ -53,6 +53,6 @@ export function DishMeta({ dish, showLast = true, compact = false }: { dish: Dis
   )
 }
 
-export function comboIcon(type: 'chinese' | 'indian' | 'tapas' | 'abendbrot') {
-  return { chinese: '🥢', indian: '🍛', tapas: '🫒', abendbrot: '🥨' }[type]
+export function comboIcon(type: ComboType) {
+  return { chinese: '🥢', indian: '🍛', tapas: '🫒', abendbrot: '🥨', teller: '🍽', salad: '🥗' }[type]
 }

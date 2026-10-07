@@ -3,7 +3,9 @@ import { d, type Def } from './define'
 
 /** Dishes for hosting guests – only used in the party planner (kind 'party'). */
 const p = (course: PartyCourse | PartyCourse[], def: Omit<Def, 'k'>) => {
-  const dish = d({ ...def, k: 'party' })
+  // cakes and desserts live in "Backen & Desserts" and are offered to the party planner from there
+  const main = Array.isArray(course) ? course[0] : course
+  const dish = main === 'cake' ? d({ ...def, k: 'bake', co: 'bkCake' }) : main === 'dessert' ? d({ ...def, k: 'bake', co: 'bkDessert' }) : d({ ...def, k: 'party' })
   dish.party = Array.isArray(course) ? course : [course]
   return dish
 }

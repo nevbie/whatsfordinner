@@ -49,6 +49,7 @@ export function DishDetail({ id }: { id: string }) {
             {pick(TAG_LABELS[tag])}
           </span>
         ))}
+        {r?.family && <span className="chip">{t('dish.familyRecipe')}</span>}
         {state.customDishes[dish.id] && <span className="chip">{t(isBuiltin(dish.id) ? 'dish.edited' : 'dish.custom')}</span>}
         {times > 0 && <span className="chip">{t('dish.timesEaten', { n: times })}</span>}
       </div>
@@ -89,7 +90,7 @@ export function DishDetail({ id }: { id: string }) {
       )}
 
       <div className="actions">
-        {dish.kind !== 'combo' && (
+        {dish.kind !== 'combo' && dish.kind !== 'bake' && (
           <>
             <button className="btn primary" onClick={() => setDay(todayISO(), { dishes: [dish.id] })}>
               {t('suggest.takeToday')}

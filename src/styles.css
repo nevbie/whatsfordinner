@@ -997,3 +997,8 @@ select.who {
   font-size: 1.3rem;
   line-height: 1.1;
 }
+
+/* Gerichte: Essen | Backen & Desserts */
+.dish-tabs { width: 100%; margin-bottom: 8px; }
+.dish-tabs button { flex: 1; }
+.group-head { font-size: 1rem; margin: 16px 0 4px; }

@@ -12,6 +12,7 @@ const CORE: PartyCourse[] = ['starter', 'salad', 'main', 'snack']
 export function partyCoursesOf(d: Dish): PartyCourse[] {
   if (d.party) return d.party
   if (d.kind === 'eatout' || d.kind === 'combo') return []
+  if (d.kind === 'bake') return d.course === 'bkCake' || d.course === 'bkPastry' ? ['cake'] : d.course === 'bkDessert' ? ['dessert'] : d.course ? [] : ['cake', 'dessert']
   if (d.kind === 'dish') return d.tags.includes('sweet') ? ['dessert'] : ['main']
   switch (d.course) {
     case 'raita':
@@ -75,7 +76,7 @@ function weightFor(d: Dish, course: PartyCourse, party: Party, ctx: SuggestCtx):
   if (party.kids > 0 && d.tags.includes('kids')) w *= 1.5
   if (party.kids > 0 && d.tags.includes('spicy')) w *= 0.3
   // prefer real party food over everyday desserts like Grießbrei
-  if (course !== 'main') w *= d.kind === 'party' ? 1.5 : 0.4
+  if (course !== 'main') w *= d.kind === 'party' || d.kind === 'bake' ? 1.5 : 0.4
   if (party.format === 'buffet' && d.effort === 3) w *= 0.5
   if (course === 'main') {
     // buffets want dishes that sit well on a table (bakes, one-pots); quick pan dishes and

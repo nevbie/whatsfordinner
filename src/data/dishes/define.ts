@@ -54,3 +54,39 @@ export function d(def: Def): Dish {
     group: def.g,
   }
 }
+
+/** Compact bilingual recipe: [German, English] pairs. */
+export interface RecipeDef {
+  serves: [string, string]
+  time: [string, string]
+  ing: [string[], string[]]
+  steps: [string[], string[]]
+  tip?: [string, string]
+  vegan?: [string, string]
+  kids?: [string, string]
+  source?: string
+  /** handwritten family recipe (shows the 📝 Familienrezept badge) */
+  family?: boolean
+}
+
+export function rc(r: RecipeDef): Recipe {
+  const pair = (x?: [string, string]) => (x ? { de: x[0], en: x[1] } : undefined)
+  return {
+    serves: { de: r.serves[0], en: r.serves[1] },
+    time: { de: r.time[0], en: r.time[1] },
+    ingredients: { de: r.ing[0], en: r.ing[1] },
+    steps: { de: r.steps[0], en: r.steps[1] },
+    tip: pair(r.tip),
+    vegan: pair(r.vegan),
+    kids: pair(r.kids),
+    source: r.source,
+    family: r.family,
+  }
+}
+
+export type BakeCourse = 'bkCake' | 'bkDessert' | 'bkPastry' | 'bkSweets'
+
+/** Backen & Desserts entry (kind 'bake'). Party roles follow from the course (cake / dessert). */
+export function bake(course: BakeCourse, def: Omit<Def, 'k' | 'co'>): Dish {
+  return d({ ...def, k: 'bake', co: course })
+}

@@ -288,3 +288,37 @@ describe('Abendbrot', () => {
     expect(byId.get('brotzeit')!.combo).toBe('abendbrot')
   })
 })
+
+describe('Teller, Salat & Backen', () => {
+  it('builds a plate: the main plus a starchy side and a vegetable', () => {
+    const o = opts({ type: 'teller' })
+    for (let seed = 1; seed < 20; seed++) {
+      const ds = dishesOf(fillEntries(initialEntries(o, byId.get('schnitzel')), builtinDishes, ctx(o), seeded(seed)))
+      expect(ds.map((d) => d.course)).toEqual(['plMain', 'plStarch', 'plVeg'])
+      expect(ds[0].id).toBe('schnitzel')
+    }
+  })
+
+  it('builds a salad with base, two different extras, topping and dressing', () => {
+    const o = opts({ type: 'salad' })
+    const ds = dishesOf(fillEntries(initialEntries(o), builtinDishes, ctx(o), seeded(4)))
+    expect(ds.map((d) => d.course)).toEqual(['slBase', 'slExtra', 'slExtra', 'slTopping', 'slDressing'])
+    expect(ds[1].id).not.toBe(ds[2].id)
+  })
+
+  it('never suggests baking for dinner', () => {
+    const out = suggest(builtinDishes, { state: emptyState(), filters: DEFAULT_FILTERS, today: TODAY }, 400, new Set(), seeded(9))
+    expect(out.some((d) => d.kind === 'bake')).toBe(false)
+  })
+
+  it('offers cakes and desserts to the party planner', () => {
+    const party = { ...newParty('2026-10-10', emptyState().settings, 'de'), format: 'buffet' as const, adults: 12 }
+    const items = suggestPartyItems(party, { pool: builtinDishes, favorites: new Set(), today: TODAY, rng: seeded(2) })
+    const cake = items.find((i) => i.course === 'cake')
+    expect(cake && byId.get(cake.dishId!)?.kind).toBe('bake')
+  })
+
+  it('attaches the family recipes to existing dishes', () => {
+    for (const id of ['kaesekuchen', 'kaiserschmarrn', 'waffeln', 'haehnchen-suesskartoffel']) expect(byId.get(id)?.recipe, id).toBeDefined()
+  })
+})

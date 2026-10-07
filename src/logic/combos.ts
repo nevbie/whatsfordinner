@@ -46,11 +46,15 @@ export function tapasCount(adults: number, kids: number): number {
 
 const TAPA_COURSES = new Set<Course>(['tapaVeg', 'tapaMeat', 'tapaFish', 'tapaBread'])
 const ABENDBROT_COURSES = new Set<Course>(['abBread', 'abCheese', 'abMeat', 'abFish', 'abSpread', 'abVeg', 'abExtra'])
+const TELLER_COURSES = new Set<Course>(['plMain', 'plStarch', 'plVeg'])
+const SALAD_COURSES = new Set<Course>(['slBase', 'slExtra', 'slTopping', 'slDressing'])
 
 /** Which builder a dish belongs to (its cuisine, or tapas for Spanish tapas). */
 export function comboTypeOfDish(d: Dish): ComboType | undefined {
   if (d.course && TAPA_COURSES.has(d.course)) return 'tapas'
   if (d.course && ABENDBROT_COURSES.has(d.course)) return 'abendbrot'
+  if (d.course && TELLER_COURSES.has(d.course)) return 'teller'
+  if (d.course && SALAD_COURSES.has(d.course)) return 'salad'
   if (d.cuisine === 'chinese' || d.cuisine === 'indian') return d.cuisine
   return undefined
 }
@@ -60,6 +64,23 @@ export function comboSlots(o: ComboOptions, seed?: Dish): ComboSlot[] {
     return o.type === 'chinese'
       ? [{ key: 'meal', roles: ['meal'] }, { key: 'side', roles: ['cold', 'soup'] }]
       : [{ key: 'meal', roles: ['meal'] }, { key: 'raita', roles: ['raita'] }, { key: 'side', roles: ['chutney', 'salad', 'side'] }]
+  }
+  if (o.type === 'teller') {
+    // German plate: the main, a starchy side (potatoes, dumplings, pasta, rice) and a vegetable
+    return [
+      { key: 'plMain', roles: ['plMain'] },
+      { key: 'plStarch', roles: ['plStarch'] },
+      { key: 'plVeg', roles: ['plVeg'] },
+    ]
+  }
+  if (o.type === 'salad') {
+    return [
+      { key: 'slBase', roles: ['slBase'] },
+      { key: 'slExtra', roles: ['slExtra'] },
+      { key: 'slExtra2', roles: ['slExtra'] },
+      { key: 'slTopping', roles: ['slTopping'] },
+      { key: 'slDressing', roles: ['slDressing'] },
+    ]
   }
   if (o.type === 'abendbrot') {
     // German cold supper: bread, cheese, cold cuts or fish, a spread, raw vegetables, an extra
@@ -164,7 +185,8 @@ function weighted(cands: Dish[], ctx: PickContext, rng: Rng): Dish | undefined {
   const ws = cands.map((d) => {
     let w = DEFAULT_BOOST[d.id] ?? 1
     if (ctx.favorites.has(d.id)) w *= 2
-    if (ctx.prefer?.has(d.id)) w *= 5
+    // a plate follows the classic pairings (Schnitzel → Bratkartoffeln) much more strictly
+    if (ctx.prefer?.has(d.id)) w *= ctx.options.type === 'teller' ? 25 : 5
     if (d.effort === 3) w *= 0.4
     return w
   })
