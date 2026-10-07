@@ -1,7 +1,7 @@
 import type { Dish } from '../types'
 import { d } from './define'
 
-/** Eating out / takeaway. Ids of the first paper-list entries are kept so the history still matches. */
+/** Eating out / takeaway – all in Karlsruhe-Neureut, Eggenstein or Leopoldshafen. Ids of the first paper-list entries are kept so the history still matches. */
 const r = (id: string, name: string, extra: { takeaway?: boolean; url?: string; note?: [string, string]; en?: string } = {}): Dish => ({
   ...d({ id, o: name, en: extra.en ?? name, c: 'restaurant', k: 'eatout', e: 1, i: '', n: extra.note }),
   takeaway: extra.takeaway,

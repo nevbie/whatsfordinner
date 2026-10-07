@@ -123,7 +123,7 @@ export function DishDetail({ id }: { id: string }) {
               {t('dish.menuLink')}
             </a>
           )}
-          <a className="btn" href={`https://www.google.com/maps/search/${encodeURIComponent(`${dish.name.orig} Karlsruhe`)}`} target="_blank" rel="noopener noreferrer">
+          <a className="btn" href={`https://www.google.com/maps/search/${encodeURIComponent(dish.name.orig)}/@49.075,8.39,13z`} target="_blank" rel="noopener noreferrer">
             {t('dish.mapsLink')}
           </a>
         </div>
