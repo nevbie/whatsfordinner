@@ -53,6 +53,6 @@ export function DishMeta({ dish, showLast = true }: { dish: Dish; showLast?: boo
   )
 }
 
-export function comboIcon(type: 'chinese' | 'indian' | 'tapas') {
-  return type === 'chinese' ? '🥢' : type === 'indian' ? '🍛' : '🫒'
+export function comboIcon(type: 'chinese' | 'indian' | 'tapas' | 'abendbrot') {
+  return { chinese: '🥢', indian: '🍛', tapas: '🫒', abendbrot: '🥨' }[type]
 }

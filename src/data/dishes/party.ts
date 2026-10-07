@@ -48,11 +48,11 @@ export const partyDishes = [
   // dips
   p('dip', { id: 'tzatziki', o: 'Τζατζίκι', l: 'el', r: 'Tzatzíki', de: 'Tzatziki', en: 'Tzatziki', c: 'greek', t: 'veggie kids', e: 1, i: 'yogurt cucumber garlic dill olive_oil' }),
   p('dip', { id: 'guacamole', o: 'Guacamole', l: 'es', en: 'Guacamole', c: 'mexican', t: 'vegan', e: 1, i: 'avocado lime tomato red_onion coriander' }),
-  p('dip', { id: 'hummus', o: 'حمص', l: 'ar', r: 'Ḥummuṣ', de: 'Hummus', en: 'Hummus', c: 'mideast', t: 'vegan kids', e: 1, i: 'chickpeas tahini lemon garlic olive_oil' }),
+  p('dip', { id: 'hummus', co: 'abSpread', o: 'حمص', l: 'ar', r: 'Ḥummuṣ', de: 'Hummus', en: 'Hummus', c: 'mideast', t: 'vegan kids', e: 1, i: 'chickpeas tahini lemon garlic olive_oil' }),
   p('dip', { id: 'baba-ganoush', o: 'بابا غنوج', l: 'ar', r: 'Bābā ghanūj', de: 'Baba Ganoush (Auberginencreme)', en: 'Baba ganoush (aubergine dip)', c: 'mideast', t: 'vegan', e: 1, i: 'eggplant tahini lemon garlic' }),
-  p('dip', { id: 'kraeuterquark', o: 'Kräuterquark', en: 'Herb quark dip', c: 'german', t: 'veggie kids', e: 1, i: 'quark herbs garlic' }),
+  p('dip', { id: 'kraeuterquark', co: 'abSpread', o: 'Kräuterquark', en: 'Herb quark dip', c: 'german', t: 'veggie kids', e: 1, i: 'quark herbs garlic' }),
   p('dip', { id: 'aioli', o: 'Allioli', l: 'ca', de: 'Aioli', en: 'Aioli', c: 'spanish', t: 'veggie', e: 1, i: 'garlic egg olive_oil lemon' }),
-  p('dip', { id: 'obatzda', o: 'Obatzda', en: 'Obatzda (Bavarian cheese spread)', c: 'german', t: 'veggie', e: 1, i: 'camembert butter onion paprika_powder' }),
+  p('dip', { id: 'obatzda', co: 'abCheese', o: 'Obatzda', en: 'Obatzda (Bavarian cheese spread)', c: 'german', t: 'veggie', e: 1, i: 'camembert butter onion paprika_powder' }),
   p('dip', { id: 'salsa', o: 'Salsa roja', l: 'es', de: 'Tomatensalsa', en: 'Tomato salsa', c: 'mexican', t: 'vegan spicy', e: 1, i: 'tomato red_onion chili lime coriander' }),
   // desserts
   p('dessert', { id: 'tiramisu', o: 'Tiramisù', l: 'it', de: 'Tiramisu', en: 'Tiramisu', c: 'italian', t: 'veggie sweet', i: 'mascarpone ladyfingers coffee egg sugar cocoa' }),

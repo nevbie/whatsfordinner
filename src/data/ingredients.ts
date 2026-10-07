@@ -303,6 +303,13 @@ export const INGREDIENTS: Record<string, [string, string]> = {
   manchego: ['Manchego', 'Manchego'],
   squid: ['Tintenfischringe', 'Squid rings'],
   fresh_anchovies: ['Frische Sardellen', 'Fresh anchovies'],
+  wholegrain_bread: ['Vollkornbrot', 'Wholegrain bread'],
+  crispbread: ['Knäckebrot', 'Crispbread'],
+  liver_sausage: ['Leberwurst', 'Liver sausage'],
+  smoked_salmon: ['Räucherlachs', 'Smoked salmon'],
+  horseradish: ['Meerrettich', 'Horseradish'],
+  matjes: ['Matjesfilets', 'Matjes herring'],
+  jam: ['Marmelade', 'Jam'],
 }
 
 /** Display name of an ingredient; unknown keys (free text from custom dishes) are shown as-is. */

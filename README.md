@@ -22,6 +22,7 @@ Ossobuco, Mercimek köftesi) plus the translation in the chosen language.
     drink and dessert.
   - Re-roll, keep (lock), pick yourself, add or remove dishes, then plan it for a day.
 - **Tapas evening** – single tapas (Tortilla de patatas, Patatas bravas, Albóndigas, Croquetas, Calamares, Pimientos de Padrón, Pan con tomate …) and a builder that combines 4–7 of them.
+- **Abendbrot** – builder for a German cold supper: bread, cheese, cold cuts or fish, spreads, raw vegetables and extras (vegetarian without cold cuts).
 - **Week** – plan every dinner, fill empty days with suggestions.
 - **Dishes** – all ~200 dishes with search (name or ingredient), ingredients and, where
   available, full recipes (the 23 recipes of the *Indischer Kochkurs* booklet, DE + EN,

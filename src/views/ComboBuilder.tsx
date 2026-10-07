@@ -12,11 +12,12 @@ import { useUI } from '../ui'
 
 const ALL_COURSES: Record<ComboType, Course[]> = {
   tapas: ['tapaVeg', 'tapaMeat', 'tapaFish', 'tapaBread'],
+  abendbrot: ['abBread', 'abCheese', 'abMeat', 'abFish', 'abSpread', 'abVeg', 'abExtra'],
   chinese: ['meat', 'fish', 'tofu', 'egg', 'veg', 'cold', 'soup', 'staple', 'meal'],
   indian: ['curry', 'dal', 'sabzi', 'raita', 'chutney', 'salad', 'side', 'bread', 'rice', 'drink', 'dessert', 'snack', 'meal'],
 }
 
-const SLOT_KEYS = new Set(['main', 'main2', 'veg', 'veg2', 'soup', 'cold', 'staple', 'meal', 'side', 'dal', 'curry', 'curry2', 'sabzi', 'raita', 'bread', 'rice', 'drink', 'dessert', 'tapaVeg', 'tapaVeg2', 'tapaMeat', 'tapaMeat2', 'tapaFish', 'tapaFish2', 'tapaBread'])
+const SLOT_KEYS = new Set(['main', 'main2', 'veg', 'veg2', 'soup', 'cold', 'staple', 'meal', 'side', 'dal', 'curry', 'curry2', 'sabzi', 'raita', 'bread', 'rice', 'drink', 'dessert', 'tapaVeg', 'tapaVeg2', 'tapaMeat', 'tapaMeat2', 'tapaFish', 'tapaFish2', 'tapaBread', 'abBread', 'abBread2', 'abCheese', 'abMeat', 'abSpread', 'abSpread2', 'abVeg', 'abExtra', 'abMore'])
 
 export function ComboBuilder({ combo, seedId, date }: { combo: ComboType; seedId?: string; date?: string }) {
   const { t, lang } = useLang()
@@ -102,7 +103,7 @@ export function ComboBuilder({ combo, seedId, date }: { combo: ComboType; seedId
         </div>
       }
     >
-      <p className="muted small">{t(combo === 'chinese' ? 'combo.introChinese' : combo === 'indian' ? 'combo.introIndian' : 'combo.introTapas')}</p>
+      <p className="muted small">{t(combo === 'chinese' ? 'combo.introChinese' : combo === 'indian' ? 'combo.introIndian' : combo === 'tapas' ? 'combo.introTapas' : 'combo.introAbendbrot')}</p>
       <div className="combo-options">
         <Stepper label={t('combo.adults')} value={options.adults} min={1} max={8} onChange={(adults) => change({ adults })} />
         <Stepper label={t('combo.kids')} value={options.kids} min={0} max={8} onChange={(kids) => change({ kids })} />

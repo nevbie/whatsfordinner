@@ -74,6 +74,13 @@ export type Course =
   | 'tapaMeat'
   | 'tapaFish'
   | 'tapaBread'
+  | 'abBread'
+  | 'abCheese'
+  | 'abMeat'
+  | 'abFish'
+  | 'abSpread'
+  | 'abVeg'
+  | 'abExtra'
 
 /**
  * dish   – a dinner on its own (may also be part of a combo when it has a course)
@@ -84,7 +91,7 @@ export type Course =
  */
 export type DishKind = 'dish' | 'side' | 'combo' | 'eatout' | 'party'
 
-export type ComboType = 'chinese' | 'indian' | 'tapas'
+export type ComboType = 'chinese' | 'indian' | 'tapas' | 'abendbrot'
 
 /** Main filling component of a meal. 'dough' = pizza, tarts, dumplings, pancakes … */
 export type Staple = 'bread' | 'pasta' | 'rice' | 'potatoes' | 'dough'

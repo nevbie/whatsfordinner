@@ -265,3 +265,26 @@ describe('tapas evening', () => {
     expect(byId.get('tortilla-espanola')!.name.orig).toBe('Tortilla de patatas')
   })
 })
+
+describe('Abendbrot', () => {
+  it('builds bread, cheese, cold cuts, spread, raw veg and an extra', () => {
+    for (let seed = 1; seed < 30; seed++) {
+      const o = opts({ type: 'abendbrot', adults: 2, kids: 2 })
+      const ds = dishesOf(fillEntries(initialEntries(o), builtinDishes, ctx(o), seeded(seed)))
+      expect(ds.every(Boolean)).toBe(true)
+      const courses = ds.map((d) => d.course)
+      for (const c of ['abBread', 'abCheese', 'abSpread', 'abVeg', 'abExtra']) expect(courses).toContain(c)
+      expect(courses.some((c) => c === 'abMeat' || c === 'abFish')).toBe(true)
+    }
+  })
+
+  it('has no cold cuts when vegetarian', () => {
+    const o = opts({ type: 'abendbrot', diet: 'veggie' })
+    const ds = dishesOf(fillEntries(initialEntries(o), builtinDishes, ctx(o), seeded(3)))
+    for (const d of ds) expect(d.tags).toContain('veggie')
+  })
+
+  it('opens from the Brotzeit entry', () => {
+    expect(byId.get('brotzeit')!.combo).toBe('abendbrot')
+  })
+})

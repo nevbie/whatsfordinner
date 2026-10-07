@@ -45,10 +45,12 @@ export function tapasCount(adults: number, kids: number): number {
 }
 
 const TAPA_COURSES = new Set<Course>(['tapaVeg', 'tapaMeat', 'tapaFish', 'tapaBread'])
+const ABENDBROT_COURSES = new Set<Course>(['abBread', 'abCheese', 'abMeat', 'abFish', 'abSpread', 'abVeg', 'abExtra'])
 
 /** Which builder a dish belongs to (its cuisine, or tapas for Spanish tapas). */
 export function comboTypeOfDish(d: Dish): ComboType | undefined {
   if (d.course && TAPA_COURSES.has(d.course)) return 'tapas'
+  if (d.course && ABENDBROT_COURSES.has(d.course)) return 'abendbrot'
   if (d.cuisine === 'chinese' || d.cuisine === 'indian') return d.cuisine
   return undefined
 }
@@ -58,6 +60,22 @@ export function comboSlots(o: ComboOptions, seed?: Dish): ComboSlot[] {
     return o.type === 'chinese'
       ? [{ key: 'meal', roles: ['meal'] }, { key: 'side', roles: ['cold', 'soup'] }]
       : [{ key: 'meal', roles: ['meal'] }, { key: 'raita', roles: ['raita'] }, { key: 'side', roles: ['chutney', 'salad', 'side'] }]
+  }
+  if (o.type === 'abendbrot') {
+    // German cold supper: bread, cheese, cold cuts or fish, a spread, raw vegetables, an extra
+    const veg = o.diet !== 'any'
+    const slots: ComboSlot[] = [
+      { key: 'abBread', roles: ['abBread'] },
+      { key: 'abCheese', roles: ['abCheese'] },
+      veg ? { key: 'abSpread2', roles: ['abSpread', 'abCheese'] } : { key: 'abMeat', roles: ['abMeat', 'abFish'] },
+      { key: 'abSpread', roles: ['abSpread'] },
+      { key: 'abVeg', roles: ['abVeg'] },
+      { key: 'abExtra', roles: ['abExtra'] },
+    ]
+    // bigger family: a second bread and a second cheese/cold cut
+    if (o.adults + o.kids >= 5) slots.splice(1, 0, { key: 'abBread2', roles: ['abBread'] })
+    if (o.adults + o.kids >= 6) slots.push({ key: 'abMore', roles: veg ? ['abCheese', 'abSpread'] : ['abMeat', 'abFish', 'abCheese'] })
+    return slots
   }
   if (o.type === 'tapas') {
     // a tapas evening: something with potatoes/eggs or vegetables, meat, fish, bread/olives …

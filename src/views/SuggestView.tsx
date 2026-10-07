@@ -169,6 +169,13 @@ export function SuggestView() {
             <span className="muted small">{t('suggest.tapasEvening')}</span>
           </span>
         </button>
+        <button className="btn quick" onClick={() => ui.openCombo('abendbrot', undefined, target)}>
+          <span aria-hidden>🥨</span>
+          <span>
+            <span>{t('combo.abendbrot')}</span>
+            <span className="muted small">{t('suggest.abendbrotSub')}</span>
+          </span>
+        </button>
         <button className="btn quick" onClick={() => (location.hash = '#/party')}>
           <span aria-hidden>🎉</span>
           <span>

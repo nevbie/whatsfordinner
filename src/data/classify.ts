@@ -35,7 +35,10 @@ export const STAPLES: Staple[] = ['bread', 'pasta', 'rice', 'potatoes', 'dough']
 
 export function staplesOf(dish: Dish): Staple[] {
   if (dish.staples) return dish.staples
-  if (dish.kind === 'combo') return dish.combo === 'indian' ? ['rice', 'bread'] : ['rice']
+  if (dish.kind === 'combo') {
+    const byCombo: Record<string, Staple[]> = { chinese: ['rice'], indian: ['bread', 'rice'], tapas: ['bread', 'potatoes'], abendbrot: ['bread'] }
+    return dish.combo ? byCombo[dish.combo] : []
+  }
   const found = new Set<Staple>()
   for (const s of STAPLES) if (STAPLE_INGREDIENTS[s].some((i) => dish.ingredients.includes(i))) found.add(s)
   if ((dish.cuisine === 'chinese' || dish.cuisine === 'indian') && dish.course) EATEN_WITH[dish.course]?.forEach((s) => found.add(s))
