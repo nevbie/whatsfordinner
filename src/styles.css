@@ -1043,3 +1043,4 @@ select.who {
 .plan-view .days { grid-template-columns: minmax(0, 1fr); }
 .plan-view .day, .day-row { min-width: 0; }
 .day-dish { flex: 0 1 auto; }
+.day-clear { flex: none; color: var(--muted); }

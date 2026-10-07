@@ -34,6 +34,12 @@ export function PlanView() {
     setDay(date, next.length || entry.done ? { ...entry, dishes: next } : null)
   }
 
+  const clearDay = (date: string) => {
+    if (!confirm(t('plan.clearConfirm'))) return
+    const entry = state.plan[date]
+    setDay(date, entry.done ? { ...entry, dishes: [] } : null)
+  }
+
   /** Suggest dishes for the given (empty) days, avoiding repeats within the week. */
   const fill = (targets: string[]) => {
     const exclude = new Set(days.flatMap((d) => state.plan[d]?.dishes ?? []))
@@ -123,6 +129,16 @@ export function PlanView() {
                     </label>
                   )}
                 </div>
+                {dishIds.length > 0 && (
+                  <button
+                    className="icon-btn small day-clear"
+                    onClick={() => (dishIds.length === 1 ? removeDish(date, 0) : clearDay(date))}
+                    aria-label={t('plan.clear')}
+                    title={t('plan.clear')}
+                  >
+                    ✕
+                  </button>
+                )}
                 <button className={`icon-btn small day-more ${open ? 'on' : ''}`} onClick={() => setExpanded(open ? null : date)} aria-expanded={open} aria-label={t('plan.actions')} title={t('plan.actions')}>
                   ⋯
                 </button>
