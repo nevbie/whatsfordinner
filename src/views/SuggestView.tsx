@@ -65,7 +65,10 @@ export function SuggestView() {
   return (
     <div className="view compact">
       <header className="title-row">
-        <h1>{todayDone ? t('appTitleTomorrow') : t('appTitle')}</h1>
+        <h1 className="brand-title">
+          <img src={`${import.meta.env.BASE_URL}icon.svg`} alt="" width={30} height={30} />
+          {todayDone ? t('appTitleTomorrow') : t('appTitle')}
+        </h1>
         <span className="muted small">{formatDay(today, lang, { weekday: 'long', day: 'numeric', month: 'long' })}</span>
       </header>
 
