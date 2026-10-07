@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Sheet } from '../components/Sheet'
+import { Stars } from '../components/Stars'
 import { INGREDIENTS, ingredientName } from '../data/ingredients'
 import { STAPLES, staplesOf } from '../data/classify'
 import type { ComboType, Course, Cuisine, Dish, DishKind, Staple, Tag } from '../data/types'
@@ -34,7 +35,7 @@ function parseIngredients(text: string): string[] {
     .map((s) => lookup.get(s.toLowerCase()) ?? s)
 }
 
-export function DishForm({ id }: { id?: string }) {
+export function DishForm({ id, kind: initialKind }: { id?: string; kind?: DishKind }) {
   const { t, lang, pick } = useLang()
   const { dishById, saveDish } = useStore()
   const ui = useUI()
@@ -46,7 +47,7 @@ export function DishForm({ id }: { id?: string }) {
   const [de, setDe] = useState(existing?.name.de ?? '')
   const [en, setEn] = useState(existing?.name.en ?? '')
   const [cuisine, setCuisine] = useState<Cuisine>(existing?.cuisine ?? 'german')
-  const [kind, setKind] = useState<DishKind>(existing?.kind ?? 'dish')
+  const [kind, setKind] = useState<DishKind>(existing?.kind ?? initialKind ?? 'dish')
   const [course, setCourse] = useState<Course | ''>(existing?.course ?? '')
   const [tags, setTags] = useState<Tag[]>(existing?.tags ?? [])
   const [effort, setEffort] = useState<1 | 2 | 3>(existing?.effort ?? 2)
@@ -55,6 +56,8 @@ export function DishForm({ id }: { id?: string }) {
   const [note, setNote] = useState(existing?.note?.[lang] ?? '')
   const [url, setUrl] = useState(existing?.url ?? '')
   const [takeaway, setTakeaway] = useState(!!existing?.takeaway)
+  const [place, setPlace] = useState(existing?.place ?? '')
+  const [rating, setRating] = useState(existing?.rating ?? 0)
   const [error, setError] = useState('')
 
   const cuisineCourses = cuisine === 'chinese' ? CHINESE_COURSES : cuisine === 'indian' ? INDIAN_COURSES : []
@@ -80,7 +83,7 @@ export function DishForm({ id }: { id?: string }) {
       // the note is entered once; keep the other language's text if it existed
       note: note.trim() ? { de: lang === 'de' ? note.trim() : existing?.note?.de ?? note.trim(), en: lang === 'en' ? note.trim() : existing?.note?.en ?? note.trim() } : undefined,
       custom: true,
-      ...(kind === 'eatout' ? { url: url.trim() || undefined, takeaway } : {}),
+      ...(kind === 'eatout' ? { url: url.trim() || undefined, takeaway, place: place.trim() || undefined, rating: rating || undefined } : {}),
     }
     saveDish(dish)
     ui.close()
@@ -162,6 +165,14 @@ export function DishForm({ id }: { id?: string }) {
               {t('form.url')}
               <input type="url" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://…" />
             </label>
+            <label>
+              {t('form.place')}
+              <input value={place} onChange={(e) => setPlace(e.target.value)} placeholder={t('form.placeHint')} />
+            </label>
+            <div>
+              <div className="label">{t('dish.rating')}</div>
+              <Stars value={rating} onChange={setRating} />
+            </div>
             <label className="check">
               <input type="checkbox" checked={takeaway} onChange={(e) => setTakeaway(e.target.checked)} /> {t('dish.takeaway')}
             </label>

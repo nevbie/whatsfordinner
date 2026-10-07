@@ -10,7 +10,7 @@ const r = (id: string, name: string, extra: { takeaway?: boolean; url?: string; 
 
 export const restaurants: Dish[] = [
   // restaurants
-  r('r-fuenf', 'fuenf', { url: 'https://fuenf.de/' }),
+  r('r-fuenf', 'fünf', { url: 'https://fuenf.de/#currentcard' }),
   r('r-lemoni', 'Lemoni'),
   r('r-millestelle', 'Mille Stelle'),
   r('r-luvino', 'Luvino'),

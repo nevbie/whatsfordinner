@@ -7,7 +7,7 @@ import { addDays, todayISO, weekStart } from '../logic/dates'
 import { DEFAULT_FILTERS } from '../logic/filters'
 import { guestTotal, newParty } from '../logic/party'
 import { suggest } from '../logic/suggest'
-import { dayDishIds, EXTRA_MEALS, type Dish } from '../data/types'
+import { dayDishIds, EXTRA_MEALS, type DayEntry, type Dish } from '../data/types'
 import { useStore, type Meal } from '../store/StoreContext'
 import { useUI } from '../ui'
 
@@ -22,10 +22,10 @@ export function PlanView() {
 
   const mealIds = (date: string, meal: Meal) => (meal === 'dinner' ? state.plan[date]?.dishes : state.plan[date]?.meals?.[meal]) ?? []
 
-  const addDish = async (date: string, meal: Meal = 'dinner') => {
+  const addDish = async (date: string, meal: Meal = 'dinner', only?: (d: Dish) => boolean) => {
     // Kaffee & Kuchen: offer cakes, desserts and sweets first
-    const filter = meal === 'coffee' ? (d: Dish) => d.kind === 'bake' || d.tags.includes('sweet') : undefined
-    const id = await ui.pickDish(meal === 'dinner' ? t('plan.pickDish') : t(`meal.${meal}`), filter)
+    const filter = only ?? (meal === 'coffee' ? (d: Dish) => d.kind === 'bake' || d.tags.includes('sweet') : undefined)
+    const id = await ui.pickDish(only ? t('plan.eatout') : meal === 'dinner' ? t('plan.pickDish') : t(`meal.${meal}`), filter)
     if (!id) return
     const dish = dishById.get(id)
     if (dish?.kind === 'combo' && dish.combo) return ui.openCombo(dish.combo, undefined, date, meal)
@@ -45,6 +45,22 @@ export function PlanView() {
     setDay(date, entry.done ? { dishes: [], done: true } : null)
   }
 
+  const [customLabel, setCustomLabel] = useState('')
+  const toggleLabel = (date: string, label: string) => {
+    const entry: DayEntry = state.plan[date] ?? { dishes: [] }
+    const labels = entry.labels ?? []
+    const next = labels.includes(label) ? labels.filter((l) => l !== label) : [...labels, label]
+    const updated: DayEntry = { ...entry, labels: next }
+    if (!next.length) delete updated.labels
+    setDay(date, updated)
+  }
+  const labelText = (label: string) => {
+    if (label === 'out' || label === 'event') return t(`plan.label.${label}`)
+    if (label.startsWith('away:')) return `👤 ${t('plan.label.away', { name: state.labels.find((l) => l.id === label.slice(5))?.name ?? '?' })}`
+    return label
+  }
+  const presetLabels = ['out', 'event', ...state.labels.map((l) => `away:${l.id}`)]
+
   /** Suggest dishes for the given (empty) days, avoiding repeats within the week. */
   const fill = (targets: string[]) => {
     const exclude = new Set(days.flatMap((d) => state.plan[d]?.dishes ?? []))
@@ -57,7 +73,8 @@ export function PlanView() {
     })
   }
 
-  const emptyFuture = days.filter((d) => d >= today && !state.plan[d]?.dishes.length)
+  // days where everyone is out don't need a dinner
+  const emptyFuture = days.filter((d) => d >= today && !state.plan[d]?.dishes.length && !state.plan[d]?.labels?.includes('out'))
   const partiesOn = (date: string) => Object.values(state.parties).filter((p) => p.date === date)
   const createParty = (date: string) => {
     const party = newParty(date, state.settings, lang)
@@ -90,13 +107,22 @@ export function PlanView() {
           const allIds = dayDishIds(entry)
           const extraMeals = EXTRA_MEALS.filter((m) => entry?.meals?.[m]?.length)
           return (
-            <li key={date} className={`day ${isToday ? 'today' : ''} ${past ? 'past' : ''}`}>
+            <li key={date} className={`day ${isToday ? 'today' : ''} ${past ? 'past' : ''} ${entry?.labels?.includes('out') ? 'out' : ''}`}>
               <div className="day-row">
                 <div className="day-when">
                   <span className="day-name">{formatDay(date, lang, { weekday: 'short' })}</span>
                   <span className="day-date">{formatDay(date, lang, { day: 'numeric', month: 'numeric' })}</span>
                 </div>
                 <div className="day-main">
+                  {!!entry?.labels?.length && (
+                    <span className="day-labels">
+                      {entry.labels.map((l) => (
+                        <span key={l} className="day-label">
+                          {labelText(l)}
+                        </span>
+                      ))}
+                    </span>
+                  )}
                   {extraMeals.map((m) => (
                     <span key={m} className="day-meal">
                       <span className="meal-tag">{t(`meal.short.${m}`)}</span>
@@ -129,7 +155,7 @@ export function PlanView() {
                       <span className="muted small"> · {t('party.guestsCount', { n: guestTotal(p) })}</span>
                     </button>
                   ))}
-                  {!allIds.length && !partiesOn(date).length && (
+                  {!allIds.length && !partiesOn(date).length && !entry?.labels?.includes('out') && (
                     <span className="day-empty">
                       <button className="link-btn" onClick={() => addDish(date)}>
                         ＋ {t('plan.add')}
@@ -178,6 +204,9 @@ export function PlanView() {
                       ＋ {t(`meal.${m}`)}
                     </button>
                   ))}
+                  <button className="chip" onClick={() => addDish(date, 'dinner', (d) => d.kind === 'eatout')}>
+                    {t('plan.eatout')}
+                  </button>
                   {(['chinese', 'indian', 'tapas', 'abendbrot', 'salad'] as const).map((c) => (
                     <button key={c} className="chip" onClick={() => ui.openCombo(c, undefined, date)} aria-label={t(`combo.${c}`)} title={t(`combo.${c}`)}>
                       {comboIcon(c)}
@@ -186,6 +215,25 @@ export function PlanView() {
                   <button className="chip" onClick={() => createParty(date)} aria-label={t('party.new')} title={t('party.new')}>
                     🎉
                   </button>
+                  <div className="label day-action-head">{t('plan.labels')}</div>
+                  {[...presetLabels, ...(entry?.labels ?? []).filter((l) => !presetLabels.includes(l))].map((l) => (
+                    <button key={l} className={`chip ${entry?.labels?.includes(l) ? 'on' : ''}`} aria-pressed={!!entry?.labels?.includes(l)} onClick={() => toggleLabel(date, l)}>
+                      {labelText(l)}
+                    </button>
+                  ))}
+                  <form
+                    className="row gap-sm label-input"
+                    onSubmit={(e) => {
+                      e.preventDefault()
+                      if (customLabel.trim()) toggleLabel(date, customLabel.trim())
+                      setCustomLabel('')
+                    }}
+                  >
+                    <input value={customLabel} onChange={(e) => setCustomLabel(e.target.value)} placeholder={t('plan.labelCustom')} />
+                    <button className="chip" type="submit" disabled={!customLabel.trim()}>
+                      ＋
+                    </button>
+                  </form>
                 </div>
               )}
             </li>

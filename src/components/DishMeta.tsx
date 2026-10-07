@@ -3,6 +3,7 @@ import { CUISINE_LABELS, useLang } from '../i18n'
 import { daysBetween } from '../logic/dates'
 import { useStore } from '../store/StoreContext'
 import { formatDay } from './format'
+import { Stars } from './Stars'
 import { useDishStats } from './useDishStats'
 
 export function FavButton({ dish }: { dish: Dish }) {
@@ -30,7 +31,10 @@ export function DishMeta({ dish, showLast = true, compact = false }: { dish: Dis
   const { t, pick, lang } = useLang()
   const { last, next, today } = useDishStats()
   const parts: string[] = []
-  if (dish.kind === 'eatout') parts.push(t(dish.takeaway ? 'dish.takeaway' : 'dish.restaurantOnly'))
+  if (dish.kind === 'eatout') {
+    parts.push(t(dish.takeaway ? 'dish.takeaway' : 'dish.restaurantOnly'))
+    if (dish.place) parts.push(dish.place)
+  }
   else {
     parts.push(pick(CUISINE_LABELS[dish.cuisine]))
     if (dish.kind !== 'combo') parts.push(t(`dish.effort${dish.effort}`))
@@ -42,12 +46,13 @@ export function DishMeta({ dish, showLast = true, compact = false }: { dish: Dis
     else if (lastDate) {
       const n = daysBetween(lastDate, today)
       parts.push(n === 0 ? t('dish.lastEatenToday') : t('dish.lastEaten', { n }))
-    } else if (dish.kind !== 'combo' && !compact) parts.push(t('dish.neverEaten'))
+    } else if (dish.kind !== 'combo' && dish.kind !== 'eatout' && !compact) parts.push(t('dish.neverEaten'))
   }
   return (
     <span className="meta">
       {parts.join(' · ')}
       {dish.tags.includes('vegan') ? ' · 🌱' : dish.tags.includes('veggie') ? ' · 🥕' : ''}
+      {dish.rating ? <> · <Stars value={dish.rating} /></> : null}
       {dish.tags.includes('spicy') ? ' · 🌶' : ''}
     </span>
   )

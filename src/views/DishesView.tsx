@@ -29,11 +29,12 @@ export function sortByName(a: Dish, b: Dish, lang: Lang) {
   return (a.name[lang] || a.name.orig).localeCompare(b.name[lang] || b.name.orig, lang)
 }
 
-type Area = 'all' | 'food' | 'side' | 'party' | 'bake' | 'drink'
-const AREAS: Area[] = ['all', 'food', 'side', 'party', 'bake', 'drink']
+type Area = 'all' | 'food' | 'side' | 'party' | 'bake' | 'drink' | 'eatout'
+const AREAS: Area[] = ['all', 'food', 'eatout', 'side', 'party', 'bake', 'drink']
 
 /** Which section of the list a dish belongs to. */
 export function areaOf(d: Dish): Exclude<Area, 'all'> {
+  if (d.kind === 'eatout') return 'eatout'
   if (d.course === 'drink' || d.party?.includes('drink')) return 'drink'
   if (d.kind === 'bake') return 'bake'
   if (d.kind === 'party') return 'party'
@@ -72,8 +73,9 @@ export function DishesView() {
     const out = dishes.filter((d) => {
       if (area !== 'all' && areaOf(d) !== area) return false
       // restaurants only with the "eating out" chip (or when searching for them)
+      // restaurants are labelled and listed like everything else (favourites filters still apply)
       if (d.kind === 'eatout') {
-        if (!filters.eatOut && !query) return false
+        if (filters.favoritesOnly && !favs.has(d.id)) return false
       } else if (!matchesFilters(d, filters, favs, state.labelFavorites)) return false
       return !query || matchesQuery(d, query)
     })
@@ -130,6 +132,11 @@ export function DishesView() {
           </button>
         )}
       </p>
+      {area === 'eatout' && (
+        <button className="btn wide" onClick={() => ui.openForm(undefined, 'eatout')}>
+          {t('dish.newRestaurant')}
+        </button>
+      )}
       <ul className="list">
         {list.map((d) => (
           <DishRow key={d.id} d={d} />

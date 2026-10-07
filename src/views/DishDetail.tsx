@@ -1,5 +1,9 @@
+import { useState } from 'react'
 import { comboIcon, DishMeta, FavButton } from '../components/DishMeta'
 import { DishName } from '../components/DishName'
+import { formatDay } from '../components/format'
+import { Stars } from '../components/Stars'
+import { dayDishIds } from '../data/types'
 import { Sheet } from '../components/Sheet'
 import { useDishStats } from '../components/useDishStats'
 import { regionOf, staplesOf } from '../data/classify'
@@ -16,14 +20,20 @@ const isBuiltin = (id: string) => builtinIds.has(id)
 
 export function DishDetail({ id }: { id: string }) {
   const { t, lang, pick } = useLang()
-  const { dishById, dishes, setMeal, deleteDish, state, toggleFavorite, toggleLabelFavorite } = useStore()
+  const { dishById, dishes, setMeal, saveDish, deleteDish, state, toggleFavorite, toggleLabelFavorite } = useStore()
   const ui = useUI()
   const { counts } = useDishStats()
+  const [visitDate, setVisitDate] = useState(todayISO())
   const dish = dishById.get(id)
   if (!dish) return null
   const combo = comboTypeOf(dish)
   const r = dish.recipe
   const times = counts.get(dish.id) ?? 0
+  const visits = Object.entries(state.plan)
+    .filter(([date, e]) => date <= todayISO() && dayDishIds(e).includes(dish.id))
+    .map(([date]) => date)
+    .sort()
+    .reverse()
 
   const planFor = async () => {
     const date = await ui.pickDay()
@@ -95,7 +105,7 @@ export function DishDetail({ id }: { id: string }) {
         {dish.kind !== 'combo' && dish.kind !== 'bake' && (
           <>
             <button className="btn primary" onClick={() => setMeal(todayISO(), 'dinner', [dish.id])}>
-              {t('suggest.takeToday')}
+              {dish.kind === 'eatout' ? t(dish.takeaway ? 'dish.orderToday' : 'dish.goToday') : t('suggest.takeToday')}
             </button>
             <button className="btn" onClick={planFor}>
               {t('dish.planFor')}
@@ -116,6 +126,25 @@ export function DishDetail({ id }: { id: string }) {
 
       {dish.note && <p>{dish.note[lang]}</p>}
 
+      {dish.kind === 'eatout' && (
+        <section className="visit-box">
+          <div className="row between wrap gap-sm">
+            <span className="label">{t('dish.rating')}</span>
+            <Stars value={dish.rating ?? 0} onChange={(rating) => saveDish({ ...dish, rating: rating || undefined, custom: true })} />
+          </div>
+          <div className="row gap-sm wrap">
+            <input type="date" value={visitDate} max={todayISO()} onChange={(e) => setVisitDate(e.target.value)} aria-label={t('dish.addVisit')} />
+            <button className="btn sm" disabled={!visitDate} onClick={() => setMeal(visitDate, 'dinner', [...(state.plan[visitDate]?.dishes ?? []).filter((x) => x !== dish.id), dish.id])}>
+              ＋ {t('dish.addVisit')}
+            </button>
+          </div>
+          {visits.length > 0 && (
+            <p className="muted small">
+              {t('dish.visits')}: {visits.map((v) => formatDay(v, lang, { day: 'numeric', month: 'short', year: 'numeric' })).join(' · ')}
+            </p>
+          )}
+        </section>
+      )}
       {dish.kind === 'eatout' && (
         <div className="actions">
           {dish.url && (

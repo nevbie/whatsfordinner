@@ -18,7 +18,7 @@ export interface Backend {
 
 /** A day entry is kept when it has dishes or is marked as done. */
 export function keepEntry(entry: DayEntry | null): entry is DayEntry {
-  return !!entry && (dayDishIds(entry).length > 0 || !!entry.done)
+  return !!entry && (dayDishIds(entry).length > 0 || !!entry.done || !!entry.labels?.length)
 }
 
 /** Fill in missing fields of state coming from storage. */

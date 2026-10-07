@@ -175,6 +175,10 @@ export interface Dish {
   takeaway?: boolean
   /** eatout: website with the current menu */
   url?: string
+  /** eatout: town / where it is (e.g. on holiday) */
+  place?: string
+  /** family rating 1–5 */
+  rating?: number
 }
 
 /** Meals besides dinner that can be planned for a day. */
@@ -185,6 +189,8 @@ export const EXTRA_MEALS: ExtraMeal[] = ['breakfast', 'lunch', 'coffee']
 export interface DayEntry {
   dishes: string[]
   meals?: Partial<Record<ExtraMeal, string[]>>
+  /** day markers: 'out' (all out), 'event', 'away:<labelId>' or free text */
+  labels?: string[]
   note?: string
   /** dinner of that day is over – the app moves on to planning the next day */
   done?: boolean

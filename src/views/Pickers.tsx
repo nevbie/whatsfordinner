@@ -24,8 +24,8 @@ export function DishPicker({ title, filter }: { title: string; filter?: (d: Dish
   }, [dishes, filter, query, lang, state.favorites])
 
   return (
-    <Sheet title={title} onClose={() => ui.finish(null)}>
-      <input className="search" type="search" autoFocus placeholder={t('dishes.search')} value={query} onChange={(e) => setQuery(e.target.value)} />
+    <Sheet tall title={title} onClose={() => ui.finish(null)}>
+      <input className="search sticky-search" type="search" autoFocus placeholder={t('dishes.search')} value={query} onChange={(e) => setQuery(e.target.value)} />
       <ul className="list">
         {list.map((d) => (
           <li key={d.id} className="list-row" onClick={() => ui.finish(d.id)}>

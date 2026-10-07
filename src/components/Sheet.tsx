@@ -2,7 +2,7 @@ import { useEffect, type ReactNode } from 'react'
 import { useLang } from '../i18n'
 
 /** Full-height bottom sheet used for every overlay. */
-export function Sheet({ title, onClose, children, footer }: { title?: ReactNode; onClose(): void; children: ReactNode; footer?: ReactNode }) {
+export function Sheet({ title, onClose, children, footer, tall }: { title?: ReactNode; onClose(): void; children: ReactNode; footer?: ReactNode; tall?: boolean }) {
   const { t } = useLang()
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
@@ -11,7 +11,7 @@ export function Sheet({ title, onClose, children, footer }: { title?: ReactNode;
   }, [onClose])
   return (
     <div className="sheet-backdrop" onClick={onClose}>
-      <div className="sheet" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+      <div className={`sheet ${tall ? 'tall' : ''}`} role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
         <div className="sheet-head">
           <div className="sheet-title">{title}</div>
           <button className="icon-btn" onClick={onClose} aria-label={t('close')}>

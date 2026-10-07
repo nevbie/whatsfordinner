@@ -87,7 +87,7 @@ export function App() {
           case 'combo':
             return <ComboBuilder key={i} combo={o.combo} seedId={o.seedId} date={o.date} meal={o.meal} />
           case 'form':
-            return <DishForm key={i} id={o.id} />
+            return <DishForm key={i} id={o.id} kind={o.kind} />
           case 'party':
             return <PartyView key={i} id={o.id} />
           case 'pickDish':
