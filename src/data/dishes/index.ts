@@ -4,6 +4,7 @@ import { CAKE_RECIPES, cakeDishes } from './bakeCakes'
 import { MORE_BAKE_RECIPES, moreBakeDishes } from './bakeMore'
 import { chineseDishes } from './chinese'
 import { IMPORT1_RECIPES, import1Dishes } from './import1'
+import { import2Dishes } from './import2'
 import { KIDS_FAVOURITES } from './kids'
 import { familyDishes } from './family'
 import { indianDishes } from './indian'
@@ -30,6 +31,7 @@ const all: Dish[] = [
   ...cakeDishes,
   ...moreBakeDishes,
   ...import1Dishes,
+  ...import2Dishes,
   ...restaurants,
 ]
 

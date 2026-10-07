@@ -49,7 +49,7 @@ export function FilterBar({ filters, onChange, showEatOut = true }: { filters: F
   )
   return (
     <div className="filters">
-      <div className="segmented" role="group">
+      <div className="segmented small" role="group">
         {(['any', 'veggie', 'vegan'] as const).map((d) => (
           <button key={d} className={filters.diet === d ? 'on' : ''} aria-pressed={filters.diet === d} onClick={() => onChange({ ...filters, diet: d })}>
             {t(`filter.diet.${d}`)}
@@ -58,10 +58,12 @@ export function FilterBar({ filters, onChange, showEatOut = true }: { filters: F
       </div>
       <div className="filter-group">
         <div className="filter-label">{t('filter.cuisine')}</div>
-        <div className="chips" role="group" aria-label={t('filter.region')}>
-          {REGIONS.map((r) => chip(filters.regions.includes(r), t(`region.${r}`), () => onChange({ ...filters, regions: toggleIn(filters.regions, r) }), 'region-chip'))}
-        </div>
-        <div className="chips" role="group" aria-label={t('filter.cuisine')}>
+        <div className="chips scroll-row" role="group" aria-label={t('filter.cuisine')}>
+          {REGIONS.map((r) => (
+            <span key={r} style={{ display: 'contents' }}>
+              {chip(filters.regions.includes(r), t(`region.${r}`), () => onChange({ ...filters, regions: toggleIn(filters.regions, r) }), 'region-chip')}
+            </span>
+          ))}
           {CUISINE_GROUPS.map((c) => (
             <span key={c} style={{ display: 'contents' }}>
               {chip(filters.cuisines.includes(c), t(`cg.${c}`), () => onChange({ ...filters, cuisines: toggleIn(filters.cuisines, c) }))}
@@ -71,7 +73,7 @@ export function FilterBar({ filters, onChange, showEatOut = true }: { filters: F
       </div>
       <div className="filter-group">
         <div className="filter-label">{t('filter.staple')}</div>
-        <div className="chips" role="group" aria-label={t('filter.staple')}>
+        <div className="chips scroll-row" role="group" aria-label={t('filter.staple')}>
           {STAPLES.map((st) => (
             <span key={st} style={{ display: 'contents' }}>
               {chip(filters.staples.includes(st), `${STAPLE_ICONS[st]} ${t(`staple.${st}`)}`, () => onChange({ ...filters, staples: toggleIn(filters.staples, st) }))}
@@ -81,7 +83,7 @@ export function FilterBar({ filters, onChange, showEatOut = true }: { filters: F
       </div>
       <div className="filter-group">
         <div className="filter-label">{t('filter.props')}</div>
-        <div className="chips">
+        <div className="chips scroll-row">
           {chip(filters.kids, `🧒 ${t('filter.kids')}`, () => toggle('kids'))}
           {chip(filters.noSpicy, t('filter.noSpicy'), () => toggle('noSpicy'))}
           {effortChip(1, `⏱ ${t('filter.quick')}`)}
@@ -91,7 +93,7 @@ export function FilterBar({ filters, onChange, showEatOut = true }: { filters: F
       </div>
       <div className="filter-group">
         <div className="filter-label">{t('filter.loved')}</div>
-        <div className="chips">
+        <div className="chips scroll-row">
           {chip(filters.favoritesOnly, `♥ ${t('filter.favorites')}`, () => toggle('favoritesOnly'))}
           {state.labels.map((l) => (
             <span key={l.id} style={{ display: 'contents' }}>

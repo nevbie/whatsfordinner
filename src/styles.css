@@ -1045,3 +1045,24 @@ select.who {
 .day-dish { flex: 0 1 auto; }
 .day-clear { flex: none; color: var(--muted); }
 .quick-row .btn.quick { font-size: 0.68rem; letter-spacing: -0.01em; padding: 6px 1px; }
+
+/* compact filters: each group is one horizontally scrolling row */
+.chips.scroll-row {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin: 0 -14px;
+  padding: 0 14px 2px;
+}
+.chips.scroll-row::-webkit-scrollbar { display: none; }
+.chips.scroll-row .chip { flex: none; white-space: nowrap; }
+.filter-panel { padding: 10px 14px; gap: 8px; }
+.filter-panel .filters { gap: 8px; }
+.filter-panel .filter-group { gap: 3px; }
+.filter-panel .filter-label { font-size: 0.66rem; }
+.filter-panel .chip { padding: 0.2rem 0.6rem; font-size: 0.8rem; }
+.region-chip { border-style: dashed; }
+.area-row { margin-top: 2px; margin-bottom: 6px; }
+.view > .area-row { margin-left: -16px; margin-right: -16px; padding-left: 16px; padding-right: 16px; }
+.filter-panel { overflow: hidden; }
+.filter-panel .segmented { justify-self: start; width: auto; }

@@ -51,12 +51,12 @@ export const import1Dishes: Dish[] = [
       serves: ['1 Kastenform (30 cm)', '1 loaf tin (30 cm)'],
       time: ['ca. 1 Std. 45 Min.', 'about 1 h 45 min'],
       ing: [
-        ['gut 300 g (320 g) Dinkelvollkornmehl', '50 g Weizenvollkornmehl', '50 g Weizenmehl', '50 g Haferflocken', '50–100 g Körner (Leinsamen, geschroteter Sesam …)', '1 TL Zucker', '1–2 TL Salz', '1 Pck. Trockenhefe', '350 ml lauwarmes Wasser (evtl. teils Joghurt)'],
-        ['a good 300 g (320 g) wholemeal spelt flour', '50 g wholemeal wheat flour', '50 g plain wheat flour', '50 g rolled oats', '50–100 g seeds (linseed, crushed sesame …)', '1 tsp sugar', '1–2 tsp salt', '1 sachet dried yeast', '350 ml lukewarm water (part yoghurt if you like)'],
+        ['gut 300 g (320 g) Dinkelvollkornmehl', '50 g Weizenvollkornmehl', '50 g Weizenmehl', '50 g Haferflocken', '100 g Körner (z. B. 50 g geschroteter Leinsamen, Sesam, Kürbiskerne, Mohn, Walnüsse, Sonnenblumenkerne, Hirse …)', '1 TL Zucker', '1–2 TL Salz', '1 Pck. Trockenhefe', '350 ml lauwarmes Wasser (evtl. teils Joghurt)'],
+        ['a good 300 g (320 g) wholemeal spelt flour', '50 g wholemeal wheat flour', '50 g plain wheat flour', '50 g rolled oats', '100 g seeds (e.g. 50 g crushed linseed, sesame, pumpkin seeds, poppy seeds, walnuts, sunflower seeds, millet …)', '1 tsp sugar', '1–2 tsp salt', '1 sachet dried yeast', '350 ml lukewarm water (part yoghurt if you like)'],
       ],
       steps: [
-        ['Alle trockenen Zutaten mischen, das lauwarme Wasser dazugeben und zu einem weichen Teig verrühren.', 'Kastenform fetten, Teig einfüllen und gehen lassen.', 'Eine Schale Wasser mit in den Ofen stellen und das Brot bei 190 °C Ober-/Unterhitze 60 Min. backen.'],
-        ['Mix all dry ingredients, add the lukewarm water and stir into a soft dough.', 'Grease the loaf tin, fill in the dough and leave to rise.', 'Put a dish of water in the oven and bake at 190 °C conventional for 60 min.'],
+        ['Alle trockenen Zutaten mischen, das lauwarme Wasser dazugeben und zu einem weichen Teig verrühren.', 'Kastenform (30 cm) fetten, Teig einfüllen und ca. 60 Min. gehen lassen.', 'Eine Schale Wasser mit in den Ofen stellen, das Brot in den kalten Ofen schieben und bei 190 °C Ober-/Unterhitze 60 Min. backen.'],
+        ['Mix all dry ingredients, add the lukewarm water and stir into a soft dough.', 'Grease the 30 cm loaf tin, fill in the dough and leave to rise for about 60 min.', 'Put a dish of water in the oven, place the bread in the cold oven and bake at 190 °C conventional for 60 min.'],
       ],
       family: true,
     }),
