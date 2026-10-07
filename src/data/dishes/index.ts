@@ -3,6 +3,7 @@ import { abendbrotDishes } from './abendbrot'
 import { CAKE_RECIPES, cakeDishes } from './bakeCakes'
 import { MORE_BAKE_RECIPES, moreBakeDishes } from './bakeMore'
 import { chineseDishes } from './chinese'
+import { IMPORT1_RECIPES, import1Dishes } from './import1'
 import { KIDS_FAVOURITES } from './kids'
 import { familyDishes } from './family'
 import { indianDishes } from './indian'
@@ -28,11 +29,12 @@ const all: Dish[] = [
   ...fingerFoodExtras,
   ...cakeDishes,
   ...moreBakeDishes,
+  ...import1Dishes,
   ...restaurants,
 ]
 
 /** Recipes from the family's photos for dishes that already existed. */
-const RECIPES: Record<string, Recipe> = { ...CAKE_RECIPES, ...MORE_BAKE_RECIPES, ...NOTEBOOK_RECIPES }
+const RECIPES: Record<string, Recipe> = { ...CAKE_RECIPES, ...MORE_BAKE_RECIPES, ...NOTEBOOK_RECIPES, ...IMPORT1_RECIPES, 'pl-kartoffelgratin': IMPORT1_RECIPES.kartoffelgratin }
 
 /** Teller mains: served with a starchy side and a vegetable; pairs = preferred sides. */
 const PLATE_MAINS: Record<string, string> = {

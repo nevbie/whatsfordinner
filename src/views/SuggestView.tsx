@@ -188,6 +188,10 @@ export function SuggestView() {
           <span className="quick-icon" aria-hidden>🥨</span>
           <span>{t('combo.abendbrot')}</span>
         </button>
+        <button className="btn quick" onClick={() => ui.openCombo('salad', undefined, target)} title={t('combo.salad')}>
+          <span className="quick-icon" aria-hidden>🥗</span>
+          <span>{t('combo.saladShort')}</span>
+        </button>
         <button className="btn quick" onClick={() => (location.hash = '#/party')} title={t('suggest.hosting')}>
           <span className="quick-icon" aria-hidden>🎉</span>
           <span>{t('nav.party')}</span>

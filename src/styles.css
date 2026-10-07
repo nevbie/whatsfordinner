@@ -976,7 +976,7 @@ select.who {
 }
 .quick-row {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 6px;
   margin-top: 10px;
 }
@@ -1044,3 +1044,4 @@ select.who {
 .plan-view .day, .day-row { min-width: 0; }
 .day-dish { flex: 0 1 auto; }
 .day-clear { flex: none; color: var(--muted); }
+.quick-row .btn.quick { font-size: 0.68rem; letter-spacing: -0.01em; padding: 6px 1px; }
