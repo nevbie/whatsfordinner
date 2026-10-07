@@ -11,6 +11,8 @@ export interface Filters {
   noSpicy: boolean
   maxEffort: 1 | 2 | 3
   favoritesOnly: boolean
+  /** favourites of these labels (people / groups); empty = no restriction */
+  favLabels: string[]
   /** only sweet dishes (Grießbrei, Arme Ritter, Kaiserschmarrn …) */
   sweetOnly: boolean
   eatOut: boolean
@@ -27,6 +29,7 @@ export const DEFAULT_FILTERS: Filters = {
   noSpicy: false,
   maxEffort: 3,
   favoritesOnly: false,
+  favLabels: [],
   sweetOnly: false,
   eatOut: false,
   cuisine: 'any',
@@ -40,6 +43,7 @@ export function normalizeFilters(raw: Partial<Filters> | null | undefined): Filt
   if (!CUISINE_GROUPS.includes(f.cuisine)) f.cuisine = 'any'
   if (!Array.isArray(f.regions)) f.regions = []
   if (!Array.isArray(f.staples)) f.staples = []
+  if (!Array.isArray(f.favLabels)) f.favLabels = []
   return f
 }
 
@@ -68,9 +72,16 @@ export function matchesDiet(dish: Dish, f: Pick<Filters, 'diet' | 'kids' | 'noSp
   return true
 }
 
-export function matchesFilters(dish: Dish, f: Filters, favorites: ReadonlySet<string>): boolean {
-  if (dish.kind === 'eatout') return f.eatOut && (!f.favoritesOnly || favorites.has(dish.id))
+/** Is the dish a favourite of at least one of the given labels? */
+export function isLabelFavorite(dishId: string, labelIds: string[], labelFavorites: Record<string, string[]>): boolean {
+  return labelIds.some((l) => labelFavorites[l]?.includes(dishId))
+}
+
+export function matchesFilters(dish: Dish, f: Filters, favorites: ReadonlySet<string>, labelFavorites: Record<string, string[]> = {}): boolean {
+  const favLabelsOk = !f.favLabels.length || isLabelFavorite(dish.id, f.favLabels, labelFavorites)
+  if (dish.kind === 'eatout') return f.eatOut && (!f.favoritesOnly || favorites.has(dish.id)) && favLabelsOk
   if (f.favoritesOnly && !favorites.has(dish.id)) return false
+  if (!favLabelsOk) return false
   if (f.sweetOnly && dish.kind === 'combo') return false
   if (f.regions.length) {
     const region = regionOf(dish)
@@ -93,6 +104,7 @@ export function activeFilterCount(f: Filters): number {
     Number(f.maxEffort < 3) +
     Number(f.favoritesOnly) +
     Number(f.sweetOnly) +
+    f.favLabels.length +
     Number(f.eatOut)
   )
 }

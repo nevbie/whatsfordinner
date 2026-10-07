@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { DishMeta, FavButton } from '../components/DishMeta'
 import { DishName } from '../components/DishName'
+import { FanTags } from '../components/FanTags'
 import { FilterBar, usePersistentFilters } from '../components/FilterBar'
 import { useDishStats } from '../components/useDishStats'
 import type { Dish, Lang } from '../data/types'
@@ -47,13 +48,13 @@ export function DishesView() {
       // restaurants only with the "eating out" chip (or when searching for them)
       if (d.kind === 'eatout') {
         if (!filters.eatOut && !query) return false
-      } else if (!matchesFilters(d, filters, favs)) return false
+      } else if (!matchesFilters(d, filters, favs, state.labelFavorites)) return false
       return !query || matchesQuery(d, query)
     })
     if (sort === 'recent') out.sort((a, b) => (last.get(a.id) ?? '').localeCompare(last.get(b.id) ?? '') || sortByName(a, b, lang))
     else out.sort((a, b) => sortByName(a, b, lang))
     return out
-  }, [dishes, state.favorites, filters, query, showSides, sort, last, lang])
+  }, [dishes, state.favorites, state.labelFavorites, filters, query, showSides, sort, last, lang])
 
   return (
     <div className="view">
@@ -118,6 +119,7 @@ export function DishesView() {
             <div className="grow">
               <DishName dish={d} size="sm" />
               <DishMeta dish={d} />
+              <FanTags dish={d} />
             </div>
             {d.kind !== 'combo' && <FavButton dish={d} />}
           </li>

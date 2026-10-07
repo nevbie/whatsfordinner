@@ -105,6 +105,15 @@ export function firebaseBackend(code: string): Backend {
     async deleteParty(id) {
       await updateDoc(await ref(), new FieldPath('parties', id), deleteField())
     },
+    async saveLabels(labels) {
+      await updateDoc(await ref(), { labels })
+    },
+    async deleteLabel(id, remaining) {
+      await updateDoc(await ref(), 'labels', remaining, new FieldPath('labelFavorites', id), deleteField())
+    },
+    async setLabelFavorite(labelId, dishId, on) {
+      await updateDoc(await ref(), new FieldPath('labelFavorites', labelId), on ? arrayUnion(dishId) : arrayRemove(dishId))
+    },
     async updateSettings(patch) {
       const r = await ref()
       const args = Object.entries(patch).flatMap(([k, v]) => [new FieldPath('settings', k), v])

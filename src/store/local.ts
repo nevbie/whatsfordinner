@@ -64,6 +64,19 @@ export function localBackend(): Backend {
       }),
     updateSettings: (patch) => update((s) => ({ ...s, settings: { ...s.settings, ...patch } })),
     saveParty: (party) => update((s) => ({ ...s, parties: { ...s.parties, [party.id]: party } })),
+    saveLabels: (labels) => update((s) => ({ ...s, labels })),
+    deleteLabel: (id, remaining) =>
+      update((s) => {
+        const labelFavorites = { ...s.labelFavorites }
+        delete labelFavorites[id]
+        return { ...s, labels: remaining, labelFavorites }
+      }),
+    setLabelFavorite: (labelId, dishId, on) =>
+      update((s) => {
+        const cur = s.labelFavorites[labelId] ?? []
+        const next = on ? [...new Set([...cur, dishId])] : cur.filter((x) => x !== dishId)
+        return { ...s, labelFavorites: { ...s.labelFavorites, [labelId]: next } }
+      }),
     deleteParty: (id) =>
       update((s) => {
         const parties = { ...s.parties }

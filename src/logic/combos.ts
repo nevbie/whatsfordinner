@@ -141,9 +141,10 @@ export function slotCandidates(slot: ComboSlot, pool: Dish[], o: ComboOptions): 
 export function pickForSlot(slot: ComboSlot, chosen: Dish[], pool: Dish[], ctx: PickContext, rng: Rng): Dish | undefined {
   const o = ctx.options
   const taken = new Set(chosen.map((d) => d.id))
+  const groups = new Set(chosen.map((d) => d.group).filter(Boolean))
   const mains = new Set(chosen.map(mainIngredient).filter(Boolean))
   const spicyCount = chosen.filter((d) => d.tags.includes('spicy')).length
-  const base = slotCandidates(slot, pool, o).filter((d) => !taken.has(d.id))
+  const base = slotCandidates(slot, pool, o).filter((d) => !taken.has(d.id) && !(d.group && groups.has(d.group)))
 
   const distinctMain = (d: Dish) => {
     const m = mainIngredient(d)

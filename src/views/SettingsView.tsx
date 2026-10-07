@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Stepper } from '../components/Stepper'
+import { TextField } from '../components/TextField'
 import { useLang } from '../i18n'
 import { useStore } from '../store/StoreContext'
 import { useUI } from '../ui'
@@ -12,6 +13,12 @@ export function SettingsView() {
   const [code, setCode] = useState('')
   const [busy, setBusy] = useState(false)
   const [msg, setMsg] = useState<string | null>(null)
+  const [labelName, setLabelName] = useState('')
+  const addLabel = () => {
+    if (!labelName.trim()) return
+    store.addLabel(labelName.trim())
+    setLabelName('')
+  }
 
   const shareLink = familyCode ? `${location.origin}${location.pathname}?join=${familyCode}` : ''
 
@@ -58,6 +65,32 @@ export function SettingsView() {
         <Stepper label={t('combo.kids')} value={state.settings.kids} min={0} max={8} onChange={(kids) => updateSettings({ kids })} />
         <p className="small muted">{t('settings.avoidDays')}</p>
         <Stepper label="" value={state.settings.avoidDays} min={0} max={60} onChange={(avoidDays) => updateSettings({ avoidDays })} />
+      </section>
+
+      <section className="card">
+        <h2>{t('labels.title')}</h2>
+        <p className="small muted">{t('labels.hint')}</p>
+        <ul className="plain label-list">
+          {store.state.labels.map((l) => (
+            <li key={l.id} className="row gap">
+              <span className={`fan-tag lbl-${l.color % 8}`}>★</span>
+              <TextField className="grow" value={l.name} onCommit={(name) => name.trim() && store.renameLabel(l.id, name.trim())} aria-label={t('party.guestName')} />
+              <button
+                className="icon-btn small"
+                onClick={() => confirm(t('labels.deleteConfirm', { name: l.name })) && store.deleteLabel(l.id)}
+                aria-label={t('combo.remove')}
+              >
+                ✕
+              </button>
+            </li>
+          ))}
+        </ul>
+        <div className="row gap">
+          <input className="grow" placeholder={t('labels.placeholder')} value={labelName} onChange={(e) => setLabelName(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && addLabel()} />
+          <button className="btn" onClick={addLabel} disabled={!labelName.trim()}>
+            {t('party.add')}
+          </button>
+        </div>
       </section>
 
       <section className="card">

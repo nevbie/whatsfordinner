@@ -16,7 +16,7 @@ const isBuiltin = (id: string) => builtinIds.has(id)
 
 export function DishDetail({ id }: { id: string }) {
   const { t, lang, pick } = useLang()
-  const { dishById, setDay, deleteDish, state } = useStore()
+  const { dishById, dishes, setDay, deleteDish, state, toggleFavorite, toggleLabelFavorite } = useStore()
   const ui = useUI()
   const { counts } = useDishStats()
   const dish = dishById.get(id)
@@ -52,6 +52,41 @@ export function DishDetail({ id }: { id: string }) {
         {state.customDishes[dish.id] && <span className="chip">{t(isBuiltin(dish.id) ? 'dish.edited' : 'dish.custom')}</span>}
         {times > 0 && <span className="chip">{t('dish.timesEaten', { n: times })}</span>}
       </div>
+
+      {dish.kind !== 'combo' && (
+        <section className="loved-by">
+          <div className="label">{t('dish.lovedBy')}</div>
+          <div className="chips">
+            <button className={`chip ${state.favorites.includes(dish.id) ? 'on' : ''}`} aria-pressed={state.favorites.includes(dish.id)} onClick={() => toggleFavorite(dish.id)}>
+              ♥ {t('dish.family')}
+            </button>
+            {state.labels.map((l) => {
+              const on = (state.labelFavorites[l.id] ?? []).includes(dish.id)
+              return (
+                <button key={l.id} className={`chip lbl-chip lbl-${l.color % 8} ${on ? 'on' : ''}`} aria-pressed={on} onClick={() => toggleLabelFavorite(l.id, dish.id)}>
+                  ★ {l.name}
+                </button>
+              )
+            })}
+          </div>
+          {state.labels.length === 0 && <p className="muted small">{t('labels.none')}</p>}
+        </section>
+      )}
+
+      {dish.group && (
+        <section>
+          <div className="label">{t('dish.variants')}</div>
+          <div className="chips">
+            {dishes
+              .filter((v) => v.group === dish.group && v.id !== dish.id)
+              .map((v) => (
+                <button key={v.id} className="chip" onClick={() => ui.openDish(v.id)}>
+                  {v.name[lang] || v.name.orig}
+                </button>
+              ))}
+          </div>
+        </section>
+      )}
 
       <div className="actions">
         {dish.kind !== 'combo' && (

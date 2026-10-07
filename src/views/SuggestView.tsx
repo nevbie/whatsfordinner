@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { comboIcon, DishMeta, FavButton } from '../components/DishMeta'
 import { DishName } from '../components/DishName'
+import { FanTags } from '../components/FanTags'
 import { FilterBar, usePersistentFilters } from '../components/FilterBar'
 import { formatDay } from '../components/format'
 import type { Dish } from '../data/types'
@@ -123,6 +124,7 @@ export function SuggestView() {
                 {dish.kind !== 'combo' && <FavButton dish={dish} />}
               </div>
               <DishMeta dish={dish} />
+              <FanTags dish={dish} />
               <div className="actions" onClick={(e) => e.stopPropagation()}>
                 {dish.kind !== 'combo' && (
                   <button className="btn sm primary" onClick={() => take(dish)}>

@@ -908,3 +908,53 @@ select.who {
 .party-link {
   margin: 2px 0;
 }
+
+/* personal favourite labels */
+.lbl-0 { --lbl: #2563eb; }
+.lbl-1 { --lbl: #db2777; }
+.lbl-2 { --lbl: #059669; }
+.lbl-3 { --lbl: #9333ea; }
+.lbl-4 { --lbl: #d97706; }
+.lbl-5 { --lbl: #0891b2; }
+.lbl-6 { --lbl: #dc2626; }
+.lbl-7 { --lbl: #65a30d; }
+@media (prefers-color-scheme: dark) {
+  .lbl-0 { --lbl: #60a5fa; }
+  .lbl-1 { --lbl: #f472b6; }
+  .lbl-2 { --lbl: #34d399; }
+  .lbl-3 { --lbl: #c084fc; }
+  .lbl-4 { --lbl: #fbbf24; }
+  .lbl-5 { --lbl: #22d3ee; }
+  .lbl-6 { --lbl: #f87171; }
+  .lbl-7 { --lbl: #a3e635; }
+}
+.fan-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+.fan-tag {
+  color: var(--lbl);
+  border: 1px solid var(--lbl);
+  border-radius: 999px;
+  padding: 0 0.5em;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.chip.lbl-chip {
+  color: var(--lbl);
+  border-color: var(--lbl);
+}
+.chip.lbl-chip.on {
+  background: var(--lbl);
+  border-color: var(--lbl);
+  color: var(--bg);
+}
+.loved-by {
+  margin: 8px 0;
+}
+.label-list li {
+  margin-bottom: 6px;
+}

@@ -135,6 +135,8 @@ export interface Dish {
   staples?: Staple[]
   /** Roles when hosting guests; derived when not given (see party.ts). */
   party?: PartyCourse[]
+  /** Variant group – dishes sharing it are variants (Schupfnudeln mit Sauerkraut / mit Apfelmus). */
+  group?: string
   /** For kind === 'combo'. */
   combo?: ComboType
   recipe?: Recipe
@@ -200,6 +202,14 @@ export interface Party {
   note?: string
 }
 
+/** A person or group with their own favourites, e.g. "Eric", "C&J", "J". */
+export interface FavLabel {
+  id: string
+  name: string
+  /** index into the label colour palette */
+  color: number
+}
+
 export interface FamilySettings {
   adults: number
   kids: number
@@ -215,10 +225,13 @@ export interface FamilyState {
   customDishes: Record<string, Dish>
   settings: FamilySettings
   parties: Record<string, Party>
+  labels: FavLabel[]
+  /** label id → favourite dish ids */
+  labelFavorites: Record<string, string[]>
 }
 
 export const DEFAULT_SETTINGS: FamilySettings = { adults: 2, kids: 2, avoidDays: 10 }
 
 export function emptyState(): FamilyState {
-  return { favorites: [], plan: {}, customDishes: {}, settings: { ...DEFAULT_SETTINGS }, parties: {} }
+  return { favorites: [], plan: {}, customDishes: {}, settings: { ...DEFAULT_SETTINGS }, parties: {}, labels: [], labelFavorites: {} }
 }

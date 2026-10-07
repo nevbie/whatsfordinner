@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { builtinDishes } from '../data/dishes'
-import type { DayEntry, Dish, FamilySettings, FamilyState, Party } from '../data/types'
+import type { DayEntry, Dish, FamilySettings, FamilyState, FavLabel, Party } from '../data/types'
 import { firebaseConfig } from '../firebaseConfig'
 import type { Backend } from './backend'
 import { localBackend, readLocal, writeLocal } from './local'
@@ -21,6 +21,10 @@ interface StoreValue {
   updateSettings(patch: Partial<FamilySettings>): void
   saveParty(party: Party): void
   deleteParty(id: string): void
+  addLabel(name: string): void
+  renameLabel(id: string, name: string): void
+  deleteLabel(id: string): void
+  toggleLabelFavorite(labelId: string, dishId: string): void
   createFamily(): Promise<string>
   joinFamily(code: string): Promise<boolean>
   leaveFamily(): void
@@ -110,6 +114,15 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     updateSettings: (patch) => run(backend?.updateSettings(patch)),
     saveParty: (party) => run(backend?.saveParty(party)),
     deleteParty: (id) => run(backend?.deleteParty(id)),
+    addLabel: (name) => {
+      const used = new Set(state.labels.map((l) => l.color))
+      const color = [0, 1, 2, 3, 4, 5, 6, 7].find((c) => !used.has(c)) ?? state.labels.length % 8
+      const label: FavLabel = { id: `l-${Date.now().toString(36)}`, name, color }
+      run(backend?.saveLabels([...state.labels, label]))
+    },
+    renameLabel: (id, name) => run(backend?.saveLabels(state.labels.map((l) => (l.id === id ? { ...l, name } : l)))),
+    deleteLabel: (id) => run(backend?.deleteLabel(id, state.labels.filter((l) => l.id !== id))),
+    toggleLabelFavorite: (labelId, dishId) => run(backend?.setLabelFavorite(labelId, dishId, !(state.labelFavorites[labelId] ?? []).includes(dishId))),
     async createFamily() {
       const m = await loadFirebase()
       const code = m.newFamilyCode()

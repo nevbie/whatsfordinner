@@ -30,6 +30,8 @@ export interface Def {
   p?: string
   combo?: ComboType
   recipe?: Recipe
+  /** variant group: dishes with the same g are variants of each other (e.g. Schupfnudeln mit …) */
+  g?: string
 }
 
 export function d(def: Def): Dish {
@@ -49,5 +51,6 @@ export function d(def: Def): Dish {
     pairsWith: def.p ? def.p.split(/\s+/) : undefined,
     combo: def.combo,
     recipe: def.recipe,
+    group: def.g,
   }
 }

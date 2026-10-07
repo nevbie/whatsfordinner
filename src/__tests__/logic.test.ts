@@ -5,7 +5,7 @@ import { chineseDishCount, fillEntries, initialEntries, rerollEntry, type ComboO
 import { addDays, weekStart } from '../logic/dates'
 import { DEFAULT_FILTERS, matchesFilters, normalizeFilters } from '../logic/filters'
 import { regionOf, staplesOf } from '../data/classify'
-import { suggest } from '../logic/suggest'
+import { lastEaten, suggest, waitingLabel } from '../logic/suggest'
 import { defaultTodos, newParty, shoppingList, suggestPartyItems } from '../logic/party'
 
 /** deterministic RNG */
@@ -203,5 +203,47 @@ describe('sweet dishes filter', () => {
     expect(sweet).toEqual(expect.arrayContaining(['griessbrei', 'arme-ritter', 'kaiserschmarrn', 'milchreis']))
     for (const id of sweet) expect(byId.get(id)!.tags).toContain('sweet')
     expect(matchesFilters(byId.get('chinesisch')!, f, new Set())).toBe(false)
+  })
+})
+
+describe('favourite labels and variants', () => {
+  const withLabels = () => {
+    const s = emptyState()
+    s.labels = [
+      { id: 'e', name: 'Eric', color: 0 },
+      { id: 'cj', name: 'C&J', color: 1 },
+    ]
+    s.labelFavorites = { e: ['lasagne', 'pizza'], cj: ['kaesespaetzle'] }
+    return s
+  }
+
+  it('filters by label favourites', () => {
+    const s = withLabels()
+    const f = { ...DEFAULT_FILTERS, favLabels: ['cj'] }
+    expect(matchesFilters(byId.get('kaesespaetzle')!, f, new Set(), s.labelFavorites)).toBe(true)
+    expect(matchesFilters(byId.get('lasagne')!, f, new Set(), s.labelFavorites)).toBe(false)
+  })
+
+  it('boosts the label whose favourites waited longest', () => {
+    const s = withLabels()
+    s.plan[addDays(TODAY, -2)] = { dishes: ['lasagne'] }
+    // Eric had a favourite two days ago, C&J never → C&J is waiting
+    expect(waitingLabel(s, lastEaten(s.plan, TODAY))).toBe('cj')
+  })
+
+  it('never suggests two variants of the same dish at once', () => {
+    const f = { ...DEFAULT_FILTERS, sweetOnly: true }
+    for (let seed = 1; seed < 40; seed++) {
+      const out = suggest(builtinDishes, { state: emptyState(), filters: f, today: TODAY }, 6, new Set(), seeded(seed))
+      const groups = out.map((d) => d.group).filter(Boolean)
+      expect(new Set(groups).size).toBe(groups.length)
+    }
+  })
+
+  it('keeps variants as separate dishes in one group', () => {
+    expect(byId.get('schupfnudeln')!.group).toBe('schupfnudeln')
+    expect(byId.get('schupfnudeln-apfelmus')!.group).toBe('schupfnudeln')
+    expect(byId.get('fischstaebchen-selbst')!.name.orig).toMatch(/selbstgemacht/)
+    expect(byId.get('haehnchen-pilz-mais')).toBeDefined()
   })
 })

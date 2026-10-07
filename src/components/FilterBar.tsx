@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useLang } from '../i18n'
+import { useStore } from '../store/StoreContext'
 import { STAPLES } from '../data/classify'
 import type { Region, Staple } from '../data/types'
 import { CUISINE_GROUPS, DEFAULT_FILTERS, normalizeFilters, type CuisineGroup, type Filters } from '../logic/filters'
@@ -34,6 +35,7 @@ export function usePersistentFilters(key: string): [Filters, (f: Filters) => voi
 
 export function FilterBar({ filters, onChange, showEatOut = true }: { filters: Filters; onChange(f: Filters): void; showEatOut?: boolean }) {
   const { t } = useLang()
+  const { state } = useStore()
   const toggle = (k: 'kids' | 'noSpicy' | 'favoritesOnly' | 'sweetOnly' | 'eatOut') => onChange({ ...filters, [k]: !filters[k] })
   const effortChip = (max: 1 | 2, label: string) => (
     <button className={`chip ${filters.maxEffort === max ? 'on' : ''}`} aria-pressed={filters.maxEffort === max} onClick={() => onChange({ ...filters, maxEffort: filters.maxEffort === max ? 3 : max })}>
@@ -85,6 +87,16 @@ export function FilterBar({ filters, onChange, showEatOut = true }: { filters: F
         <button className={`chip ${filters.favoritesOnly ? 'on' : ''}`} aria-pressed={filters.favoritesOnly} onClick={() => toggle('favoritesOnly')}>
           ♥ {t('filter.favorites')}
         </button>
+        {state.labels.map((l) => (
+          <button
+            key={l.id}
+            className={`chip lbl-chip lbl-${l.color % 8} ${filters.favLabels.includes(l.id) ? 'on' : ''}`}
+            aria-pressed={filters.favLabels.includes(l.id)}
+            onClick={() => onChange({ ...filters, favLabels: toggleIn(filters.favLabels, l.id) })}
+          >
+            ★ {l.name}
+          </button>
+        ))}
         {showEatOut && (
           <button className={`chip ${filters.eatOut ? 'on' : ''}`} aria-pressed={filters.eatOut} onClick={() => toggle('eatOut')}>
             🍽 {t('filter.eatOut')}

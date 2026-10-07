@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { DishMeta } from '../components/DishMeta'
 import { DishName } from '../components/DishName'
+import { FanTags } from '../components/FanTags'
 import { formatDay } from '../components/format'
 import { Sheet } from '../components/Sheet'
 import type { Dish } from '../data/types'
@@ -31,6 +32,7 @@ export function DishPicker({ title, filter }: { title: string; filter?: (d: Dish
             <div className="grow">
               <DishName dish={d} size="sm" />
               <DishMeta dish={d} />
+              <FanTags dish={d} />
             </div>
             {state.favorites.includes(d.id) && <span className="fav on">♥</span>}
           </li>

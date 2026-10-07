@@ -26,6 +26,8 @@ Ossobuco, Mercimek köftesi) plus the translation in the chosen language.
   available, full recipes (the 23 recipes of the *Indischer Kochkurs* booklet, DE + EN,
   incl. vegan and kids' notes). Add your own dishes or edit the built-in ones.
 - **History** – what you ate, most frequent dishes, add past days.
+- **Personal favourites** – labels for people or groups (e.g. "Eric", "C&J", "J") under Options; tick on each dish whose favourite it is, filter by them; suggestions favour them and give the label whose favourites waited longest a boost.
+- **Variants** as separate dishes (e.g. Schupfnudeln mit Sauerkraut / mit Apfelmus), linked on the dish page; only one variant is suggested at a time.
 - **"Dinner is over"** – tick it on the Suggest page or in the week plan and the app switches to planning tomorrow.
 - **Guests (party planner)** – menu in courses, buffet, finger food or raclette/BBQ & co.; guest numbers with vegetarian/vegan guests and allergies; menu suggestions (incl. ~60 party dishes: starters, salads, finger food, dips, desserts, cakes, drinks); who brings what; combined shopping list; to-do timeline. Parties also show in the week plan.
 - **Shared by the whole family** on several phones (optional, via Firebase – see below).

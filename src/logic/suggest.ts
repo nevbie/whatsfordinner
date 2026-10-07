@@ -40,11 +40,35 @@ export interface SuggestContext {
   today: string
 }
 
+/**
+ * Fairness between the family's favourite labels: the label whose favourites have waited the
+ * longest (or were never cooked) gets a boost, so everyone's wishes come up in turn.
+ */
+export function waitingLabel(state: FamilyState, last: Map<string, string>): string | undefined {
+  let best: string | undefined
+  let bestDate = '9999'
+  for (const label of state.labels) {
+    const favs = state.labelFavorites[label.id] ?? []
+    if (!favs.length) continue
+    // most recent date any of this label's favourites was eaten ('' = never)
+    let latest = ''
+    for (const id of favs) {
+      const date = last.get(id) ?? ''
+      if (date > latest) latest = date
+    }
+    if (latest < bestDate) {
+      bestDate = latest
+      best = label.id
+    }
+  }
+  return best
+}
+
 /** Relative chance of a dish being suggested; 0 = never. */
-export function weight(dish: Dish, ctx: SuggestContext, last: Map<string, string>, soon: Set<string>): number {
+export function weight(dish: Dish, ctx: SuggestContext, last: Map<string, string>, soon: Set<string>, waiting?: string): number {
   const favorites = new Set(ctx.state.favorites)
   if (dish.kind === 'side' || dish.kind === 'party') return 0
-  if (!matchesFilters(dish, ctx.filters, favorites)) return 0
+  if (!matchesFilters(dish, ctx.filters, favorites, ctx.state.labelFavorites)) return 0
   if (soon.has(dish.id)) return 0
 
   let w = 1
@@ -53,6 +77,9 @@ export function weight(dish: Dish, ctx: SuggestContext, last: Map<string, string
   if (dish.kind === 'combo') w = 1.5
   else if (dish.cuisine === 'chinese' || dish.cuisine === 'indian') w = 0.35
   if (favorites.has(dish.id)) w *= 2.5
+  const fans = ctx.state.labels.filter((l) => ctx.state.labelFavorites[l.id]?.includes(dish.id))
+  if (fans.length) w *= 1.8
+  if (waiting && fans.some((l) => l.id === waiting)) w *= 1.6
   if (dish.tags.includes('sweet')) w *= 0.6
   if (dish.kind === 'eatout') w *= 0.8
 
@@ -74,9 +101,10 @@ export function weight(dish: Dish, ctx: SuggestContext, last: Map<string, string
 export function suggest(dishes: Dish[], ctx: SuggestContext, n: number, exclude: ReadonlySet<string> = new Set(), rng: Rng = Math.random): Dish[] {
   const last = lastEaten(ctx.state.plan, ctx.today)
   const soon = plannedSoon(ctx.state.plan, ctx.today)
+  const waiting = waitingLabel(ctx.state, last)
   const pool = dishes
     .filter((d) => !exclude.has(d.id))
-    .map((d) => ({ d, w: weight(d, ctx, last, soon) }))
+    .map((d) => ({ d, w: weight(d, ctx, last, soon, waiting) }))
     .filter((x) => x.w > 0)
   const out: Dish[] = []
   while (out.length < n && pool.length) {
@@ -87,8 +115,11 @@ export function suggest(dishes: Dish[], ctx: SuggestContext, n: number, exclude:
       r -= pool[i].w
       if (r < 0) break
     }
-    out.push(pool[i].d)
+    const picked = pool[i].d
+    out.push(picked)
     pool.splice(i, 1)
+    // only one variant of a dish per round (not Schupfnudeln mit Sauerkraut AND mit Apfelmus)
+    if (picked.group) for (let j = pool.length - 1; j >= 0; j--) if (pool[j].d.group === picked.group) pool.splice(j, 1)
   }
   return out
 }
