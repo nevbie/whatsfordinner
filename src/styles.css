@@ -1071,3 +1071,5 @@ select.who {
 select.add-slot { text-align: center; appearance: none; }
 .day-meal { display: inline-flex; gap: 6px; align-items: baseline; flex-basis: 100%; min-width: 0; }
 .meal-tag { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); flex: none; }
+a.btn { text-decoration: none; color: var(--text); display: inline-flex; align-items: center; justify-content: center; }
+a.btn.primary { color: var(--accent-text); }

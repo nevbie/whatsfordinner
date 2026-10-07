@@ -171,6 +171,10 @@ export interface Dish {
   recipe?: Recipe
   /** true for dishes the family added themselves. */
   custom?: boolean
+  /** eatout: takeaway / delivery instead of sitting in the restaurant */
+  takeaway?: boolean
+  /** eatout: website with the current menu */
+  url?: string
 }
 
 /** Meals besides dinner that can be planned for a day. */

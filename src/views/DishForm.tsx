@@ -53,6 +53,8 @@ export function DishForm({ id }: { id?: string }) {
   const [staples, setStaples] = useState<Staple[]>(existing ? staplesOf(existing) : [])
   const [ingredients, setIngredients] = useState((existing?.ingredients ?? []).map((i) => ingredientName(i, lang)).join(', '))
   const [note, setNote] = useState(existing?.note?.[lang] ?? '')
+  const [url, setUrl] = useState(existing?.url ?? '')
+  const [takeaway, setTakeaway] = useState(!!existing?.takeaway)
   const [error, setError] = useState('')
 
   const cuisineCourses = cuisine === 'chinese' ? CHINESE_COURSES : cuisine === 'indian' ? INDIAN_COURSES : []
@@ -78,6 +80,7 @@ export function DishForm({ id }: { id?: string }) {
       // the note is entered once; keep the other language's text if it existed
       note: note.trim() ? { de: lang === 'de' ? note.trim() : existing?.note?.de ?? note.trim(), en: lang === 'en' ? note.trim() : existing?.note?.en ?? note.trim() } : undefined,
       custom: true,
+      ...(kind === 'eatout' ? { url: url.trim() || undefined, takeaway } : {}),
     }
     saveDish(dish)
     ui.close()
@@ -153,6 +156,17 @@ export function DishForm({ id }: { id?: string }) {
             </label>
           )}
         </div>
+        {kind === 'eatout' && (
+          <>
+            <label>
+              {t('form.url')}
+              <input type="url" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://…" />
+            </label>
+            <label className="check">
+              <input type="checkbox" checked={takeaway} onChange={(e) => setTakeaway(e.target.checked)} /> {t('dish.takeaway')}
+            </label>
+          </>
+        )}
         {kind !== 'eatout' && (
           <label>
             {kind === 'bake' ? t('form.kind.bake') : t('form.builderRole')}

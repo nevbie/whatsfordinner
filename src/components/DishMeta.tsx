@@ -30,7 +30,7 @@ export function DishMeta({ dish, showLast = true, compact = false }: { dish: Dis
   const { t, pick, lang } = useLang()
   const { last, next, today } = useDishStats()
   const parts: string[] = []
-  if (dish.kind === 'eatout') parts.push(t('dish.restaurant'))
+  if (dish.kind === 'eatout') parts.push(t(dish.takeaway ? 'dish.takeaway' : 'dish.restaurantOnly'))
   else {
     parts.push(pick(CUISINE_LABELS[dish.cuisine]))
     if (dish.kind !== 'combo') parts.push(t(`dish.effort${dish.effort}`))

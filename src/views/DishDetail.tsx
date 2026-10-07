@@ -116,6 +116,19 @@ export function DishDetail({ id }: { id: string }) {
 
       {dish.note && <p>{dish.note[lang]}</p>}
 
+      {dish.kind === 'eatout' && (
+        <div className="actions">
+          {dish.url && (
+            <a className="btn primary" href={dish.url} target="_blank" rel="noopener noreferrer">
+              {t('dish.menuLink')}
+            </a>
+          )}
+          <a className="btn" href={`https://www.google.com/maps/search/${encodeURIComponent(`${dish.name.orig} Karlsruhe`)}`} target="_blank" rel="noopener noreferrer">
+            {t('dish.mapsLink')}
+          </a>
+        </div>
+      )}
+
       {dish.kind !== 'combo' && dish.kind !== 'eatout' && (
         <section>
           <h3>{t('dish.ingredients')}</h3>
