@@ -27,6 +27,8 @@ export interface Filters {
   favLabels: string[]
   /** only sweet dishes (Grießbrei, Arme Ritter, Kaiserschmarrn …) */
   sweetOnly: boolean
+  /** only dishes nobody marked as 'mag nicht' */
+  noDislikes: boolean
   eatOut: boolean
   /** empty = all cuisines; otherwise the dish belongs to one of them */
   cuisines: CuisineGroup[]
@@ -44,6 +46,7 @@ export const DEFAULT_FILTERS: Filters = {
   favoritesOnly: false,
   favLabels: [],
   sweetOnly: false,
+  noDislikes: false,
   eatOut: false,
   cuisines: [],
   regions: [],
@@ -85,7 +88,18 @@ export function isLabelFavorite(dishId: string, labelIds: string[], labelFavorit
   return labelIds.some((l) => labelFavorites[l]?.includes(dishId))
 }
 
-export function matchesFilters(dish: Dish, f: Filters, favorites: ReadonlySet<string>, labelFavorites: Record<string, string[]> = {}): boolean {
+/** Labels (people) that don't like the dish. */
+export function dislikersOf(dishId: string, labelDislikes: Record<string, string[]>): string[] {
+  return Object.entries(labelDislikes)
+    .filter(([, ids]) => ids.includes(dishId))
+    .map(([label]) => label)
+}
+
+export function matchesFilters(dish: Dish, f: Filters, favorites: ReadonlySet<string>, labelFavorites: Record<string, string[]> = {}, labelDislikes: Record<string, string[]> = {}): boolean {
+  const dislikers = dislikersOf(dish.id, labelDislikes)
+  if (f.noDislikes && dislikers.length) return false
+  // cooking for someone: skip what they don't like
+  if (f.favLabels.some((l) => dislikers.includes(l))) return false
   const favLabelsOk = !f.favLabels.length || isLabelFavorite(dish.id, f.favLabels, labelFavorites)
   if (dish.kind === 'eatout') return f.eatOut && (!f.favoritesOnly || favorites.has(dish.id)) && favLabelsOk
   if (f.favoritesOnly && !favorites.has(dish.id)) return false
@@ -112,6 +126,7 @@ export function activeFilterCount(f: Filters): number {
     Number(f.maxEffort < 3) +
     Number(f.favoritesOnly) +
     Number(f.sweetOnly) +
+    Number(f.noDislikes) +
     f.favLabels.length +
     Number(f.eatOut)
   )

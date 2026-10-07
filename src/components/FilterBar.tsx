@@ -36,7 +36,7 @@ export function usePersistentFilters(key: string): [Filters, (f: Filters) => voi
 export function FilterBar({ filters, onChange, showEatOut = true }: { filters: Filters; onChange(f: Filters): void; showEatOut?: boolean }) {
   const { t } = useLang()
   const { state } = useStore()
-  const toggle = (k: 'kids' | 'noSpicy' | 'favoritesOnly' | 'sweetOnly' | 'eatOut') => onChange({ ...filters, [k]: !filters[k] })
+  const toggle = (k: 'kids' | 'noSpicy' | 'favoritesOnly' | 'sweetOnly' | 'noDislikes' | 'eatOut') => onChange({ ...filters, [k]: !filters[k] })
   const effortChip = (max: 1 | 2, label: string) => (
     <button className={`chip ${filters.maxEffort === max ? 'on' : ''}`} aria-pressed={filters.maxEffort === max} onClick={() => onChange({ ...filters, maxEffort: filters.maxEffort === max ? 3 : max })}>
       {label}
@@ -95,6 +95,7 @@ export function FilterBar({ filters, onChange, showEatOut = true }: { filters: F
         <div className="filter-label">{t('filter.loved')}</div>
         <div className="chips scroll-row">
           {chip(filters.favoritesOnly, `♥ ${t('filter.favorites')}`, () => toggle('favoritesOnly'))}
+          {state.labels.length > 0 && chip(filters.noDislikes, `👍 ${t('filter.noDislikes')}`, () => toggle('noDislikes'))}
           {state.labels.map((l) => (
             <span key={l.id} style={{ display: 'contents' }}>
               {chip(filters.favLabels.includes(l.id), `★ ${l.name}`, () => onChange({ ...filters, favLabels: toggleIn(filters.favLabels, l.id) }), `lbl-chip lbl-${l.color % 8}`)}

@@ -20,7 +20,7 @@ const isBuiltin = (id: string) => builtinIds.has(id)
 
 export function DishDetail({ id }: { id: string }) {
   const { t, lang, pick } = useLang()
-  const { dishById, dishes, setMeal, saveDish, deleteDish, state, toggleFavorite, toggleLabelFavorite } = useStore()
+  const { dishById, dishes, setMeal, saveDish, deleteDish, state, toggleFavorite, toggleLabelFavorite, toggleLabelDislike, setHidden } = useStore()
   const ui = useUI()
   const { counts } = useDishStats()
   const [visitDate, setVisitDate] = useState(todayISO())
@@ -82,6 +82,21 @@ export function DishDetail({ id }: { id: string }) {
               )
             })}
           </div>
+          {state.labels.length > 0 && (
+            <>
+              <div className="label">{t('dish.dislikedBy')}</div>
+              <div className="chips">
+                {state.labels.map((l) => {
+                  const on = (state.labelDislikes[l.id] ?? []).includes(dish.id)
+                  return (
+                    <button key={l.id} className={`chip lbl-chip dislike-chip lbl-${l.color % 8} ${on ? 'on' : ''}`} aria-pressed={on} onClick={() => toggleLabelDislike(l.id, dish.id)}>
+                      👎 {l.name}
+                    </button>
+                  )
+                })}
+              </div>
+            </>
+          )}
           {state.labels.length === 0 && <p className="muted small">{t('labels.none')}</p>}
         </section>
       )}
@@ -250,6 +265,19 @@ export function DishDetail({ id }: { id: string }) {
               }}
             >
               {t(isBuiltin(dish.id) ? 'dish.reset' : 'dish.delete')}
+            </button>
+          )}
+          {isBuiltin(dish.id) && (
+            <button
+              className="btn danger"
+              onClick={() => {
+                if (confirm(t('dish.hideConfirm'))) {
+                  setHidden(dish.id, true)
+                  ui.close()
+                }
+              }}
+            >
+              🗑 {t('dish.hide')}
             </button>
           )}
         </div>

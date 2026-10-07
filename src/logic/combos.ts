@@ -259,6 +259,8 @@ export interface PickContext {
   favorites: ReadonlySet<string>
   /** dishes to prefer (e.g. the seed's pairsWith) */
   prefer?: ReadonlySet<string>
+  /** dishes someone at the table doesn't like */
+  avoid?: ReadonlySet<string>
 }
 
 function weighted(cands: Dish[], ctx: PickContext, rng: Rng): Dish | undefined {
@@ -269,6 +271,7 @@ function weighted(cands: Dish[], ctx: PickContext, rng: Rng): Dish | undefined {
     // a plate follows the classic pairings (Schnitzel → Bratkartoffeln) much more strictly
     if (ctx.prefer?.has(d.id)) w *= ctx.options.type === 'teller' ? 25 : 5
     if (d.effort === 3) w *= 0.4
+    if (ctx.avoid?.has(d.id)) w *= 0.1
     return w
   })
   let r = rng() * ws.reduce((a, b) => a + b, 0)

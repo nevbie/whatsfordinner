@@ -1088,3 +1088,4 @@ a.btn.primary { color: var(--accent-text); }
 .sticky-search { position: sticky; top: 0; z-index: 1; box-shadow: 0 -12px 0 12px var(--bg); }
 html { font-size: 15px; }
 .day-action-head { flex-basis: 100%; margin-top: 4px; } .label-input input { flex: 1; min-width: 0; padding: 4px 10px; }
+.fan-tag.dislike { opacity: 0.75; text-decoration: none; border-style: dashed; }

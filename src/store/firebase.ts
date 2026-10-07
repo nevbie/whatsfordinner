@@ -109,10 +109,16 @@ export function firebaseBackend(code: string): Backend {
       await updateDoc(await ref(), { labels })
     },
     async deleteLabel(id, remaining) {
-      await updateDoc(await ref(), 'labels', remaining, new FieldPath('labelFavorites', id), deleteField())
+      await updateDoc(await ref(), 'labels', remaining, new FieldPath('labelFavorites', id), deleteField(), new FieldPath('labelDislikes', id), deleteField())
     },
     async setLabelFavorite(labelId, dishId, on) {
       await updateDoc(await ref(), new FieldPath('labelFavorites', labelId), on ? arrayUnion(dishId) : arrayRemove(dishId))
+    },
+    async setLabelDislike(labelId, dishId, on) {
+      await updateDoc(await ref(), new FieldPath('labelDislikes', labelId), on ? arrayUnion(dishId) : arrayRemove(dishId))
+    },
+    async setHidden(dishId, on) {
+      await updateDoc(await ref(), { hiddenDishes: on ? arrayUnion(dishId) : arrayRemove(dishId) })
     },
     async updateSettings(patch) {
       const r = await ref()

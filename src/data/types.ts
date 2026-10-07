@@ -274,12 +274,16 @@ export interface FamilyState {
   labels: FavLabel[]
   /** label id → favourite dish ids */
   labelFavorites: Record<string, string[]>
+  /** label id → dish ids that person doesn't like */
+  labelDislikes: Record<string, string[]>
+  /** built-in dishes the family removed from their list */
+  hiddenDishes: string[]
 }
 
 export const DEFAULT_SETTINGS: FamilySettings = { adults: 2, kids: 2, avoidDays: 10 }
 
 export function emptyState(): FamilyState {
-  return { favorites: [], plan: {}, customDishes: {}, settings: { ...DEFAULT_SETTINGS }, parties: {}, labels: [], labelFavorites: {} }
+  return { favorites: [], plan: {}, customDishes: {}, settings: { ...DEFAULT_SETTINGS }, parties: {}, labels: [], labelFavorites: {}, labelDislikes: {}, hiddenDishes: [] }
 }
 
 /** All dish ids of a day, dinner and the other meals. */

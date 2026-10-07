@@ -76,13 +76,13 @@ export function DishesView() {
       // restaurants are labelled and listed like everything else (favourites filters still apply)
       if (d.kind === 'eatout') {
         if (filters.favoritesOnly && !favs.has(d.id)) return false
-      } else if (!matchesFilters(d, filters, favs, state.labelFavorites)) return false
+      } else if (!matchesFilters(d, filters, favs, state.labelFavorites, state.labelDislikes)) return false
       return !query || matchesQuery(d, query)
     })
     if (sort === 'recent') out.sort((a, b) => (last.get(a.id) ?? '').localeCompare(last.get(b.id) ?? '') || sortByName(a, b, lang))
     else out.sort((a, b) => sortByName(a, b, lang))
     return out
-  }, [dishes, state.favorites, state.labelFavorites, filters, query, area, sort, last, lang])
+  }, [dishes, state.favorites, state.labelFavorites, state.labelDislikes, filters, query, area, sort, last, lang])
 
   return (
     <div className="view">

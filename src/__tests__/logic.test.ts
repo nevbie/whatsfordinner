@@ -5,7 +5,7 @@ import { chineseDishCount, defaultCounts, fillEntries, initialEntries, rerollEnt
 import { addDays, weekStart } from '../logic/dates'
 import { DEFAULT_FILTERS, matchesFilters, normalizeFilters } from '../logic/filters'
 import { regionOf, staplesOf } from '../data/classify'
-import { lastEaten, suggest, waitingLabel } from '../logic/suggest'
+import { lastEaten, suggest, waitingLabel, weight } from '../logic/suggest'
 import { defaultTodos, newParty, shoppingList, suggestPartyItems } from '../logic/party'
 
 /** deterministic RNG */
@@ -341,5 +341,17 @@ describe('builder composition & meals', () => {
     const last = lastEaten(plan, TODAY)
     expect(last.get('minestrone')).toBe('2026-03-01')
     expect(last.get('kaesekuchen')).toBe('2026-03-01')
+  })
+})
+
+describe('dislikes', () => {
+  it('suggests disliked dishes much less and never when cooking for that person', () => {
+    const state = { ...emptyState(), labels: [{ id: 'j', name: 'J', color: 0 }], labelDislikes: { j: ['lasagne'] } }
+    const ctxS = { state, filters: DEFAULT_FILTERS, today: TODAY }
+    const ctxN = { state: emptyState(), filters: DEFAULT_FILTERS, today: TODAY }
+    const last = new Map<string, string>()
+    expect(weight(byId.get('lasagne')!, ctxS, last, new Set())).toBeLessThan(weight(byId.get('lasagne')!, ctxN, last, new Set()) * 0.2)
+    expect(weight(byId.get('lasagne')!, { ...ctxS, filters: { ...DEFAULT_FILTERS, favLabels: ['j'] } }, last, new Set())).toBe(0)
+    expect(weight(byId.get('lasagne')!, { ...ctxS, filters: { ...DEFAULT_FILTERS, noDislikes: true } }, last, new Set())).toBe(0)
   })
 })

@@ -1,7 +1,7 @@
 import type { DayEntry, Dish, FamilyState } from '../data/types'
 import { dayDishIds } from '../data/types'
 import { addDays, daysBetween, fromISO } from './dates'
-import { matchesFilters, type Filters } from './filters'
+import { dislikersOf, matchesFilters, type Filters } from './filters'
 
 export type Rng = () => number
 
@@ -69,7 +69,7 @@ export function waitingLabel(state: FamilyState, last: Map<string, string>): str
 export function weight(dish: Dish, ctx: SuggestContext, last: Map<string, string>, soon: Set<string>, waiting?: string): number {
   const favorites = new Set(ctx.state.favorites)
   if (dish.kind === 'side' || dish.kind === 'party' || dish.kind === 'bake') return 0
-  if (!matchesFilters(dish, ctx.filters, favorites, ctx.state.labelFavorites)) return 0
+  if (!matchesFilters(dish, ctx.filters, favorites, ctx.state.labelFavorites, ctx.state.labelDislikes)) return 0
   if (soon.has(dish.id)) return 0
 
   let w = 1
@@ -81,6 +81,9 @@ export function weight(dish: Dish, ctx: SuggestContext, last: Map<string, string
   const fans = ctx.state.labels.filter((l) => ctx.state.labelFavorites[l.id]?.includes(dish.id))
   if (fans.length) w *= 1.8
   if (waiting && fans.some((l) => l.id === waiting)) w *= 1.6
+  // someone doesn't like it: much rarer (unless that person is marked as away that day)
+  const away = new Set((ctx.state.plan[ctx.today]?.labels ?? []).filter((l) => l.startsWith('away:')).map((l) => l.slice(5)))
+  for (const l of dislikersOf(dish.id, ctx.state.labelDislikes)) if (!away.has(l)) w *= 0.15
   if (dish.tags.includes('sweet')) w *= 0.6
   if (dish.kind === 'eatout') w *= 0.8
 

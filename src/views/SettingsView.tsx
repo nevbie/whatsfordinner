@@ -1,3 +1,4 @@
+import { dishLabel } from '../components/DishName'
 import { useState } from 'react'
 import { Stepper } from '../components/Stepper'
 import { TextField } from '../components/TextField'
@@ -91,6 +92,24 @@ export function SettingsView() {
             {t('party.add')}
           </button>
         </div>
+      </section>
+
+      <section className="card">
+        <h2>{t('settings.hidden')}</h2>
+        {store.state.hiddenDishes.length === 0 ? (
+          <p className="small muted">{t('settings.hiddenNone')}</p>
+        ) : (
+          <ul className="plain">
+            {store.state.hiddenDishes.map((id) => (
+              <li key={id} className="row between">
+                <span>{store.dishById.get(id) ? dishLabel(store.dishById.get(id)!, lang) : id}</span>
+                <button className="btn sm" onClick={() => store.setHidden(id, false)}>
+                  {t('settings.restore')}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
 
       <section className="card">

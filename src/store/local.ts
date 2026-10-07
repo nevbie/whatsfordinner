@@ -69,8 +69,18 @@ export function localBackend(): Backend {
       update((s) => {
         const labelFavorites = { ...s.labelFavorites }
         delete labelFavorites[id]
-        return { ...s, labels: remaining, labelFavorites }
+        const labelDislikes = { ...s.labelDislikes }
+        delete labelDislikes[id]
+        return { ...s, labels: remaining, labelFavorites, labelDislikes }
       }),
+    setLabelDislike: (labelId, dishId, on) =>
+      update((s) => {
+        const cur = s.labelDislikes[labelId] ?? []
+        const next = on ? [...new Set([...cur, dishId])] : cur.filter((x) => x !== dishId)
+        return { ...s, labelDislikes: { ...s.labelDislikes, [labelId]: next } }
+      }),
+    setHidden: (dishId, on) =>
+      update((s) => ({ ...s, hiddenDishes: on ? [...new Set([...s.hiddenDishes, dishId])] : s.hiddenDishes.filter((x) => x !== dishId) })),
     setLabelFavorite: (labelId, dishId, on) =>
       update((s) => {
         const cur = s.labelFavorites[labelId] ?? []

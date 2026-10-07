@@ -14,6 +14,8 @@ export interface Backend {
   saveLabels(labels: FavLabel[]): Promise<void>
   deleteLabel(id: string, remaining: FavLabel[]): Promise<void>
   setLabelFavorite(labelId: string, dishId: string, on: boolean): Promise<void>
+  setLabelDislike(labelId: string, dishId: string, on: boolean): Promise<void>
+  setHidden(dishId: string, on: boolean): Promise<void>
 }
 
 /** A day entry is kept when it has dishes or is marked as done. */
@@ -33,5 +35,7 @@ export function normalize(raw: Partial<FamilyState> | undefined | null): FamilyS
     parties: raw.parties ?? {},
     labels: Array.isArray(raw.labels) ? raw.labels : [],
     labelFavorites: raw.labelFavorites ?? {},
+    labelDislikes: raw.labelDislikes ?? {},
+    hiddenDishes: Array.isArray(raw.hiddenDishes) ? raw.hiddenDishes : [],
   }
 }

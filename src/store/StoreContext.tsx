@@ -29,6 +29,8 @@ interface StoreValue {
   renameLabel(id: string, name: string): void
   deleteLabel(id: string): void
   toggleLabelFavorite(labelId: string, dishId: string): void
+  toggleLabelDislike(labelId: string, dishId: string): void
+  setHidden(dishId: string, on: boolean): void
   createFamily(): Promise<string>
   joinFamily(code: string): Promise<boolean>
   leaveFamily(): void
@@ -97,12 +99,17 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   )
 
   // Custom dishes with a built-in id are the family's edits of that dish and replace it.
-  const dishes = useMemo(() => {
+  const allDishes = useMemo(() => {
     const custom = state.customDishes
     const builtinIds = new Set(builtinDishes.map((d) => d.id))
     return [...builtinDishes.map((d) => custom[d.id] ?? d), ...Object.values(custom).filter((d) => !builtinIds.has(d.id))]
   }, [state.customDishes])
-  const dishById = useMemo(() => new Map(dishes.map((d) => [d.id, d])), [dishes])
+  // removed dishes disappear from lists and suggestions but still show up in the history
+  const dishes = useMemo(() => {
+    const hidden = new Set(state.hiddenDishes)
+    return allDishes.filter((d) => !hidden.has(d.id))
+  }, [allDishes, state.hiddenDishes])
+  const dishById = useMemo(() => new Map(allDishes.map((d) => [d.id, d])), [allDishes])
 
   const value: StoreValue = {
     state,
@@ -137,7 +144,18 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     },
     renameLabel: (id, name) => run(backend?.saveLabels(state.labels.map((l) => (l.id === id ? { ...l, name } : l)))),
     deleteLabel: (id) => run(backend?.deleteLabel(id, state.labels.filter((l) => l.id !== id))),
-    toggleLabelFavorite: (labelId, dishId) => run(backend?.setLabelFavorite(labelId, dishId, !(state.labelFavorites[labelId] ?? []).includes(dishId))),
+    // a person can't love and dislike the same dish: setting one clears the other
+    toggleLabelDislike: (labelId, dishId) => {
+      const on = !(state.labelDislikes[labelId] ?? []).includes(dishId)
+      if (on && (state.labelFavorites[labelId] ?? []).includes(dishId)) run(backend?.setLabelFavorite(labelId, dishId, false))
+      run(backend?.setLabelDislike(labelId, dishId, on))
+    },
+    setHidden: (dishId, on) => run(backend?.setHidden(dishId, on)),
+    toggleLabelFavorite: (labelId, dishId) => {
+      const on = !(state.labelFavorites[labelId] ?? []).includes(dishId)
+      if (on && (state.labelDislikes[labelId] ?? []).includes(dishId)) run(backend?.setLabelDislike(labelId, dishId, false))
+      run(backend?.setLabelFavorite(labelId, dishId, on))
+    },
     async createFamily() {
       const m = await loadFirebase()
       const code = m.newFamilyCode()

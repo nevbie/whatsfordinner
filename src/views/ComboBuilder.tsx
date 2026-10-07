@@ -57,7 +57,8 @@ export function ComboBuilder({ combo, seedId, date, meal: initialMeal }: { combo
     dessert: false,
     counts: state.settings.builderCounts?.[combo],
   })
-  const ctx = (o: ComboOptions) => ({ options: o, favorites, prefer: new Set(seed?.pairsWith ?? []) })
+  const disliked = useMemo(() => new Set(Object.values(state.labelDislikes).flat()), [state.labelDislikes])
+  const ctx = (o: ComboOptions) => ({ options: o, favorites, prefer: new Set(seed?.pairsWith ?? []), avoid: disliked })
   const build = (o: ComboOptions) => fillEntries(initialEntries(o, seed), dishes, ctx(o))
   const [entries, setEntries] = useState<ComboEntry[]>(() => {
     // re-open a day that already holds a combo of this cuisine: start from what is planned
