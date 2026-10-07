@@ -6,6 +6,7 @@ import { FilterBar, usePersistentFilters } from '../components/FilterBar'
 import { formatDay } from '../components/format'
 import type { Dish } from '../data/types'
 import { useLang } from '../i18n'
+import { comboTypeOfDish } from '../logic/combos'
 import { addDays, todayISO } from '../logic/dates'
 import { activeFilterCount } from '../logic/filters'
 import { suggest } from '../logic/suggest'
@@ -17,8 +18,7 @@ const COUNT = 3
 /** Chinese/Indian dishes and the "(diverse)" entries can be expanded into a full meal. */
 export function comboTypeOf(dish: Dish) {
   if (dish.kind === 'combo') return dish.combo
-  if (dish.cuisine === 'chinese' || dish.cuisine === 'indian') return dish.cuisine
-  return undefined
+  return comboTypeOfDish(dish)
 }
 
 export function SuggestView() {
@@ -160,6 +160,13 @@ export function SuggestView() {
           <span>
             <span lang="hi">थाली</span>
             <span className="muted small">Thali</span>
+          </span>
+        </button>
+        <button className="btn quick" onClick={() => ui.openCombo('tapas', undefined, target)}>
+          <span aria-hidden>🫒</span>
+          <span>
+            <span lang="es">Tapas</span>
+            <span className="muted small">{t('suggest.tapasEvening')}</span>
           </span>
         </button>
         <button className="btn quick" onClick={() => (location.hash = '#/party')}>

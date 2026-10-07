@@ -247,3 +247,21 @@ describe('favourite labels and variants', () => {
     expect(byId.get('haehnchen-pilz-mais')).toBeDefined()
   })
 })
+
+describe('tapas evening', () => {
+  it('combines veg, meat, fish and bread tapas, scaled to the family', () => {
+    for (let seed = 1; seed < 30; seed++) {
+      const o = opts({ type: 'tapas', adults: 2, kids: 2 })
+      const ds = dishesOf(fillEntries(initialEntries(o), builtinDishes, ctx(o), seeded(seed)))
+      expect(ds).toHaveLength(5)
+      expect(ds.every(Boolean)).toBe(true)
+      for (const c of ['tapaVeg', 'tapaMeat', 'tapaFish', 'tapaBread']) expect(ds.map((d) => d.course)).toContain(c)
+      expect(new Set(ds.map((d) => d.id)).size).toBe(5)
+    }
+  })
+
+  it('opens the builder from the Tapas entry and includes Tortilla de patatas', () => {
+    expect(byId.get('tapas')!.combo).toBe('tapas')
+    expect(byId.get('tortilla-espanola')!.name.orig).toBe('Tortilla de patatas')
+  })
+})

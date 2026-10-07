@@ -70,6 +70,10 @@ export type Course =
   | 'dessert'
   | 'snack'
   | 'meal'
+  | 'tapaVeg'
+  | 'tapaMeat'
+  | 'tapaFish'
+  | 'tapaBread'
 
 /**
  * dish   – a dinner on its own (may also be part of a combo when it has a course)
@@ -80,7 +84,7 @@ export type Course =
  */
 export type DishKind = 'dish' | 'side' | 'combo' | 'eatout' | 'party'
 
-export type ComboType = 'chinese' | 'indian'
+export type ComboType = 'chinese' | 'indian' | 'tapas'
 
 /** Main filling component of a meal. 'dough' = pizza, tarts, dumplings, pancakes … */
 export type Staple = 'bread' | 'pasta' | 'rice' | 'potatoes' | 'dough'

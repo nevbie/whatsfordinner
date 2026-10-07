@@ -21,6 +21,7 @@ Ossobuco, Mercimek köftesi) plus the translation in the chosen language.
   - Indian thali: dal + curry + sabzi + raita (+ chutney/salad) + bread + rice, optional
     drink and dessert.
   - Re-roll, keep (lock), pick yourself, add or remove dishes, then plan it for a day.
+- **Tapas evening** – single tapas (Tortilla de patatas, Patatas bravas, Albóndigas, Croquetas, Calamares, Pimientos de Padrón, Pan con tomate …) and a builder that combines 4–7 of them.
 - **Week** – plan every dinner, fill empty days with suggestions.
 - **Dishes** – all ~200 dishes with search (name or ingredient), ingredients and, where
   available, full recipes (the 23 recipes of the *Indischer Kochkurs* booklet, DE + EN,

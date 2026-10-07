@@ -5,5 +5,6 @@ import { indianDishes } from './indian'
 import { moreDishes } from './more'
 import { partyDishes } from './party'
 import { restaurants } from './restaurants'
+import { tapasDishes } from './tapas'
 
-export const builtinDishes: Dish[] = [...familyDishes, ...moreDishes, ...chineseDishes, ...indianDishes, ...partyDishes, ...restaurants]
+export const builtinDishes: Dish[] = [...familyDishes, ...moreDishes, ...chineseDishes, ...indianDishes, ...tapasDishes, ...partyDishes, ...restaurants]

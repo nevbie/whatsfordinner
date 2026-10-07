@@ -297,6 +297,12 @@ export const INGREDIENTS: Record<string, [string, string]> = {
   vanilla_ice_cream: ['Vanilleeis', 'Vanilla ice cream'],
   wakame: ['Wakame-Algen', 'Wakame seaweed'],
   white_chocolate: ['Weiße Schokolade', 'White chocolate'],
+  padron_peppers: ['Padrón-Paprika', 'Padrón peppers'],
+  sea_salt: ['Meersalz', 'Sea salt'],
+  serrano_ham: ['Serrano-Schinken', 'Serrano ham'],
+  manchego: ['Manchego', 'Manchego'],
+  squid: ['Tintenfischringe', 'Squid rings'],
+  fresh_anchovies: ['Frische Sardellen', 'Fresh anchovies'],
 }
 
 /** Display name of an ingredient; unknown keys (free text from custom dishes) are shown as-is. */

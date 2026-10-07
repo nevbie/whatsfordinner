@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { comboIcon } from '../components/DishMeta'
 import { DishName } from '../components/DishName'
 import { formatDay } from '../components/format'
 import { Sheet } from '../components/Sheet'
@@ -10,11 +11,12 @@ import { useStore } from '../store/StoreContext'
 import { useUI } from '../ui'
 
 const ALL_COURSES: Record<ComboType, Course[]> = {
+  tapas: ['tapaVeg', 'tapaMeat', 'tapaFish', 'tapaBread'],
   chinese: ['meat', 'fish', 'tofu', 'egg', 'veg', 'cold', 'soup', 'staple', 'meal'],
   indian: ['curry', 'dal', 'sabzi', 'raita', 'chutney', 'salad', 'side', 'bread', 'rice', 'drink', 'dessert', 'snack', 'meal'],
 }
 
-const SLOT_KEYS = new Set(['main', 'main2', 'veg', 'veg2', 'soup', 'cold', 'staple', 'meal', 'side', 'dal', 'curry', 'curry2', 'sabzi', 'raita', 'bread', 'rice', 'drink', 'dessert'])
+const SLOT_KEYS = new Set(['main', 'main2', 'veg', 'veg2', 'soup', 'cold', 'staple', 'meal', 'side', 'dal', 'curry', 'curry2', 'sabzi', 'raita', 'bread', 'rice', 'drink', 'dessert', 'tapaVeg', 'tapaVeg2', 'tapaMeat', 'tapaMeat2', 'tapaFish', 'tapaFish2', 'tapaBread'])
 
 export function ComboBuilder({ combo, seedId, date }: { combo: ComboType; seedId?: string; date?: string }) {
   const { t, lang } = useLang()
@@ -84,8 +86,7 @@ export function ComboBuilder({ combo, seedId, date }: { combo: ComboType; seedId
     <Sheet
       title={
         <span className="combo-title">
-          {combo === 'chinese' ? '🥢 ' : '🍛 '}
-          {t(combo === 'chinese' ? 'combo.chinese' : 'combo.indian')}
+          {comboIcon(combo)} {t(`combo.${combo}`)}
           {date && <span className="muted small"> · {formatDay(date, lang)}</span>}
         </span>
       }
@@ -101,7 +102,7 @@ export function ComboBuilder({ combo, seedId, date }: { combo: ComboType; seedId
         </div>
       }
     >
-      <p className="muted small">{t(combo === 'chinese' ? 'combo.introChinese' : 'combo.introIndian')}</p>
+      <p className="muted small">{t(combo === 'chinese' ? 'combo.introChinese' : combo === 'indian' ? 'combo.introIndian' : 'combo.introTapas')}</p>
       <div className="combo-options">
         <Stepper label={t('combo.adults')} value={options.adults} min={1} max={8} onChange={(adults) => change({ adults })} />
         <Stepper label={t('combo.kids')} value={options.kids} min={0} max={8} onChange={(kids) => change({ kids })} />

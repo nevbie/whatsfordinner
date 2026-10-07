@@ -120,6 +120,9 @@ const de = {
 
   'combo.chinese': 'Chinesisches Essen',
   'combo.indian': 'Indisches Thali',
+  'combo.tapas': 'Tapas-Abend',
+  'combo.introTapas': 'Mehrere kleine Gerichte zum Teilen: etwas mit Kartoffeln oder Gemüse, Fleisch, Fisch und Brot oder Oliven – dazu Aioli.',
+  'suggest.tapasEvening': 'Tapas-Abend',
   'combo.introChinese': 'Faustregel: etwa ein Gericht pro Person – Fleisch oder Fisch, Gemüse, Suppe oder kalte Vorspeise, dazu Reis.',
   'combo.introIndian': 'Ein Thali vereint Dal, Curry, Gemüse, Kühlendes und Brot oder Reis – idealerweise alle sechs Geschmacksrichtungen.',
   'combo.people': 'Personen',
@@ -155,6 +158,13 @@ const de = {
   'slot.rice': 'Reis',
   'slot.drink': 'Getränk',
   'slot.dessert': 'Nachtisch',
+  'slot.tapaVeg': 'Kartoffel & Gemüse',
+  'slot.tapaMeat': 'Fleisch',
+  'slot.tapaFish': 'Fisch & Meeresfrüchte',
+  'slot.tapaBread': 'Brot, Käse & Oliven',
+  'slot.tapaVeg2': 'Noch etwas Gemüse',
+  'slot.tapaMeat2': 'Noch etwas Fleisch',
+  'slot.tapaFish2': 'Fisch oder Gemüse',
   'slot.extra': 'Extra',
 
   'settings.language': 'Sprache',
@@ -376,6 +386,9 @@ const en: Record<Key, string> = {
 
   'combo.chinese': 'Chinese meal',
   'combo.indian': 'Indian thali',
+  'combo.tapas': 'Tapas evening',
+  'combo.introTapas': 'Several small dishes to share: something with potatoes or vegetables, meat, fish and bread or olives – with aioli.',
+  'suggest.tapasEvening': 'Tapas evening',
   'combo.introChinese': 'Rule of thumb: about one dish per person – meat or fish, vegetables, a soup or cold dish, plus rice.',
   'combo.introIndian': 'A thali brings together dal, curry, vegetables, something cooling and bread or rice – ideally all six tastes.',
   'combo.people': 'People',
@@ -411,6 +424,13 @@ const en: Record<Key, string> = {
   'slot.rice': 'Rice',
   'slot.drink': 'Drink',
   'slot.dessert': 'Dessert',
+  'slot.tapaVeg': 'Potatoes & vegetables',
+  'slot.tapaMeat': 'Meat',
+  'slot.tapaFish': 'Fish & seafood',
+  'slot.tapaBread': 'Bread, cheese & olives',
+  'slot.tapaVeg2': 'More vegetables',
+  'slot.tapaMeat2': 'More meat',
+  'slot.tapaFish2': 'Fish or vegetables',
   'slot.extra': 'Extra',
 
   'settings.language': 'Language',
@@ -572,6 +592,10 @@ export const COURSE_LABELS: Record<Course, [string, string]> = {
   dessert: ['Nachtisch', 'Dessert'],
   snack: ['Snack', 'Snack'],
   meal: ['Eintopf / Einzelgericht', 'One-dish meal'],
+  tapaVeg: ['Tapa: Kartoffel & Gemüse', 'Tapa: potatoes & veg'],
+  tapaMeat: ['Tapa: Fleisch', 'Tapa: meat'],
+  tapaFish: ['Tapa: Fisch', 'Tapa: fish'],
+  tapaBread: ['Tapa: Brot, Käse & Oliven', 'Tapa: bread, cheese & olives'],
 }
 
 export const PARTY_FORMAT_LABELS: Record<PartyFormat, [string, string, string]> = {

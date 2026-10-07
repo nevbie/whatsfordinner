@@ -39,11 +39,42 @@ export function chineseDishCount(adults: number, kids: number): number {
   return Math.max(2, Math.min(6, Math.round(adults + kids * 0.5)))
 }
 
+/** Number of tapas for a tapas evening (4–7). */
+export function tapasCount(adults: number, kids: number): number {
+  return Math.max(4, Math.min(7, Math.round(adults + kids * 0.5) + 2))
+}
+
+const TAPA_COURSES = new Set<Course>(['tapaVeg', 'tapaMeat', 'tapaFish', 'tapaBread'])
+
+/** Which builder a dish belongs to (its cuisine, or tapas for Spanish tapas). */
+export function comboTypeOfDish(d: Dish): ComboType | undefined {
+  if (d.course && TAPA_COURSES.has(d.course)) return 'tapas'
+  if (d.cuisine === 'chinese' || d.cuisine === 'indian') return d.cuisine
+  return undefined
+}
+
 export function comboSlots(o: ComboOptions, seed?: Dish): ComboSlot[] {
   if (seed?.course === 'meal') {
     return o.type === 'chinese'
       ? [{ key: 'meal', roles: ['meal'] }, { key: 'side', roles: ['cold', 'soup'] }]
       : [{ key: 'meal', roles: ['meal'] }, { key: 'raita', roles: ['raita'] }, { key: 'side', roles: ['chutney', 'salad', 'side'] }]
+  }
+  if (o.type === 'tapas') {
+    // a tapas evening: something with potatoes/eggs or vegetables, meat, fish, bread/olives …
+    const slots: ComboSlot[] = [
+      { key: 'tapaVeg', roles: ['tapaVeg'] },
+      { key: 'tapaMeat', roles: ['tapaMeat'] },
+      { key: 'tapaFish', roles: ['tapaFish'] },
+      { key: 'tapaBread', roles: ['tapaBread'] },
+    ]
+    const more: ComboSlot[] = [
+      { key: 'tapaVeg2', roles: ['tapaVeg'] },
+      { key: 'tapaMeat2', roles: ['tapaMeat'] },
+      { key: 'tapaFish2', roles: ['tapaFish', 'tapaVeg'] },
+    ]
+    const n = tapasCount(o.adults, o.kids)
+    for (const m of more) if (slots.length < n) slots.push(m)
+    return slots
   }
   if (o.type === 'chinese') {
     const slots: ComboSlot[] = [
@@ -131,7 +162,7 @@ function weighted(cands: Dish[], ctx: PickContext, rng: Rng): Dish | undefined {
 export function slotCandidates(slot: ComboSlot, pool: Dish[], o: ComboOptions): Dish[] {
   return pool.filter(
     (d) =>
-      d.cuisine === o.type &&
+      comboTypeOfDish(d) === o.type &&
       d.course !== undefined &&
       slot.roles.includes(d.course) &&
       matchesDiet(d, { diet: o.diet, kids: false, noSpicy: o.noSpicy, maxEffort: 3 }),
