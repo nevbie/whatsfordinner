@@ -1,5 +1,5 @@
 import type { DayEntry, Dish, FamilySettings, FamilyState, FavLabel, Party } from '../data/types'
-import { DEFAULT_SETTINGS, emptyState } from '../data/types'
+import { dayDishIds, DEFAULT_SETTINGS, emptyState } from '../data/types'
 
 /** Storage for the shared family state: localStorage on this device, or Firebase for the family. */
 export interface Backend {
@@ -18,7 +18,7 @@ export interface Backend {
 
 /** A day entry is kept when it has dishes or is marked as done. */
 export function keepEntry(entry: DayEntry | null): entry is DayEntry {
-  return !!entry && (entry.dishes.length > 0 || !!entry.done)
+  return !!entry && (dayDishIds(entry).length > 0 || !!entry.done)
 }
 
 /** Fill in missing fields of state coming from storage. */

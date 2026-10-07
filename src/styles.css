@@ -1066,3 +1066,8 @@ select.who {
 .view > .area-row { margin-left: -16px; margin-right: -16px; padding-left: 16px; padding-right: 16px; }
 .filter-panel { overflow: hidden; }
 .filter-panel .segmented { justify-self: start; width: auto; }
+.compose-panel { display: grid; gap: 6px; padding: 10px 14px; margin: 6px 0 10px; background: var(--surface-2); }
+.meal-select { margin-right: auto; }
+select.add-slot { text-align: center; appearance: none; }
+.day-meal { display: inline-flex; gap: 6px; align-items: baseline; flex-basis: 100%; min-width: 0; }
+.meal-tag { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); flex: none; }

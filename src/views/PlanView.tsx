@@ -7,37 +7,42 @@ import { addDays, todayISO, weekStart } from '../logic/dates'
 import { DEFAULT_FILTERS } from '../logic/filters'
 import { guestTotal, newParty } from '../logic/party'
 import { suggest } from '../logic/suggest'
-import { useStore } from '../store/StoreContext'
+import { dayDishIds, EXTRA_MEALS, type Dish } from '../data/types'
+import { useStore, type Meal } from '../store/StoreContext'
 import { useUI } from '../ui'
 
 export function PlanView() {
   const { t, lang } = useLang()
-  const { state, dishes, dishById, setDay, saveParty } = useStore()
+  const { state, dishes, dishById, setDay, setMeal, saveParty } = useStore()
   const ui = useUI()
   const today = todayISO()
   const [start, setStart] = useState(() => weekStart(today))
   const [expanded, setExpanded] = useState<string | null>(null)
   const days = Array.from({ length: 7 }, (_, i) => addDays(start, i))
 
-  const addDish = async (date: string) => {
-    const id = await ui.pickDish(t('plan.pickDish'))
+  const mealIds = (date: string, meal: Meal) => (meal === 'dinner' ? state.plan[date]?.dishes : state.plan[date]?.meals?.[meal]) ?? []
+
+  const addDish = async (date: string, meal: Meal = 'dinner') => {
+    // Kaffee & Kuchen: offer cakes, desserts and sweets first
+    const filter = meal === 'coffee' ? (d: Dish) => d.kind === 'bake' || d.tags.includes('sweet') : undefined
+    const id = await ui.pickDish(meal === 'dinner' ? t('plan.pickDish') : t(`meal.${meal}`), filter)
     if (!id) return
     const dish = dishById.get(id)
-    if (dish?.kind === 'combo' && dish.combo) return ui.openCombo(dish.combo, undefined, date)
-    const existing = state.plan[date]?.dishes ?? []
-    setDay(date, { ...state.plan[date], dishes: [...existing, id] })
+    if (dish?.kind === 'combo' && dish.combo) return ui.openCombo(dish.combo, undefined, date, meal)
+    setMeal(date, meal, [...mealIds(date, meal), id])
   }
 
-  const removeDish = (date: string, index: number) => {
+  const removeDish = (date: string, meal: Meal, index: number) => {
+    const next = mealIds(date, meal).filter((_, i) => i !== index)
     const entry = state.plan[date]
-    const next = entry.dishes.filter((_, i) => i !== index)
-    setDay(date, next.length || entry.done ? { ...entry, dishes: next } : null)
+    if (!next.length && dayDishIds(entry).length <= 1 && !entry.done) return setDay(date, null)
+    setMeal(date, meal, next)
   }
 
   const clearDay = (date: string) => {
     if (!confirm(t('plan.clearConfirm'))) return
     const entry = state.plan[date]
-    setDay(date, entry.done ? { ...entry, dishes: [] } : null)
+    setDay(date, entry.done ? { dishes: [], done: true } : null)
   }
 
   /** Suggest dishes for the given (empty) days, avoiding repeats within the week. */
@@ -48,7 +53,7 @@ export function PlanView() {
       const dish = picks[i]
       if (!dish) return
       // a "Chinesisch/Indisch (diverse)" pick stays a placeholder the family can expand later
-      setDay(date, { dishes: [dish.id] })
+      setDay(date, { ...state.plan[date], dishes: [dish.id] })
     })
   }
 
@@ -82,6 +87,8 @@ export function PlanView() {
           const past = date < today
           const open = expanded === date
           const dishIds = entry?.dishes ?? []
+          const allIds = dayDishIds(entry)
+          const extraMeals = EXTRA_MEALS.filter((m) => entry?.meals?.[m]?.length)
           return (
             <li key={date} className={`day ${isToday ? 'today' : ''} ${past ? 'past' : ''}`}>
               <div className="day-row">
@@ -90,6 +97,17 @@ export function PlanView() {
                   <span className="day-date">{formatDay(date, lang, { day: 'numeric', month: 'numeric' })}</span>
                 </div>
                 <div className="day-main">
+                  {extraMeals.map((m) => (
+                    <span key={m} className="day-meal">
+                      <span className="meal-tag">{t(`meal.short.${m}`)}</span>
+                      {entry!.meals![m]!.map((id, i) => (
+                        <button key={`${id}-${i}`} className="day-dish" onClick={() => ui.openDish(id)}>
+                          {dishById.get(id) ? dishLabel(dishById.get(id)!, lang) : id}
+                        </button>
+                      ))}
+                    </span>
+                  ))}
+                  {extraMeals.length > 0 && dishIds.length > 0 && <span className="meal-tag">{t('meal.short.dinner')}</span>}
                   {dishIds.map((id, i) => {
                     const d = dishById.get(id)
                     return (
@@ -111,7 +129,7 @@ export function PlanView() {
                       <span className="muted small"> · {t('party.guestsCount', { n: guestTotal(p) })}</span>
                     </button>
                   ))}
-                  {!dishIds.length && !partiesOn(date).length && (
+                  {!allIds.length && !partiesOn(date).length && (
                     <span className="day-empty">
                       <button className="link-btn" onClick={() => addDish(date)}>
                         ＋ {t('plan.add')}
@@ -129,10 +147,10 @@ export function PlanView() {
                     </label>
                   )}
                 </div>
-                {dishIds.length > 0 && (
+                {allIds.length > 0 && (
                   <button
                     className="icon-btn small day-clear"
-                    onClick={() => (dishIds.length === 1 ? removeDish(date, 0) : clearDay(date))}
+                    onClick={() => (allIds.length === 1 ? setDay(date, entry!.done ? { dishes: [], done: true } : null) : clearDay(date))}
                     aria-label={t('plan.clear')}
                     title={t('plan.clear')}
                   >
@@ -145,14 +163,21 @@ export function PlanView() {
               </div>
               {open && (
                 <div className="day-actions">
-                  {dishIds.map((id, i) => (
-                    <button key={`${id}-${i}`} className="chip" onClick={() => removeDish(date, i)}>
-                      ✕ {dishById.get(id) ? dishLabel(dishById.get(id)!, lang) : id}
+                  {(['dinner', ...EXTRA_MEALS] as Meal[]).flatMap((m) =>
+                    mealIds(date, m).map((id, i) => (
+                      <button key={`${m}-${id}-${i}`} className="chip" onClick={() => removeDish(date, m, i)}>
+                        ✕ {dishById.get(id) ? dishLabel(dishById.get(id)!, lang) : id}
+                      </button>
+                    )),
+                  )}
+                  <button className="chip" onClick={() => addDish(date)}>
+                    ＋ {t('meal.dinner')}
+                  </button>
+                  {EXTRA_MEALS.map((m) => (
+                    <button key={m} className="chip" onClick={() => addDish(date, m)}>
+                      ＋ {t(`meal.${m}`)}
                     </button>
                   ))}
-                  <button className="chip" onClick={() => addDish(date)}>
-                    ＋ {t('plan.add')}
-                  </button>
                   {(['chinese', 'indian', 'tapas', 'abendbrot', 'salad'] as const).map((c) => (
                     <button key={c} className="chip" onClick={() => ui.openCombo(c, undefined, date)} aria-label={t(`combo.${c}`)} title={t(`combo.${c}`)}>
                       {comboIcon(c)}

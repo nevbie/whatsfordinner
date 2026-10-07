@@ -85,7 +85,7 @@ export function App() {
           case 'dish':
             return <DishDetail key={i} id={o.id} />
           case 'combo':
-            return <ComboBuilder key={i} combo={o.combo} seedId={o.seedId} date={o.date} />
+            return <ComboBuilder key={i} combo={o.combo} seedId={o.seedId} date={o.date} meal={o.meal} />
           case 'form':
             return <DishForm key={i} id={o.id} />
           case 'party':

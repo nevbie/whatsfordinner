@@ -23,7 +23,7 @@ export function comboTypeOf(dish: Dish) {
 
 export function SuggestView() {
   const { t, lang } = useLang()
-  const { state, dishes, dishById, setDay } = useStore()
+  const { state, dishes, dishById, setDay, setMeal } = useStore()
   const ui = useUI()
   const [filters, setFilters] = usePersistentFilters('wfd:filters:suggest')
   const [showFilters, setShowFilters] = useState(false)
@@ -54,12 +54,12 @@ export function SuggestView() {
   const take = (dish: Dish) => {
     const combo = comboTypeOf(dish)
     if (dish.kind === 'combo' && combo) return ui.openCombo(combo, undefined, target)
-    setDay(target, { dishes: [dish.id] })
+    setMeal(target, 'dinner', [dish.id])
   }
   const planLater = async (dish: Dish) => {
     if (dish.kind === 'combo' && dish.combo) return ui.openCombo(dish.combo)
     const date = await ui.pickDay()
-    if (date) setDay(date, { dishes: [dish.id] })
+    if (date) setMeal(date, 'dinner', [dish.id])
   }
 
   return (

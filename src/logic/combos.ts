@@ -34,6 +34,8 @@ export interface ComboOptions {
   kidsFav?: boolean
   quick?: boolean
   favs?: boolean
+  /** own composition: number of slots per group key (see COMPOSE_GROUPS) */
+  counts?: Record<string, number>
 }
 
 const PROTEIN: Course[] = ['meat', 'fish', 'tofu']
@@ -63,7 +65,82 @@ export function comboTypeOfDish(d: Dish): ComboType | undefined {
   return undefined
 }
 
+/**
+ * Groups the family can count when changing a builder's composition. The keys match the
+ * default slot keys (without the trailing number), so the defaults can be shown as counts.
+ */
+export const COMPOSE_GROUPS: Record<ComboType, ComboSlot[]> = {
+  chinese: [
+    { key: 'main', roles: ['meat', 'fish', 'tofu'] },
+    { key: 'meat', roles: ['meat'] },
+    { key: 'fish', roles: ['fish'] },
+    { key: 'tofu', roles: ['tofu'] },
+    { key: 'veg', roles: ['veg', 'egg'] },
+    { key: 'egg', roles: ['egg'] },
+    { key: 'soup', roles: ['soup', 'cold'] },
+    { key: 'cold', roles: ['cold'] },
+    { key: 'meal', roles: ['meal'] },
+    { key: 'staple', roles: ['staple'] },
+  ],
+  indian: [
+    { key: 'dal', roles: ['dal'] },
+    { key: 'curry', roles: ['curry'] },
+    { key: 'sabzi', roles: ['sabzi'] },
+    { key: 'raita', roles: ['raita'] },
+    { key: 'chutney', roles: ['chutney'] },
+    { key: 'salad', roles: ['salad'] },
+    { key: 'side', roles: ['chutney', 'salad', 'side'] },
+    { key: 'snack', roles: ['snack'] },
+    { key: 'meal', roles: ['meal'] },
+    { key: 'bread', roles: ['bread'] },
+    { key: 'rice', roles: ['rice'] },
+    { key: 'drink', roles: ['drink'] },
+    { key: 'dessert', roles: ['dessert'] },
+  ],
+  tapas: [
+    { key: 'tapaVeg', roles: ['tapaVeg'] },
+    { key: 'tapaMeat', roles: ['tapaMeat'] },
+    { key: 'tapaFish', roles: ['tapaFish'] },
+    { key: 'tapaBread', roles: ['tapaBread'] },
+  ],
+  abendbrot: [
+    { key: 'abBread', roles: ['abBread'] },
+    { key: 'abCheese', roles: ['abCheese'] },
+    { key: 'abMeat', roles: ['abMeat', 'abFish'] },
+    { key: 'abFish', roles: ['abFish'] },
+    { key: 'abSpread', roles: ['abSpread'] },
+    { key: 'abVeg', roles: ['abVeg'] },
+    { key: 'abExtra', roles: ['abExtra'] },
+    { key: 'abMore', roles: ['abMeat', 'abFish', 'abCheese'] },
+  ],
+  teller: [
+    { key: 'plMain', roles: ['plMain'] },
+    { key: 'plStarch', roles: ['plStarch'] },
+    { key: 'plVeg', roles: ['plVeg'] },
+  ],
+  salad: [
+    { key: 'slBase', roles: ['slBase'] },
+    { key: 'slExtra', roles: ['slExtra'] },
+    { key: 'slTopping', roles: ['slTopping'] },
+    { key: 'slDressing', roles: ['slDressing'] },
+  ],
+}
+
+/** Group key of a default slot key ('veg2' → 'veg', 'abSpread2' → 'abSpread'). */
+export const groupKeyOf = (slotKey: string) => slotKey.replace(/\d+$/, '')
+
+/** The default composition as counts per group (for the composition editor). */
+export function defaultCounts(o: ComboOptions): Record<string, number> {
+  const counts: Record<string, number> = {}
+  for (const s of comboSlots({ ...o, counts: undefined })) counts[groupKeyOf(s.key)] = (counts[groupKeyOf(s.key)] ?? 0) + 1
+  return counts
+}
+
 export function comboSlots(o: ComboOptions, seed?: Dish): ComboSlot[] {
+  if (o.counts && seed?.course !== 'meal') {
+    // own composition: n slots per group, in the group order
+    return COMPOSE_GROUPS[o.type].flatMap((g) => Array.from({ length: o.counts![g.key] ?? 0 }, (_, i) => ({ key: i ? `${g.key}${i + 1}` : g.key, roles: g.roles })))
+  }
   if (seed?.course === 'meal') {
     return o.type === 'chinese'
       ? [{ key: 'meal', roles: ['meal'] }, { key: 'side', roles: ['cold', 'soup'] }]

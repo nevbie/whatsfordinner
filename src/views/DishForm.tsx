@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Sheet } from '../components/Sheet'
 import { INGREDIENTS, ingredientName } from '../data/ingredients'
 import { STAPLES, staplesOf } from '../data/classify'
-import type { Course, Cuisine, Dish, DishKind, Staple, Tag } from '../data/types'
+import type { ComboType, Course, Cuisine, Dish, DishKind, Staple, Tag } from '../data/types'
 import { COURSE_LABELS, CUISINE_LABELS, LANG_NAMES, TAG_LABELS, useLang } from '../i18n'
 import { useStore } from '../store/StoreContext'
 import { useUI } from '../ui'
@@ -10,6 +10,14 @@ import { useUI } from '../ui'
 const TAGS = Object.keys(TAG_LABELS) as Tag[]
 const CHINESE_COURSES: Course[] = ['meat', 'fish', 'tofu', 'egg', 'veg', 'cold', 'soup', 'staple', 'meal']
 const INDIAN_COURSES: Course[] = ['curry', 'dal', 'sabzi', 'raita', 'chutney', 'salad', 'side', 'bread', 'rice', 'drink', 'dessert', 'snack', 'meal']
+/** Builder roles that work for any cuisine (Chinese/Indian roles need that cuisine). */
+const OTHER_BUILDERS: [ComboType, Course[]][] = [
+  ['tapas', ['tapaVeg', 'tapaMeat', 'tapaFish', 'tapaBread']],
+  ['abendbrot', ['abBread', 'abCheese', 'abMeat', 'abFish', 'abSpread', 'abVeg', 'abExtra']],
+  ['teller', ['plMain', 'plStarch', 'plVeg']],
+  ['salad', ['slBase', 'slExtra', 'slTopping', 'slDressing']],
+]
+const BAKE_COURSES: Course[] = ['bkCake', 'bkDessert', 'bkPastry', 'bkSweets']
 
 /** Map typed ingredient names back to dictionary keys where possible; keep the rest as free text. */
 function parseIngredients(text: string): string[] {
@@ -47,7 +55,10 @@ export function DishForm({ id }: { id?: string }) {
   const [note, setNote] = useState(existing?.note?.[lang] ?? '')
   const [error, setError] = useState('')
 
-  const courses = cuisine === 'chinese' ? CHINESE_COURSES : cuisine === 'indian' ? INDIAN_COURSES : []
+  const cuisineCourses = cuisine === 'chinese' ? CHINESE_COURSES : cuisine === 'indian' ? INDIAN_COURSES : []
+  const groups: [string, Course[]][] =
+    kind === 'bake' ? [[t('form.kind.bake'), BAKE_COURSES]] : [...(cuisineCourses.length ? [[t(`combo.${cuisine as 'chinese'}`), cuisineCourses] as [string, Course[]]] : []), ...OTHER_BUILDERS.map(([c, cs]) => [t(`combo.${c}`), cs] as [string, Course[]])]
+  const courses = groups.flatMap(([, cs]) => cs)
 
   const save = () => {
     if (!orig.trim()) return setError(t('form.required'))
@@ -142,15 +153,19 @@ export function DishForm({ id }: { id?: string }) {
             </label>
           )}
         </div>
-        {courses.length > 0 && kind !== 'eatout' && (
+        {kind !== 'eatout' && (
           <label>
-            {t('form.course')}
+            {kind === 'bake' ? t('form.kind.bake') : t('form.builderRole')}
             <select value={course} onChange={(e) => setCourse(e.target.value as Course)}>
               <option value="">{t('form.none')}</option>
-              {courses.map((c) => (
-                <option key={c} value={c}>
-                  {pick(COURSE_LABELS[c])}
-                </option>
+              {groups.map(([label, cs]) => (
+                <optgroup key={label} label={label}>
+                  {cs.map((c) => (
+                    <option key={c} value={c}>
+                      {pick(COURSE_LABELS[c])}
+                    </option>
+                  ))}
+                </optgroup>
               ))}
             </select>
           </label>

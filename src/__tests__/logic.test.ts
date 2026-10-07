@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { builtinDishes } from '../data/dishes'
 import { emptyState, type Dish } from '../data/types'
-import { chineseDishCount, fillEntries, initialEntries, rerollEntry, type ComboOptions } from '../logic/combos'
+import { chineseDishCount, defaultCounts, fillEntries, initialEntries, rerollEntry, type ComboOptions } from '../logic/combos'
 import { addDays, weekStart } from '../logic/dates'
 import { DEFAULT_FILTERS, matchesFilters, normalizeFilters } from '../logic/filters'
 import { regionOf, staplesOf } from '../data/classify'
@@ -321,5 +321,25 @@ describe('Teller, Salat & Backen', () => {
 
   it('attaches the family recipes to existing dishes', () => {
     for (const id of ['kaesekuchen', 'kaiserschmarrn', 'waffeln', 'haehnchen-suesskartoffel']) expect(byId.get(id)?.recipe, id).toBeDefined()
+  })
+})
+
+describe('builder composition & meals', () => {
+  it('builds slots from an own composition', () => {
+    const o = opts({ type: 'salad', counts: { slBase: 1, slExtra: 3, slTopping: 0, slDressing: 1 } })
+    const ds = dishesOf(fillEntries(initialEntries(o), builtinDishes, ctx(o), seeded(3)))
+    expect(ds.map((d) => d.course)).toEqual(['slBase', 'slExtra', 'slExtra', 'slExtra', 'slDressing'])
+  })
+
+  it('shows the default composition as counts', () => {
+    expect(defaultCounts(opts({ type: 'salad' }))).toEqual({ slBase: 1, slExtra: 2, slTopping: 1, slDressing: 1 })
+    expect(defaultCounts(opts({ type: 'chinese', adults: 2, kids: 2 }))).toEqual({ main: 1, veg: 1, soup: 1, staple: 1 })
+  })
+
+  it('counts lunch and coffee dishes as eaten', () => {
+    const plan = { '2026-03-01': { dishes: ['lasagne'], meals: { lunch: ['minestrone'], coffee: ['kaesekuchen'] } } }
+    const last = lastEaten(plan, TODAY)
+    expect(last.get('minestrone')).toBe('2026-03-01')
+    expect(last.get('kaesekuchen')).toBe('2026-03-01')
   })
 })

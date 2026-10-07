@@ -1,10 +1,11 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
 import type { ComboType, Dish } from './data/types'
+import type { Meal } from './store/StoreContext'
 
 /** Overlays (sheets) stacked on top of the current tab. The phone's back button closes the top one. */
 export type Overlay =
   | { type: 'dish'; id: string }
-  | { type: 'combo'; combo: ComboType; seedId?: string; date?: string }
+  | { type: 'combo'; combo: ComboType; seedId?: string; date?: string; meal?: Meal }
   | { type: 'form'; id?: string }
   | { type: 'party'; id: string }
   | { type: 'pickDish'; title: string; filter?: (d: Dish) => boolean; resolve(id: string | null): void }
@@ -17,7 +18,7 @@ interface UIValue {
   /** Close a picker overlay and hand its result to the waiting caller. */
   finish(result: string | null): void
   openDish(id: string): void
-  openCombo(combo: ComboType, seedId?: string, date?: string): void
+  openCombo(combo: ComboType, seedId?: string, date?: string, meal?: Meal): void
   openForm(id?: string): void
   openParty(id: string): void
   pickDish(title: string, filter?: (d: Dish) => boolean): Promise<string | null>
@@ -73,7 +74,7 @@ export function UIProvider({ children }: { children: ReactNode }) {
     close,
     finish,
     openDish: (id) => open({ type: 'dish', id }),
-    openCombo: (combo, seedId, date) => open({ type: 'combo', combo, seedId, date }),
+    openCombo: (combo, seedId, date, meal) => open({ type: 'combo', combo, seedId, date, meal }),
     openForm: (id) => open({ type: 'form', id }),
     openParty: (id) => open({ type: 'party', id }),
     pickDish: (title, filter) =>

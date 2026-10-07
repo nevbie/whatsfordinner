@@ -4,10 +4,10 @@ import { DishName } from '../components/DishName'
 import { formatDay } from '../components/format'
 import { Sheet } from '../components/Sheet'
 import { Stepper } from '../components/Stepper'
-import type { ComboType, Course } from '../data/types'
-import { useLang, type I18nKey } from '../i18n'
-import { fillEntries, initialEntries, pickForSlot, rerollEntry, slotCandidates, type ComboEntry, type ComboOptions } from '../logic/combos'
-import { useStore } from '../store/StoreContext'
+import { EXTRA_MEALS, type ComboType, type Course } from '../data/types'
+import { COURSE_LABELS, useLang, type I18nKey } from '../i18n'
+import { COMPOSE_GROUPS, comboTypeOfDish, defaultCounts, fillEntries, groupKeyOf, initialEntries, pickForSlot, rerollEntry, slotCandidates, type ComboEntry, type ComboOptions } from '../logic/combos'
+import { useStore, type Meal } from '../store/StoreContext'
 import { useUI } from '../ui'
 
 const ALL_COURSES: Record<ComboType, Course[]> = {
@@ -17,6 +17,13 @@ const ALL_COURSES: Record<ComboType, Course[]> = {
   salad: ['slExtra', 'slTopping', 'slDressing'],
   chinese: ['meat', 'fish', 'tofu', 'egg', 'veg', 'cold', 'soup', 'staple', 'meal'],
   indian: ['curry', 'dal', 'sabzi', 'raita', 'chutney', 'salad', 'side', 'bread', 'rice', 'drink', 'dessert', 'snack', 'meal'],
+}
+
+/** Copy of an object without one key (Firestore rejects undefined values). */
+function withoutKey<T extends object>(o: T, key: keyof T): T {
+  const copy = { ...o }
+  delete copy[key]
+  return copy
 }
 
 const INTRO: Record<ComboType, I18nKey> = {
@@ -30,9 +37,12 @@ const INTRO: Record<ComboType, I18nKey> = {
 
 const SLOT_KEYS = new Set(['main', 'main2', 'veg', 'veg2', 'soup', 'cold', 'staple', 'meal', 'side', 'dal', 'curry', 'curry2', 'sabzi', 'raita', 'bread', 'rice', 'drink', 'dessert', 'tapaVeg', 'tapaVeg2', 'tapaMeat', 'tapaMeat2', 'tapaFish', 'tapaFish2', 'tapaBread', 'abBread', 'abBread2', 'abCheese', 'abMeat', 'abSpread', 'abSpread2', 'abVeg', 'abExtra', 'abMore', 'plMain', 'plStarch', 'plVeg', 'slBase', 'slExtra', 'slExtra2', 'slTopping', 'slDressing'])
 
-export function ComboBuilder({ combo, seedId, date }: { combo: ComboType; seedId?: string; date?: string }) {
-  const { t, lang } = useLang()
-  const { state, dishes, dishById, setDay } = useStore()
+export function ComboBuilder({ combo, seedId, date, meal: initialMeal }: { combo: ComboType; seedId?: string; date?: string; meal?: Meal }) {
+  const { t, lang, pick } = useLang()
+  const { state, dishes, dishById, setMeal, updateSettings } = useStore()
+  const [meal, setMealChoice] = useState<Meal>(initialMeal ?? 'dinner')
+  const [composing, setComposing] = useState(false)
+  const savedCounts = state.settings.builderCounts?.[combo]
   const ui = useUI()
   const seed = seedId ? dishById.get(seedId) : undefined
   const favorites = useMemo(() => new Set(state.favorites), [state.favorites])
@@ -45,13 +55,16 @@ export function ComboBuilder({ combo, seedId, date }: { combo: ComboType; seedId
     noSpicy: false,
     drink: false,
     dessert: false,
+    counts: state.settings.builderCounts?.[combo],
   })
   const ctx = (o: ComboOptions) => ({ options: o, favorites, prefer: new Set(seed?.pairsWith ?? []) })
   const build = (o: ComboOptions) => fillEntries(initialEntries(o, seed), dishes, ctx(o))
   const [entries, setEntries] = useState<ComboEntry[]>(() => {
     // re-open a day that already holds a combo of this cuisine: start from what is planned
-    const planned = date ? state.plan[date]?.dishes.map((id) => dishById.get(id)).filter((d) => d && d.cuisine === combo && d.course) : undefined
-    if (planned?.length && !seed) return planned.map((d) => ({ slot: { key: 'extra', roles: [d!.course!] }, dishId: d!.id, locked: true }))
+    const plannedIds = date ? (meal === 'dinner' ? state.plan[date]?.dishes : state.plan[date]?.meals?.[meal]) : undefined
+    const planned = plannedIds?.map((id) => dishById.get(id)).filter((d) => d && comboTypeOfDish(d) === combo && d.course)
+    if (planned?.length && !seed)
+      return planned.map((d) => ({ slot: { key: COMPOSE_GROUPS[combo].find((g) => g.roles.includes(d!.course!))?.key ?? 'extra', roles: [d!.course!] }, dishId: d!.id, locked: true }))
     return build(options)
   })
 
@@ -77,8 +90,9 @@ export function ComboBuilder({ combo, seedId, date }: { combo: ComboType; seedId
     if (id) update(i, { dishId: id, locked: true })
   }
 
-  const addSlot = () => {
-    const slot = { key: 'extra', roles: ALL_COURSES[combo] }
+  const addSlot = (groupKey: string) => {
+    const group = COMPOSE_GROUPS[combo].find((g) => g.key === groupKey)
+    const slot = group ? { key: group.key, roles: group.roles } : { key: 'extra', roles: ALL_COURSES[combo] }
     const chosen = entries.map((e) => (e.dishId ? dishById.get(e.dishId) : undefined)).filter((d) => d !== undefined)
     const dish = pickForSlot(slot, chosen, dishes, ctx(options), Math.random)
     setEntries([...entries, { slot, dishId: dish?.id, locked: false }])
@@ -88,11 +102,19 @@ export function ComboBuilder({ combo, seedId, date }: { combo: ComboType; seedId
     const target = date ?? (await ui.pickDay())
     if (!target) return
     const ids = entries.map((e) => e.dishId).filter((x): x is string => !!x)
-    setDay(target, { dishes: ids })
+    setMeal(target, meal, ids)
     ui.close()
   }
 
-  const slotLabel = (key: string) => t(`slot.${SLOT_KEYS.has(key) ? key : 'extra'}` as I18nKey)
+  const slotLabel = (key: string) => {
+    const k = SLOT_KEYS.has(key) ? key : groupKeyOf(key)
+    if (SLOT_KEYS.has(k)) return t(`slot.${k}` as I18nKey)
+    const group = COMPOSE_GROUPS[combo].find((g) => g.key === k)
+    if (group && group.roles.length === 1) return pick(COURSE_LABELS[group.roles[0]]).replace(/^[^:]*: /, '')
+    return t('slot.extra')
+  }
+  const counts = options.counts ?? defaultCounts(options)
+  const setCount = (key: string, n: number) => change({ counts: { ...counts, [key]: n } })
 
   return (
     <Sheet
@@ -108,13 +130,41 @@ export function ComboBuilder({ combo, seedId, date }: { combo: ComboType; seedId
           <button className="btn" onClick={() => setEntries(fillEntries(entries, dishes, ctx(options)))}>
             🎲 {t('combo.shuffle')}
           </button>
+          <select className="chip select meal-select" value={meal} onChange={(e) => setMealChoice(e.target.value as Meal)} aria-label={t('meal.for')}>
+            {(['dinner', ...EXTRA_MEALS] as Meal[]).map((m) => (
+              <option key={m} value={m}>
+                {t(`meal.short.${m}`)}
+              </option>
+            ))}
+          </select>
           <button className="btn primary" onClick={plan}>
             {date ? t('combo.plan') : t('suggest.plan')}
           </button>
         </div>
       }
     >
-      <p className="muted small">{t(INTRO[combo])}</p>
+      <div className="row between top gap-sm">
+        <p className="muted small grow">{t(INTRO[combo])}</p>
+        <button className={`chip ${composing ? 'on' : ''}`} onClick={() => setComposing(!composing)} aria-expanded={composing}>
+          ⚙︎ {t('builder.compose')}
+          {savedCounts && ' •'}
+        </button>
+      </div>
+      {composing && (
+        <div className="card compose-panel">
+          {COMPOSE_GROUPS[combo].map((g) => (
+            <Stepper key={g.key} label={slotLabel(g.key)} value={counts[g.key] ?? 0} min={0} max={6} onChange={(n) => setCount(g.key, n)} />
+          ))}
+          <div className="row between wrap gap-sm">
+            <button className="btn sm" disabled={!savedCounts && !options.counts} onClick={() => { updateSettings({ builderCounts: withoutKey(state.settings.builderCounts ?? {}, combo) }); change({ counts: undefined }) }}>
+              {t('builder.resetDefault')}
+            </button>
+            <button className="btn sm primary" onClick={() => { updateSettings({ builderCounts: { ...state.settings.builderCounts, [combo]: counts } }); setComposing(false) }}>
+              {t('builder.saveDefault')}
+            </button>
+          </div>
+        </div>
+      )}
       <div className="builder-prefer">
         <span className="filter-label">{t('builder.prefer')}</span>
         <div className="chips">
@@ -194,9 +244,14 @@ export function ComboBuilder({ combo, seedId, date }: { combo: ComboType; seedId
           )
         })}
       </ul>
-      <button className="btn wide" onClick={addSlot}>
-        ＋ {t('combo.addSlot')}
-      </button>
+      <select className="btn wide add-slot" value="" onChange={(e) => e.target.value && addSlot(e.target.value)} aria-label={t('combo.addSlot')}>
+        <option value="">＋ {t('combo.addSlot')} …</option>
+        {COMPOSE_GROUPS[combo].map((g) => (
+          <option key={g.key} value={g.key}>
+            {slotLabel(g.key)}
+          </option>
+        ))}
+      </select>
     </Sheet>
   )
 }

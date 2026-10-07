@@ -1,4 +1,5 @@
 import type { DayEntry, Dish, FamilyState } from '../data/types'
+import { dayDishIds } from '../data/types'
 import { addDays, daysBetween, fromISO } from './dates'
 import { matchesFilters, type Filters } from './filters'
 
@@ -9,7 +10,7 @@ export function lastEaten(plan: Record<string, DayEntry>, today: string): Map<st
   const last = new Map<string, string>()
   for (const [date, entry] of Object.entries(plan)) {
     if (date > today) continue
-    for (const id of entry.dishes) {
+    for (const id of dayDishIds(entry)) {
       const prev = last.get(id)
       if (!prev || prev < date) last.set(id, date)
     }
@@ -22,7 +23,7 @@ export function plannedSoon(plan: Record<string, DayEntry>, today: string, days 
   const until = addDays(today, days)
   const ids = new Set<string>()
   for (const [date, entry] of Object.entries(plan)) {
-    if (date > today && date <= until) entry.dishes.forEach((id) => ids.add(id))
+    if (date > today && date <= until) dayDishIds(entry).forEach((id) => ids.add(id))
   }
   return ids
 }

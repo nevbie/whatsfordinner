@@ -1,11 +1,13 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { builtinDishes } from '../data/dishes'
-import type { DayEntry, Dish, FamilySettings, FamilyState, FavLabel, Party } from '../data/types'
+import type { DayEntry, Dish, ExtraMeal, FamilySettings, FamilyState, FavLabel, Party } from '../data/types'
 import { firebaseConfig } from '../firebaseConfig'
 import type { Backend } from './backend'
 import { localBackend, readLocal, writeLocal } from './local'
 
 const FAMILY_KEY = 'wfd:family'
+
+export type Meal = ExtraMeal | 'dinner'
 
 interface StoreValue {
   state: FamilyState
@@ -15,6 +17,8 @@ interface StoreValue {
   syncAvailable: boolean
   syncError: string | null
   setDay(date: string, entry: DayEntry | null): void
+  /** Replace the dishes of one meal of a day, keeping the other meals. */
+  setMeal(date: string, meal: Meal, ids: string[]): void
   toggleFavorite(id: string): void
   saveDish(dish: Dish): void
   deleteDish(id: string): void
@@ -108,6 +112,17 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     syncAvailable,
     syncError,
     setDay: (date, entry) => run(backend?.setDay(date, entry)),
+    setMeal: (date, meal, ids) => {
+      const entry: DayEntry = { ...(state.plan[date] ?? { dishes: [] }) }
+      if (meal === 'dinner') entry.dishes = ids
+      else {
+        const meals = { ...entry.meals }
+        if (ids.length) meals[meal] = ids
+        else delete meals[meal]
+        entry.meals = meals
+      }
+      run(backend?.setDay(date, entry))
+    },
     toggleFavorite: (id) => run(backend?.setFavorite(id, !state.favorites.includes(id))),
     saveDish: (dish) => run(backend?.saveDish(dish)),
     deleteDish: (id) => run(backend?.deleteDish(id)),

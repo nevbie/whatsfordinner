@@ -16,7 +16,7 @@ const isBuiltin = (id: string) => builtinIds.has(id)
 
 export function DishDetail({ id }: { id: string }) {
   const { t, lang, pick } = useLang()
-  const { dishById, dishes, setDay, deleteDish, state, toggleFavorite, toggleLabelFavorite } = useStore()
+  const { dishById, dishes, setMeal, deleteDish, state, toggleFavorite, toggleLabelFavorite } = useStore()
   const ui = useUI()
   const { counts } = useDishStats()
   const dish = dishById.get(id)
@@ -27,7 +27,9 @@ export function DishDetail({ id }: { id: string }) {
 
   const planFor = async () => {
     const date = await ui.pickDay()
-    if (date) setDay(date, { dishes: [dish.id] })
+    if (!date) return
+    if (dish.kind === 'bake') setMeal(date, 'coffee', [...(state.plan[date]?.meals?.coffee ?? []), dish.id])
+    else setMeal(date, 'dinner', [dish.id])
   }
 
   return (
@@ -92,13 +94,18 @@ export function DishDetail({ id }: { id: string }) {
       <div className="actions">
         {dish.kind !== 'combo' && dish.kind !== 'bake' && (
           <>
-            <button className="btn primary" onClick={() => setDay(todayISO(), { dishes: [dish.id] })}>
+            <button className="btn primary" onClick={() => setMeal(todayISO(), 'dinner', [dish.id])}>
               {t('suggest.takeToday')}
             </button>
             <button className="btn" onClick={planFor}>
               {t('dish.planFor')}
             </button>
           </>
+        )}
+        {dish.kind === 'bake' && (
+          <button className="btn primary" onClick={planFor}>
+            ☕ {t('dish.planCoffee')}
+          </button>
         )}
         {combo && (
           <button className={`btn ${dish.kind === 'combo' ? 'primary' : ''}`} onClick={() => ui.openCombo(combo, dish.kind === 'combo' ? undefined : dish.id)}>

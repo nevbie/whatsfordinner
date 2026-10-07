@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { dayDishIds } from '../data/types'
 import { todayISO } from '../logic/dates'
 import { lastEaten } from '../logic/suggest'
 import { useStore } from '../store/StoreContext'
@@ -12,7 +13,7 @@ export function useDishStats() {
     const counts = new Map<string, number>()
     const next = new Map<string, string>()
     for (const [date, entry] of Object.entries(state.plan)) {
-      for (const id of entry.dishes) {
+      for (const id of dayDishIds(entry)) {
         if (date <= today) counts.set(id, (counts.get(id) ?? 0) + 1)
         else if (!next.has(id) || next.get(id)! > date) next.set(id, date)
       }

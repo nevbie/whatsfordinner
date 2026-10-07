@@ -173,9 +173,14 @@ export interface Dish {
   custom?: boolean
 }
 
-/** One planned / eaten dinner. */
+/** Meals besides dinner that can be planned for a day. */
+export type ExtraMeal = 'breakfast' | 'lunch' | 'coffee'
+export const EXTRA_MEALS: ExtraMeal[] = ['breakfast', 'lunch', 'coffee']
+
+/** One planned / eaten day: `dishes` is dinner, `meals` the other meals. */
 export interface DayEntry {
   dishes: string[]
+  meals?: Partial<Record<ExtraMeal, string[]>>
   note?: string
   /** dinner of that day is over – the app moves on to planning the next day */
   done?: boolean
@@ -244,6 +249,8 @@ export interface FamilySettings {
   kids: number
   /** Do not suggest a dish again within this many days. */
   avoidDays: number
+  /** custom builder composition: number of components per role, per builder */
+  builderCounts?: Partial<Record<ComboType, Record<string, number>>>
 }
 
 /** State shared by all phones of a family. */
@@ -263,4 +270,10 @@ export const DEFAULT_SETTINGS: FamilySettings = { adults: 2, kids: 2, avoidDays:
 
 export function emptyState(): FamilyState {
   return { favorites: [], plan: {}, customDishes: {}, settings: { ...DEFAULT_SETTINGS }, parties: {}, labels: [], labelFavorites: {} }
+}
+
+/** All dish ids of a day, dinner and the other meals. */
+export function dayDishIds(entry: DayEntry | undefined): string[] {
+  if (!entry) return []
+  return [...entry.dishes, ...EXTRA_MEALS.flatMap((m) => entry.meals?.[m] ?? [])]
 }
