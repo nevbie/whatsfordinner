@@ -30,6 +30,10 @@ export interface ComboOptions {
   noSpicy: boolean
   drink: boolean
   dessert: boolean
+  /** soft filters: preferred when something fits, ignored for a slot otherwise */
+  kidsFav?: boolean
+  quick?: boolean
+  favs?: boolean
 }
 
 const PROTEIN: Course[] = ['meat', 'fish', 'tofu']
@@ -224,7 +228,12 @@ export function pickForSlot(slot: ComboSlot, chosen: Dish[], pool: Dish[], ctx: 
   // With kids at the table, at most one spicy dish.
   const spiceOk = (d: Dish) => o.kids === 0 || !d.tags.includes('spicy') || spicyCount === 0
 
+  // soft filters (Kinderliebling, schnell, Favoriten): use them when the slot has a match
+  const soft = (d: Dish) => (!o.kidsFav || d.tags.includes('kids')) && (!o.quick || d.effort === 1) && (!o.favs || ctx.favorites.has(d.id))
+  const preferred = base.filter(soft)
   return (
+    weighted(preferred.filter((d) => distinctMain(d) && spiceOk(d)), ctx, rng) ??
+    weighted(preferred.filter(spiceOk), ctx, rng) ??
     weighted(base.filter((d) => distinctMain(d) && spiceOk(d)), ctx, rng) ??
     weighted(base.filter(spiceOk), ctx, rng) ??
     weighted(base, ctx, rng)

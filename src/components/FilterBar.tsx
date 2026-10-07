@@ -3,7 +3,7 @@ import { useLang } from '../i18n'
 import { useStore } from '../store/StoreContext'
 import { STAPLES } from '../data/classify'
 import type { Region, Staple } from '../data/types'
-import { CUISINE_GROUPS, DEFAULT_FILTERS, normalizeFilters, type CuisineGroup, type Filters } from '../logic/filters'
+import { CUISINE_GROUPS, DEFAULT_FILTERS, normalizeFilters, type Filters } from '../logic/filters'
 
 const REGIONS: Region[] = ['europe', 'asia', 'other']
 
@@ -42,6 +42,11 @@ export function FilterBar({ filters, onChange, showEatOut = true }: { filters: F
       {label}
     </button>
   )
+  const chip = (on: boolean, label: string, onClick: () => void, extra = '') => (
+    <button className={`chip ${extra} ${on ? 'on' : ''}`} aria-pressed={on} onClick={onClick}>
+      {label}
+    </button>
+  )
   return (
     <div className="filters">
       <div className="segmented" role="group">
@@ -51,57 +56,50 @@ export function FilterBar({ filters, onChange, showEatOut = true }: { filters: F
           </button>
         ))}
       </div>
-      <div className="chips" role="group" aria-label={t('filter.region')}>
-        {REGIONS.map((r) => (
-          <button key={r} className={`chip ${filters.regions.includes(r) ? 'on' : ''}`} aria-pressed={filters.regions.includes(r)} onClick={() => onChange({ ...filters, regions: toggleIn(filters.regions, r) })}>
-            {t(`region.${r}`)}
-          </button>
-        ))}
-      </div>
-      <div className="chips" role="group" aria-label={t('filter.staple')}>
-        {STAPLES.map((s) => (
-          <button key={s} className={`chip ${filters.staples.includes(s) ? 'on' : ''}`} aria-pressed={filters.staples.includes(s)} onClick={() => onChange({ ...filters, staples: toggleIn(filters.staples, s) })}>
-            {STAPLE_ICONS[s]} {t(`staple.${s}`)}
-          </button>
-        ))}
-      </div>
-      <div className="chips">
-        <select className="chip select" value={filters.cuisine} onChange={(e) => onChange({ ...filters, cuisine: e.target.value as CuisineGroup })} aria-label={t('filter.cuisine')}>
+      <div className="filter-group">
+        <div className="filter-label">{t('filter.cuisine')}</div>
+        <div className="chips" role="group" aria-label={t('filter.region')}>
+          {REGIONS.map((r) => chip(filters.regions.includes(r), t(`region.${r}`), () => onChange({ ...filters, regions: toggleIn(filters.regions, r) }), 'region-chip'))}
+        </div>
+        <div className="chips" role="group" aria-label={t('filter.cuisine')}>
           {CUISINE_GROUPS.map((c) => (
-            <option key={c} value={c}>
-              {t(`cg.${c}`)}
-            </option>
+            <span key={c} style={{ display: 'contents' }}>
+              {chip(filters.cuisines.includes(c), t(`cg.${c}`), () => onChange({ ...filters, cuisines: toggleIn(filters.cuisines, c) }))}
+            </span>
           ))}
-        </select>
-        <button className={`chip ${filters.kids ? 'on' : ''}`} aria-pressed={filters.kids} onClick={() => toggle('kids')}>
-          🧒 {t('filter.kids')}
-        </button>
-        <button className={`chip ${filters.noSpicy ? 'on' : ''}`} aria-pressed={filters.noSpicy} onClick={() => toggle('noSpicy')}>
-          {t('filter.noSpicy')}
-        </button>
-        {effortChip(1, `⏱ ${t('filter.quick')}`)}
-        {effortChip(2, t('filter.noProject'))}
-        <button className={`chip ${filters.sweetOnly ? 'on' : ''}`} aria-pressed={filters.sweetOnly} onClick={() => toggle('sweetOnly')}>
-          🍮 {t('filter.sweet')}
-        </button>
-        <button className={`chip ${filters.favoritesOnly ? 'on' : ''}`} aria-pressed={filters.favoritesOnly} onClick={() => toggle('favoritesOnly')}>
-          ♥ {t('filter.favorites')}
-        </button>
-        {state.labels.map((l) => (
-          <button
-            key={l.id}
-            className={`chip lbl-chip lbl-${l.color % 8} ${filters.favLabels.includes(l.id) ? 'on' : ''}`}
-            aria-pressed={filters.favLabels.includes(l.id)}
-            onClick={() => onChange({ ...filters, favLabels: toggleIn(filters.favLabels, l.id) })}
-          >
-            ★ {l.name}
-          </button>
-        ))}
-        {showEatOut && (
-          <button className={`chip ${filters.eatOut ? 'on' : ''}`} aria-pressed={filters.eatOut} onClick={() => toggle('eatOut')}>
-            🍽 {t('filter.eatOut')}
-          </button>
-        )}
+        </div>
+      </div>
+      <div className="filter-group">
+        <div className="filter-label">{t('filter.staple')}</div>
+        <div className="chips" role="group" aria-label={t('filter.staple')}>
+          {STAPLES.map((st) => (
+            <span key={st} style={{ display: 'contents' }}>
+              {chip(filters.staples.includes(st), `${STAPLE_ICONS[st]} ${t(`staple.${st}`)}`, () => onChange({ ...filters, staples: toggleIn(filters.staples, st) }))}
+            </span>
+          ))}
+        </div>
+      </div>
+      <div className="filter-group">
+        <div className="filter-label">{t('filter.props')}</div>
+        <div className="chips">
+          {chip(filters.kids, `🧒 ${t('filter.kids')}`, () => toggle('kids'))}
+          {chip(filters.noSpicy, t('filter.noSpicy'), () => toggle('noSpicy'))}
+          {effortChip(1, `⏱ ${t('filter.quick')}`)}
+          {effortChip(2, t('filter.noProject'))}
+          {chip(filters.sweetOnly, `🍮 ${t('filter.sweet')}`, () => toggle('sweetOnly'))}
+        </div>
+      </div>
+      <div className="filter-group">
+        <div className="filter-label">{t('filter.loved')}</div>
+        <div className="chips">
+          {chip(filters.favoritesOnly, `♥ ${t('filter.favorites')}`, () => toggle('favoritesOnly'))}
+          {state.labels.map((l) => (
+            <span key={l.id} style={{ display: 'contents' }}>
+              {chip(filters.favLabels.includes(l.id), `★ ${l.name}`, () => onChange({ ...filters, favLabels: toggleIn(filters.favLabels, l.id) }), `lbl-chip lbl-${l.color % 8}`)}
+            </span>
+          ))}
+          {showEatOut && chip(filters.eatOut, `🍽 ${t('filter.eatOut')}`, () => toggle('eatOut'))}
+        </div>
       </div>
     </div>
   )

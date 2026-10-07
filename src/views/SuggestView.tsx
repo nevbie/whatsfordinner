@@ -8,7 +8,7 @@ import type { Dish } from '../data/types'
 import { useLang } from '../i18n'
 import { comboTypeOfDish } from '../logic/combos'
 import { addDays, todayISO } from '../logic/dates'
-import { activeFilterCount } from '../logic/filters'
+import { activeFilterCount, DEFAULT_FILTERS } from '../logic/filters'
 import { suggest } from '../logic/suggest'
 import { useStore } from '../store/StoreContext'
 import { useUI } from '../ui'
@@ -113,7 +113,19 @@ export function SuggestView() {
           </button>
         </div>
       </div>
-      {showFilters && <FilterBar filters={filters} onChange={setFilters} />}
+      {showFilters && (
+        <div className="card filter-panel">
+          <FilterBar filters={filters} onChange={setFilters} />
+          <div className="row between">
+            <button className="btn" disabled={activeFilterCount(filters) === 0} onClick={() => setFilters(DEFAULT_FILTERS)}>
+              {t('filter.reset')}
+            </button>
+            <button className="btn primary" onClick={() => setShowFilters(false)}>
+              {t('filter.close')}
+            </button>
+          </div>
+        </div>
+      )}
 
       {suggestions.length === 0 && <p className="muted">{t('suggest.none')}</p>}
       <div className="stack tight">

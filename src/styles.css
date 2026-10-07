@@ -1002,3 +1002,44 @@ select.who {
 .dish-tabs { width: 100%; margin-bottom: 8px; }
 .dish-tabs button { flex: 1; }
 .group-head { font-size: 1rem; margin: 16px 0 4px; }
+
+/* filter panel: clearly set apart from the results below */
+.filter-panel {
+  background: var(--surface-2, color-mix(in srgb, var(--accent) 6%, var(--card, #fff)));
+  border: 1.5px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  box-shadow: 0 6px 18px rgb(0 0 0 / 0.08);
+  margin-bottom: 18px;
+}
+.filter-group { display: grid; gap: 6px; }
+.filter-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted, #7a6a60);
+}
+.filter-panel .filters { gap: 14px; }
+.builder-prefer { display: grid; gap: 6px; margin: 4px 0 10px; }
+
+/* week: one compact row per day so the whole week fits on one screen */
+.plan-view h1 { margin-bottom: 4px; }
+.plan-view .week-nav { margin-bottom: 6px; }
+.plan-view .days { gap: 6px; }
+.plan-view .day { padding: 7px 8px 7px 12px; }
+.day-row { display: flex; align-items: center; gap: 10px; min-height: 40px; }
+.day-when { display: grid; width: 42px; flex: none; line-height: 1.15; }
+.day-when .day-name { font-weight: 700; }
+.day-date { font-size: 0.75rem; color: var(--muted); }
+.day-main { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; gap: 2px 10px; align-items: center; }
+.day-dish {
+  border: none; background: none; padding: 2px 0; font: inherit; color: inherit; text-align: left;
+  max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer;
+}
+.day-empty { display: flex; gap: 12px; }
+.day-done { flex-basis: 100%; }
+.day-more { flex: none; }
+.day-more.on { background: var(--accent-soft); }
+.plan-view .day-actions { margin: 6px 0 2px 52px; }
+.plan-view .days { grid-template-columns: minmax(0, 1fr); }
+.plan-view .day, .day-row { min-width: 0; }
+.day-dish { flex: 0 1 auto; }

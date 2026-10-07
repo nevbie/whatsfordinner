@@ -141,7 +141,8 @@ describe('region and staple filters', () => {
   })
 
   it('ignores outdated stored filter values', () => {
-    expect(normalizeFilters({ cuisine: 'european' as never }).cuisine).toBe('any')
+    expect(normalizeFilters({ cuisine: 'european' } as never).cuisines).toEqual([])
+    expect(normalizeFilters({ cuisine: 'italian' } as never).cuisines).toEqual(['italian'])
     expect(normalizeFilters({}).staples).toEqual([])
   })
 })

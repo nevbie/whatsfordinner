@@ -115,6 +115,22 @@ export function ComboBuilder({ combo, seedId, date }: { combo: ComboType; seedId
       }
     >
       <p className="muted small">{t(INTRO[combo])}</p>
+      <div className="builder-prefer">
+        <span className="filter-label">{t('builder.prefer')}</span>
+        <div className="chips">
+          {(
+            [
+              ['kidsFav', `🧒 ${t('filter.kids')}`],
+              ['quick', `⏱ ${t('filter.quick')}`],
+              ['favs', `♥ ${t('filter.favoritesShort')}`],
+            ] as const
+          ).map(([k, label]) => (
+            <button key={k} className={`chip ${options[k] ? 'on' : ''}`} aria-pressed={!!options[k]} onClick={() => change({ [k]: !options[k] })}>
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
       {combo !== 'teller' && combo !== 'salad' && (
       <div className="combo-options">
         <Stepper label={t('combo.adults')} value={options.adults} min={1} max={8} onChange={(adults) => change({ adults })} />

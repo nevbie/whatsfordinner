@@ -1,9 +1,21 @@
 import { regionOf, staplesOf } from '../data/classify'
 import type { Dish, Region, Staple } from '../data/types'
 
-/** Finer cuisine choice on top of the region chips. */
-export type CuisineGroup = 'any' | 'german' | 'italian' | 'chinese' | 'indian'
-export const CUISINE_GROUPS: CuisineGroup[] = ['any', 'german', 'italian', 'chinese', 'indian']
+/** Finer cuisine choice on top of the region chips (several can be picked). */
+export type CuisineGroup = 'german' | 'italian' | 'french' | 'spanish' | 'oriental' | 'american' | 'chinese' | 'indian' | 'eastasia'
+export const CUISINE_GROUPS: CuisineGroup[] = ['german', 'italian', 'french', 'spanish', 'oriental', 'american', 'chinese', 'indian', 'eastasia']
+
+const GROUP_CUISINES: Record<CuisineGroup, string[]> = {
+  german: ['german', 'austrian', 'swiss'],
+  italian: ['italian'],
+  french: ['french'],
+  spanish: ['spanish'],
+  oriental: ['greek', 'turkish', 'mideast', 'persian', 'northafrican', 'georgian', 'eastern'],
+  american: ['american', 'mexican'],
+  chinese: ['chinese'],
+  indian: ['indian'],
+  eastasia: ['thai', 'vietnamese', 'japanese', 'korean', 'fusion'],
+}
 
 export interface Filters {
   diet: 'any' | 'veggie' | 'vegan'
@@ -16,7 +28,8 @@ export interface Filters {
   /** only sweet dishes (Grießbrei, Arme Ritter, Kaiserschmarrn …) */
   sweetOnly: boolean
   eatOut: boolean
-  cuisine: CuisineGroup
+  /** empty = all cuisines; otherwise the dish belongs to one of them */
+  cuisines: CuisineGroup[]
   /** empty = all regions */
   regions: Region[]
   /** empty = any staple; otherwise the dish needs at least one of them */
@@ -32,32 +45,27 @@ export const DEFAULT_FILTERS: Filters = {
   favLabels: [],
   sweetOnly: false,
   eatOut: false,
-  cuisine: 'any',
+  cuisines: [],
   regions: [],
   staples: [],
 }
 
 /** Merge stored filters (possibly from an older app version) with the defaults. */
-export function normalizeFilters(raw: Partial<Filters> | null | undefined): Filters {
-  const f = { ...DEFAULT_FILTERS, ...(raw ?? {}) }
-  if (!CUISINE_GROUPS.includes(f.cuisine)) f.cuisine = 'any'
+export function normalizeFilters(raw: (Partial<Filters> & { cuisine?: string }) | null | undefined): Filters {
+  const { cuisine, ...rest } = raw ?? {}
+  const f: Filters = { ...DEFAULT_FILTERS, ...rest }
+  // older versions stored a single cuisine
+  if (!Array.isArray(f.cuisines)) f.cuisines = []
+  if (cuisine && CUISINE_GROUPS.includes(cuisine as CuisineGroup) && !f.cuisines.length) f.cuisines = [cuisine as CuisineGroup]
+  f.cuisines = f.cuisines.filter((c) => CUISINE_GROUPS.includes(c))
   if (!Array.isArray(f.regions)) f.regions = []
   if (!Array.isArray(f.staples)) f.staples = []
   if (!Array.isArray(f.favLabels)) f.favLabels = []
   return f
 }
 
-export function inCuisineGroup(dish: Dish, group: CuisineGroup): boolean {
-  switch (group) {
-    case 'any':
-      return true
-    case 'german':
-      return dish.cuisine === 'german' || dish.cuisine === 'austrian'
-    case 'italian':
-    case 'chinese':
-    case 'indian':
-      return dish.cuisine === group
-  }
+export function inCuisineGroups(dish: Dish, groups: CuisineGroup[]): boolean {
+  return !groups.length || groups.some((g) => GROUP_CUISINES[g].includes(dish.cuisine))
 }
 
 /** Diet / kids / spice / effort checks shared by suggestions, the dish list and the meal builder. */
@@ -88,7 +96,7 @@ export function matchesFilters(dish: Dish, f: Filters, favorites: ReadonlySet<st
     if (!region || !f.regions.includes(region)) return false
   }
   if (f.staples.length && !staplesOf(dish).some((s) => f.staples.includes(s))) return false
-  if (!inCuisineGroup(dish, f.cuisine)) return false
+  if (!inCuisineGroups(dish, f.cuisines)) return false
   return matchesDiet(dish, f)
 }
 
@@ -98,7 +106,7 @@ export function activeFilterCount(f: Filters): number {
     Number(f.diet !== 'any') +
     f.regions.length +
     f.staples.length +
-    Number(f.cuisine !== 'any') +
+    f.cuisines.length +
     Number(f.kids) +
     Number(f.noSpicy) +
     Number(f.maxEffort < 3) +
