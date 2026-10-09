@@ -1,0 +1,55 @@
+name: Android app
+
+on:
+  push:
+    branches: [main]
+    paths: ['android/**', 'shared/**', '.github/workflows/android.yml']
+  pull_request:
+    paths: ['android/**', 'shared/**', '.github/workflows/android.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: android
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Test and build
+        run: ./gradlew --no-daemon :core:test assembleDebug
+        env:
+          FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
+          FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
+          FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
+          FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
+      - name: Rename APK
+        run: cp app/build/outputs/apk/debug/app-debug.apk was-gibts-heute.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: was-gibts-heute-apk
+          path: android/was-gibts-heute.apk
+      # a fixed download link for the phones: Releases → "Android-App (neueste Version)"
+      - name: Publish as release
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: android-latest
+          name: Android-App (neueste Version)
+          body: |
+            Neueste Android-Version von „Was gibt's heute?“ (Commit ${{ github.sha }}).
+            Auf dem Handy die Datei was-gibts-heute.apk herunterladen und öffnen (Installation aus dieser Quelle erlauben).
+          files: android/was-gibts-heute.apk
+          make_latest: false

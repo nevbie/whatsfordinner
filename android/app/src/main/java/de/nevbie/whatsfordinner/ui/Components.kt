@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.FlowRowScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -124,8 +123,8 @@ fun Tag(text: String, color: Color, faded: Boolean = false) {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun Chips(modifier: Modifier = Modifier, content: @Composable FlowRowScope.() -> Unit) {
-    FlowRow(modifier, horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp), content = content)
+fun Chips(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    FlowRow(modifier, horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) { content() }
 }
 
 @Composable
@@ -314,9 +313,11 @@ fun CommitField(
     var focused by remember { mutableStateOf(false) }
     LaunchedEffect(value) { if (!focused) draft = value }
     val focus = LocalFocusManager.current
-    val commit = {
+    val commit: () -> Unit = {
         if (draft != value) onCommit(draft)
-        if (clearOnCommit) draft = ""
+        if (clearOnCommit) {
+            draft = ""
+        }
     }
     OutlinedTextField(
         value = draft,
