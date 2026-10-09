@@ -723,6 +723,9 @@ const en: Record<Key, string> = {
   weekday: 'Weekday',
 }
 
+/** Both UI dictionaries (exported for the native apps, see scripts/export-native.ts). */
+export const STRINGS = { de, en }
+
 export const TAG_LABELS: Record<Tag, [string, string]> = {
   meat: ['Fleisch', 'Meat'],
   fish: ['Fisch', 'Fish'],
