@@ -1,0 +1,54 @@
+name: iOS app
+
+on:
+  push:
+    branches: [main]
+    paths: ['ios/**', 'shared/**', '.github/workflows/ios.yml']
+  pull_request:
+    paths: ['ios/**', 'shared/**', '.github/workflows/ios.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  core-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: '6.0'
+      - run: swift test
+        working-directory: ios/WFDCore
+
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - run: brew install xcodegen
+      - name: Firebase config from repository variables
+        if: vars.VITE_FIREBASE_API_KEY != ''
+        working-directory: ios/WhatsForDinner
+        run: |
+          cat > FirebaseConfig.plist <<PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>API_KEY</key><string>${{ vars.VITE_FIREBASE_API_KEY }}</string>
+            <key>PROJECT_ID</key><string>${{ vars.VITE_FIREBASE_PROJECT_ID }}</string>
+            <key>APP_ID</key><string>${{ vars.VITE_FIREBASE_APP_ID }}</string>
+            <key>AUTH_DOMAIN</key><string>${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}</string>
+          </dict></plist>
+          PLIST
+      - name: Generate project and build for the simulator
+        working-directory: ios
+        run: |
+          xcodegen generate
+          xcodebuild -project WhatsForDinner.xcodeproj -scheme WhatsForDinner \
+            -destination 'generic/platform=iOS Simulator' build CODE_SIGNING_ALLOWED=NO | tail -n 200
+          exit ${PIPESTATUS[0]}

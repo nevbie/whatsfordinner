@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Copy to FirebaseConfig.plist (same folder) and fill in the values of the family's Firebase project –
+  the same project the web app uses (VITE_FIREBASE_* values). FirebaseConfig.plist is git-ignored.
+  Without it the app works in local-only mode.
+  APP_ID: preferably the app id of an iOS app registered in the Firebase console (1:<sender>:ios:<hash>);
+  the web app id (1:<sender>:web:<hash>) also works.
+-->
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>YOUR_API_KEY</string>
+	<key>PROJECT_ID</key>
+	<string>YOUR_PROJECT_ID</string>
+	<key>APP_ID</key>
+	<string>YOUR_APP_ID</string>
+	<key>AUTH_DOMAIN</key>
+	<string>YOUR_PROJECT_ID.firebaseapp.com</string>
+</dict>
+</plist>
