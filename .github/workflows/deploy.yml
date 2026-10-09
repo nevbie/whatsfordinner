@@ -26,6 +26,9 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
+      # the native apps bundle shared/*.json – make sure it matches the web data
+      - name: Check shared data for the native apps is up to date
+        run: npm run export:native && git diff --exit-code shared || (echo 'Run npm run export:native and commit shared/' && exit 1)
       - run: npm run build
         env:
           BASE_PATH: /${{ github.event.repository.name }}/
