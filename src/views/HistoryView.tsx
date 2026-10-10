@@ -11,7 +11,7 @@ const PAGE = 30
 
 export function HistoryView() {
   const { t, lang } = useLang()
-  const { state, dishById, setDay } = useStore()
+  const { state, dishById, setMeal } = useStore()
   const ui = useUI()
   const { counts } = useDishStats()
   const [limit, setLimit] = useState(PAGE)
@@ -39,7 +39,7 @@ export function HistoryView() {
     const id = await ui.pickDish(t('plan.pickDish'))
     if (!id) return
     const existing = state.plan[pastDate]?.dishes ?? []
-    setDay(pastDate, { dishes: [...existing, id] })
+    setMeal(pastDate, 'dinner', [...existing, id])
     setPastDate('')
   }
 

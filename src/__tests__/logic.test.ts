@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { keepEntry } from '../store/backend'
 import { builtinDishes } from '../data/dishes'
 import { emptyState, type Dish } from '../data/types'
 import { chineseDishCount, defaultCounts, fillEntries, initialEntries, rerollEntry, type ComboOptions } from '../logic/combos'
@@ -353,5 +354,12 @@ describe('dislikes', () => {
     expect(weight(byId.get('lasagne')!, ctxS, last, new Set())).toBeLessThan(weight(byId.get('lasagne')!, ctxN, last, new Set()) * 0.2)
     expect(weight(byId.get('lasagne')!, { ...ctxS, filters: { ...DEFAULT_FILTERS, favLabels: ['j'] } }, last, new Set())).toBe(0)
     expect(weight(byId.get('lasagne')!, { ...ctxS, filters: { ...DEFAULT_FILTERS, noDislikes: true } }, last, new Set())).toBe(0)
+  })
+})
+
+describe('day markers', () => {
+  it('keeps a day that only has markers', () => {
+    expect(keepEntry({ dishes: [], labels: ['out'] })).toBe(true)
+    expect(keepEntry({ dishes: [] })).toBe(false)
   })
 })

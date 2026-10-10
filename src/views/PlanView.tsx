@@ -11,6 +11,14 @@ import { dayDishIds, EXTRA_MEALS, type DayEntry, type Dish } from '../data/types
 import { useStore, type Meal } from '../store/StoreContext'
 import { useUI } from '../ui'
 
+/** A day with all its dishes removed but its markers and "done" kept. */
+function withoutDishes(entry: DayEntry): DayEntry {
+  const rest: DayEntry = { dishes: [] }
+  if (entry.done) rest.done = true
+  if (entry.labels?.length) rest.labels = entry.labels
+  return rest
+}
+
 export function PlanView() {
   const { t, lang } = useLang()
   const { state, dishes, dishById, setDay, setMeal, saveParty } = useStore()
@@ -33,16 +41,14 @@ export function PlanView() {
   }
 
   const removeDish = (date: string, meal: Meal, index: number) => {
-    const next = mealIds(date, meal).filter((_, i) => i !== index)
-    const entry = state.plan[date]
-    if (!next.length && dayDishIds(entry).length <= 1 && !entry.done) return setDay(date, null)
-    setMeal(date, meal, next)
+    // the day itself (markers, done) stays; an entry with nothing left is removed by the backend
+    setMeal(date, meal, mealIds(date, meal).filter((_, i) => i !== index))
   }
 
   const clearDay = (date: string) => {
     if (!confirm(t('plan.clearConfirm'))) return
     const entry = state.plan[date]
-    setDay(date, entry.done ? { dishes: [], done: true } : null)
+    setDay(date, withoutDishes(entry))
   }
 
   const [customLabel, setCustomLabel] = useState('')
@@ -176,7 +182,7 @@ export function PlanView() {
                 {allIds.length > 0 && (
                   <button
                     className="icon-btn small day-clear"
-                    onClick={() => (allIds.length === 1 ? setDay(date, entry!.done ? { dishes: [], done: true } : null) : clearDay(date))}
+                    onClick={() => (allIds.length === 1 ? setDay(date, withoutDishes(entry!)) : clearDay(date))}
                     aria-label={t('plan.clear')}
                     title={t('plan.clear')}
                   >
