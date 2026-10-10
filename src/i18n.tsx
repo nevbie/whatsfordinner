@@ -205,6 +205,11 @@ const de = {
   'slot.extra': 'Extra',
 
   'settings.language': 'Sprache',
+  'settings.display': 'Anzeige',
+  'settings.display.auto': 'Automatisch',
+  'settings.display.compact': 'Kompakt',
+  'settings.display.normal': 'Normal',
+  'settings.displayHint': 'Kompakt: kleinere Schrift und Abstände für kleine Handys wie das iPhone SE. Automatisch wählt das je nach Bildschirm. Gilt nur für dieses Gerät.',
   'settings.family': 'Familie',
   'settings.avoidDays': 'Gerichte frühestens nach … Tagen wieder vorschlagen',
   'settings.sync': 'Mit der Familie teilen',
@@ -567,6 +572,11 @@ const en: Record<Key, string> = {
   'slot.extra': 'Extra',
 
   'settings.language': 'Language',
+  'settings.display': 'Display',
+  'settings.display.auto': 'Automatic',
+  'settings.display.compact': 'Compact',
+  'settings.display.normal': 'Normal',
+  'settings.displayHint': 'Compact: smaller text and spacing for small phones like the iPhone SE. Automatic picks it based on the screen. Applies to this device only.',
   'settings.family': 'Family',
   'settings.avoidDays': 'Suggest a dish again after at least … days',
   'settings.sync': 'Share with the family',

@@ -1,3 +1,4 @@
+import { loadDensity, saveDensity, type Density } from '../display'
 import { dishLabel } from '../components/DishName'
 import { useState } from 'react'
 import { Stepper } from '../components/Stepper'
@@ -8,6 +9,7 @@ import { useUI } from '../ui'
 
 export function SettingsView() {
   const { t, lang, setLang } = useLang()
+  const [density, setDensity] = useState<Density>(loadDensity)
   const store = useStore()
   const { state, updateSettings, familyCode, syncAvailable, syncError } = store
   const ui = useUI()
@@ -58,6 +60,26 @@ export function SettingsView() {
             English
           </button>
         </div>
+      </section>
+
+      <section className="card">
+        <h2>{t('settings.display')}</h2>
+        <div className="segmented">
+          {(['auto', 'compact', 'normal'] as const).map((d) => (
+            <button
+              key={d}
+              className={density === d ? 'on' : ''}
+              aria-pressed={density === d}
+              onClick={() => {
+                setDensity(d)
+                saveDensity(d)
+              }}
+            >
+              {t(`settings.display.${d}`)}
+            </button>
+          ))}
+        </div>
+        <p className="small muted">{t('settings.displayHint')}</p>
       </section>
 
       <section className="card">
