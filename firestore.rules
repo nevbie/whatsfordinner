@@ -13,6 +13,9 @@ service cloud.firestore {
       match /ghosts/{ghostId} {
         allow get, create, update: if request.auth != null && familyId.size() == 12;
       }
+      match /voices/{land} {
+        allow get, list, create, update: if request.auth != null && familyId.size() == 12;
+      }
     }
   }
 }
