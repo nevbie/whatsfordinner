@@ -6,5 +6,13 @@ service cloud.firestore {
     match /families/{familyId} {
       allow get, create, update: if request.auth != null && familyId.size() == 12;
     }
+    // JC Racer (the kids' racing game) shares this Firebase project: same idea, own collection.
+    // The family document holds the drivers, each record ghost is a document of its own.
+    match /racers/{familyId} {
+      allow get, create, update: if request.auth != null && familyId.size() == 12;
+      match /ghosts/{ghostId} {
+        allow get, create, update: if request.auth != null && familyId.size() == 12;
+      }
+    }
   }
 }
